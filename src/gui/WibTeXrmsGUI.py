@@ -33,7 +33,8 @@ class MyFrame(Frame):
             e3.insert(0, path)  # Insert the 'path'
             # print path
 
-        
+        def WibTeXrun():
+            return
 
 
         e1 = Entry(self, width=10)
@@ -61,14 +62,14 @@ class MyFrame(Frame):
         self.button = Button(self, text="Browse", command=callback3, width=5)
         self.button.grid(row=6, column=3, sticky=W)
         
-        Radiobutton(self, text = "ACM", variable = var, value = 1).grid(row=3, column=2, sticky=W)
-        Radiobutton(self, text = "CCSC", variable = var, value = 2).grid(row=3, column=3, sticky=W)
-        Radiobutton(self, text = "IEEE", variable = var, value = 3).grid(row=4, column=3, sticky=W)
-        Radiobutton(self, text = "APA", variable = var, value = 4).grid(row=4, column=2, sticky=W)
-        Radiobutton(self, text = "Other", variable = var, value = 5).grid(row=4, column=1, sticky=W)
+        R1 = Radiobutton(self, text = "ACM", variable = var, value = 1).grid(row=3, column=2, sticky=W)
+        R2 = Radiobutton(self, text = "CCSC", variable = var, value = 2).grid(row=3, column=3, sticky=W)
+        R3 = Radiobutton(self, text = "IEEE", variable = var, value = 3).grid(row=4, column=3, sticky=W)
+        R4 = Radiobutton(self, text = "APA", variable = var, value = 4).grid(row=4, column=2, sticky=W)
+        R5 = Radiobutton(self, text = "Other", variable = var, value = 5).grid(row=4, column=1, sticky=W)
         selection = var.get()
         
-        self.button = Button(self, text="Run", width=5)
+        self.button = Button(self, text="Run", command="", width=5)
         self.button.grid(row=7, column=3, sticky=E)
 
         
