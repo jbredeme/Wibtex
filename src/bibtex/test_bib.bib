@@ -1,0 +1,903 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Verify Syntax
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Miscellaneous Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Test Duplicate Entry Names - SUCCESS (last duplicate is used)
+@article{ duplicate_entry,
+    author = {Charles Duso},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+@article{ duplicate_entry,
+    author = {Charles Duso},
+    title = {this is also a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Test Quote Strings - SUCCESS
+@article{ quote_strings,
+    author = "Charles Duso",
+    title = "this is a test",
+    journal = "The Journal of Test Articles",
+    year = "1997",
+}
+
+% Test Case Preservation - SUCCESS (brackets read in, but not needed)
+@article{ without_preservation,
+    author = {Charles DuSo},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+@article{ with_preservation,
+    author = {Charles {DuSo}},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Test Multiple Authors - SUCCESS
+@article{ multiple_authors_forename,
+    author = {Michel Goossens and Frank Mittelbach and Alexander Samarin},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+@article{ multiple_authors_surname,
+    author = {Abedon, S. T. and Hyman, P. and Thomas, C.},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Test Multiple Authors with Varied Author Formats - SUCCESS
+@article{ multiple_authors_mixed,
+    author = {Abedon, S. T. and Hyman, P. and Alexander Samarin},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Test Non-standard Entry Type - FAILURE (Not read in)
+@patent{ non_standard_entry,
+    author = {Abedon, S. T. and Hyman, P. and Alexander Samarin},
+    title = {this is a test},
+    number = {3},
+    year = {1997},
+}
+
+% Test Duplicate Fields - SUCCESS (Last duplicate is used)
+@article{ duplicate_fields,
+    author = {Charles Duso},
+    author = {John Smith},
+    title = {this is a test},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Field Format Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Test Author (Forename Surname)
+@article{ forename_surname,
+    author = {Charles Duso},
+    title = {A Test Article},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Test Author (Surname Forename)
+@article{ surname_forename,
+    author = {Duso, Charles},
+    title = {A Test Article},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Special Character Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Test Special Characters {\'e}
+@article{ special_characters,
+    author = {Charles Duso},
+    title = {test title},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Verify Entry Types (SUCCESS - Invalid entries also read however)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Article Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Article - Test Mandatory Fields
+@article{ article_good,
+    author = {Charles Duso},
+    title = {A Test Article},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+}
+
+% Article - Test Mandatory and Optional Fields
+@article{ article_optional,
+    author = {Charles Duso},
+    title = {A Test Article},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    month = {November},
+    note = {this is a note},
+    number = {3},
+    pages = {7609--7610},
+    volume = {1},
+}
+
+% Article - Test Incorrect Fields
+@article{ article_bad,
+    author = {Charles Duso},
+}
+
+% Article - Test Unnecessary Fields
+@article{ article_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Article},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Book Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Book - Test Mandatory Fields
+@book{ book_good,
+    author = {Charles Duso},
+    title = {A Test Book},
+    year = {1997},
+    publisher = {Scholastic},
+}
+
+% Book - Test Mandatory and Optional Fields
+@book{ book_optional,
+    author = {Charles Duso},
+    title = {A Test Book},
+    publisher = {Scholastic},
+    year = {1997},
+    volume = {12},
+    number = {34},
+    series = {1},
+    address = {1234 Test Street},
+    month = {October},
+    note = {This is a test note},
+}
+
+% Book - Test Incorrect Fields
+@book{ book_bad,
+    author = {Charles Duso},
+}
+
+% Book - Test Unnecessary Fields
+@book{ book_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Book},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Booklet Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Booklet - Test Mandatory Fields
+@booklet{ booklet_good,
+    title = {A Test Booklet},
+}
+
+% Booklet - Test Mandatory and Optional Fields
+@booklet{ booklet_optional,
+    author = {Charles Duso},
+    title = {A Test Booklet},
+    howpublished = {Scholastic},
+    year = {1997},
+    address = {1234 Test Street},
+    month = {October},
+    note = {This is a test note},
+}
+
+% Booklet - Test Incorrect Fields
+@booklet{ booklet_bad,
+    author = {Charles Duso},
+}
+
+% Booklet - Test Unnecessary Fields
+@booklet{ booklet_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Booklet},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Conference Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Conference - Test Mandatory Fields
+@conference{ conference_good,
+    author = {Charles Duso},
+    title = {A Test Conference},
+    booktitle = {50 shades of tests},
+    year = {1997},
+}
+
+% Conference - Test Mandatory and Optional Fields
+@conference{ conference_optional,
+    author = {Charles Duso},
+    title = {A Test Conference},
+    booktitle = {Scholastic},
+    year = {1997},
+    editor = {Wayne Brady},
+    volume = {1},
+    number = {2},
+    series = {4},
+    pages = {1000--2000},
+    address = {1234 Test Street},
+    month = {October},
+    publisher = {Scholastic},
+    note = {test note},
+}
+
+% Conference - Test Incorrect Fields
+@conference{ conference_bad,
+    author = {Charles Duso},
+}
+
+% Conference - Test Unnecessary Fields
+@conference{ conference_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Conference},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Inbook Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Inbook - Test Mandatory Fields
+@inbook{ inbook_good,
+    author = {Charles Duso},
+    title = {A Test Conference},
+    editor = {Wayne Brady},
+    chapter = {1},
+    pages = {1000--2000},
+    publisher = {Scholastic},
+    year = {1997},
+}
+
+% Inbook - Test Mandatory and Optional Fields
+@inbook{ inbook_optional,
+    author = {Charles Duso},
+    title = {A Test Conference},
+    editor = {Wayne Brady},
+    chapter = {1},
+    pages = {1000--2000},
+    publisher = {Scholastic},
+    year = {1997},
+    address = {1234 Test Street},
+    month = {October},
+    volume = {1},
+    series = {Erotic Fiction},
+    type = {print},
+    edition = {54},
+    number = {2},
+    note = {test note},
+}
+
+% Inbook - Test Incorrect Fields
+@inbook{ inbook_bad,
+    author = {Charles Duso},
+}
+
+% Inbook - Test Unnecessary Fields
+@inbook{ inbook_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inbook},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    pages = {1000--2000},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Incollection Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Incollection - Test Mandatory Fields
+@incollection{ incollection_good,
+    author = {Charles Duso},
+    title = {A Test Incollection},
+    booktitle = {50 shades of tests},
+    publisher = {Scholastic},
+    year = {1997},
+}
+
+% Incollection - Test Mandatory and Optional Fields
+@incollection{ incollection_optional,
+    author = {Charles Duso},
+    title = {A Test Incollection},
+    booktitle = {50 shades of tests},
+    publisher = {Scholastic},
+    year = {1997},
+    editor = {Wayne Brady},
+    volume = {1},
+    number = {2},
+    series = {Erotic Fiction},
+    type = {print},
+    chapter = {1},
+    pages = {1000--2000},
+    address = {1234 Test Street},
+    edition = {54},
+    month = {October},
+    note = {test note},
+}
+
+% Incollection - Test Incorrect Fields
+@incollection{ incollection_bad,
+    author = {Charles Duso},
+}
+
+% Incollection - Test Unnecessary Fields
+@incollection{ incollection_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Incollection},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Inproceedings Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Inproceedings - Test Mandatory Fields
+@inproceedings{ inproceedings_good,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    booktitle = {50 shades of tests},
+    year = {1997},
+}
+
+% Inproceedings - Test Mandatory and Optional Fields
+@inproceedings{ inproceedings_optional,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    booktitle = {50 shades of tests},
+    publisher = {Scholastic},
+    editor = {Wayne Brady},
+    volume = {1},
+    number = {2},
+    year = {1997},   
+    series = {Erotic Fiction},
+    pages = {1000--2000},
+    address = {1234 Test Street},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    month = {October},
+    note = {test note},
+}
+
+% Inproceedings - Test Incorrect Fields
+@inproceedings{ inproceedings_bad,
+    author = {Charles Duso},
+}
+
+% Inproceedings - Test Unnecessary Fields
+@inproceedings{ inproceedings_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note}, 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Manual Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Manual - Test Mandatory Fields
+@manual{ manual_good,
+    title = {A Test Manual},
+    year = {1997},
+}
+
+% Manual - Test Mandatory and Optional Fields
+@manual{ manual_optional,
+    author = {Charles Duso},
+    title = {A Test Manual},
+    organizaiton = {NAU},
+    address = {1234 Test Street},
+    edition = {54},
+    year = {1997},
+    month = {October},
+    note = {test note},
+}
+
+% Manual - Test Incorrect Fields
+@manual{ manual_bad,
+    author = {Charles Duso},
+}
+
+% Manual - Test Unnecessary Fields
+@manual{ manual_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Manual},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Masters Thesis Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Masters Thesis - Test Mandatory Fields
+@mastersthesis{ mastersthesis_good,
+    author = {Charles Duso},
+    title = {A Test masters},
+    school = {Elementary},
+    year = {1997},
+}
+
+% Masters Thesis - Test Mandatory and Optional Fields
+@mastersthesis{ mastersthesis_optional,
+    author = {Charles Duso},
+    title = {A Test masters},
+    school = {Elementary},
+    year = {1997},
+    type = {print},
+    address = {1234 Test Street},
+    month = {October},
+    note = {test note},
+}
+
+% Masters Thesis - Test Incorrect Fields
+@mastersthesis{ mastersthesis_bad,
+    author = {Charles Duso},
+}
+
+% Masters Thesis - Test Unnecessary Fields
+@mastersthesis{ mastersthesis_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print}
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Misc Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Misc - Test Optional Fields
+@misc{ misc_optional,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    howpublished = {paper},   
+    year = {1997},
+    month = {October},
+    note = {test note},
+}
+
+% Misc - Test Unnecessary Fields
+@misc{ misc_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print},
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PhD Thesis Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PhD Thesis - Test Mandatory Fields
+@phdthesis{ phdthesis_good,
+    author = {Charles Duso},
+    title = {A Test phd thesis},
+    school = {Elementary},
+    year = {1997},
+}
+
+% PhD Thesis - Test Mandatory and Optional Fields
+@phdthesis{ phdthesis_optional,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    school = {Elementary},
+    year = {1997},
+    address = {1234 Test Street},
+    keywords = {yes, this, is, a, test},
+    month = {October},
+    note = {test note},
+}
+
+% PhD Thesis - Test Incorrect Fields
+@phdthesis{ phdthesis_bad,
+    author = {Charles Duso},
+}
+
+% PhD Thesis - Test Unnecessary Fields
+@phdthesis{ phdthesis_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print}
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Proceedings Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Proceedings - Test Mandatory Fields
+@proceedings{ proceedings_good,
+    title = {A Test proceedings},
+    year = {1997},
+}
+
+% Proceedings - Test Mandatory and Optional Fields
+@proceedings{ proceedings_optional,
+    title = {A Test Inproceedings},
+    year = {1997},
+    volume = {1},
+    editor = {Scholastic},
+    address = {1234 Test Street},
+    number = {2},
+    series = {Erotic Fiction},
+    organizaiton = {NAU},   
+    month = {October},
+    publisher = {Scholastic},
+    note = {test note},
+}
+
+% Proceedings - Test Incorrect Fields
+@proceedings{ proceedings_bad,
+    author = {Charles Duso},
+}
+
+% Proceedings - Test Unnecessary Fields
+@proceedings{ proceedings_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print}
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Tech Report Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Tech Report - Test Mandatory Fields
+@techreport{ techreport_good,
+    title = {A Test proceedings},
+    author = {Charles Duso},
+    institution = {hogwarts},
+    year = {1997},
+}
+
+% Tech Report - Test Mandatory and Optional Fields
+@techreport{ techreport_optional,
+    title = {A Test proceedings},
+    author = {Charles Duso},
+    institution = {hogwarts},
+    year = {1997},
+    type = {print},
+    number = {2},
+    address = {1234 Test Street},  
+    month = {October},
+    note = {test note},
+}
+
+% Tech Report - Test Incorrect Fields
+@techreport{ techreport_bad,
+    author = {Charles Duso},
+}
+
+% Tech Report - Test Unnecessary Fields
+@techreport{ techreport_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print}
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Unpublished Tests %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Unpublished - Test Mandatory Fields
+@unpublished{ unpublished_good,
+    title = {A Test proceedings},
+    author = {Charles Duso},
+    note = {test note},
+}
+
+% Unpublished - Test Mandatory and Optional Fields
+@unpublished{ unpublished_optional,
+    title = {A Test proceedings},
+    author = {Charles Duso},
+    year = {1997},
+    month = {October},
+    note = {test note},
+}
+
+% Unpublished - Test Incorrect Fields
+@unpublished{ unpublished_bad,
+    author = {Charles Duso},
+}
+
+% Unpublished - Test Unnecessary Fields
+@unpublished{ unpublished_unnecessary,
+    author = {Charles Duso},
+    title = {A Test Inproceedings},
+    journal = {The Journal of Test Articles},
+    year = {1997},
+    address = {1234 Test Street},
+    annote = {test annote},
+    booktitle = {50 shades of tests},
+    chapter = {1},
+    crossref = {crossref test},
+    edition = {54},
+    editor = {Scholastic},
+    howpublished = {paper},
+    volume = {1},
+    institution = {hogwarts},
+    key = {1234},
+    organizaiton = {NAU},
+    publisher = {Scholastic},
+    school = {Elementary},
+    series = {Erotic Fiction},
+    number = {2},
+    type = {print}
+    month = {October},
+    keywords = {yes, this, is, a, test},
+    note = {test note},
+}
