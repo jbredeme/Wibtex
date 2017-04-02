@@ -1,0 +1,13 @@
+{
+    "ccsc": {
+        "journal": "{{num}} {{name}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
+        "book": "{{num}} {{name}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
+        "internet": "{{num}} {{name}}, {{title}}, {{year}}, {{url}}, {{year}}."
+    },
+
+    "apa": {
+        "journal": "{{num}} {{name}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
+        "book": "{{num}} {{name}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
+        "internet": "{{num}} {{name}}, {{title}}, {{year}}, {{url}}, {{year}}."
+    },
+}
