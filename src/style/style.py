@@ -3,13 +3,19 @@ import json
 
 # Style File Extraction
 
-def validate_style_file( file ):
+def validate_style( file, style ):
     #todo
     return
 
-def read_style_file( file ):
-    #todo
-    return
+def read_style_file( file, style ):
+    with open(file, 'r') as f:
+        try:
+            data = json.load(f)
+        # if the file is empty the ValueError will be thrown
+        except ValueError:
+            data = {}
+
+    return data[style]
 
 # Reference Data Generation
 
@@ -101,6 +107,7 @@ def remove_duplicates( list ):
     return [x for x in list if not (x in seen or seen_add(x))]
 
 def organize_citations( citations, bib_list, style_data ):
+
     """ TODO - if alpha:
         value = 0
         temp_list = citations[0:(len(citations) - 1)]
@@ -169,4 +176,5 @@ with open('test.json', 'r') as f:
         data = {}
 
 organize_citations(test, data, None)
+read_style_file('style.json', 'ccsc')
 
