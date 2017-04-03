@@ -189,26 +189,3 @@ def generate_works_cited( citations, bib_list, style, output_dict ):
 def get_reference_data( style_file, doc_list ):
     return
 
-test = ['\\cite{article_okay}', '\\cite{article_bad}', '\\cite{article_good}', '\\bibliography{test}',
-        '\\cite{demo5}', '\\cite{demo6}', '\\cite{demo7}', '\\bibliography{demo8}',
-        '\\cite{demo92}', '\\cite{demo10}', '\\cite{demo11}', '\\bibliography{demo12}',
-        '\\cite{demo13}', '\\cite{demo14}', '\\cite{demo15}', '\\bibliography{demo16}']
-
-validate_syntax(test)
-test = split_citations(test)
-test = strip_markup(test)
-
-# load from file:
-with open('test.json', 'r') as f:
-    try:
-        data = json.load(f)
-    # if the file is empty the ValueError will be thrown
-    except ValueError:
-        data = {}
-
-organize_citations(test, data, None)
-style_data = read_style_file('style.json', 'ccsc')
-dict = {}
-dict = generate_citations((test[0])[0:3], data, style_data['in_text_style'] , dict )
-dict = generate_works_cited(test[0], data, style_data, dict)
-print(dict)
