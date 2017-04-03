@@ -11,7 +11,7 @@ def read_style_file( file ):
 # Reference Data Generation
 
 def strip_markup( citations ):
-    #todo
+    
     return
 
 def validate_citations( citations ):
