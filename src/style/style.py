@@ -1,5 +1,6 @@
 import re
 import json
+from jinja2 import Template
 
 # Style File Extraction
 
@@ -136,24 +137,54 @@ def organize_citations( citations, bib_list, style_data ):
 
     if any(isinstance(el, list) for el in citations):
 
-        for sub_list in citations:
-            temp_list = sub_list[0:(len(sub_list) - 1)]
+        for i in range(0, len(citations)):
+            temp_list = (citations[i])[0:(len(citations[i]) - 1)]
             temp_list = remove_duplicates(temp_list)
-            print(temp_list)
+
     else:
         # Remove duplicate data
         temp_list = citations[0:(len(citations) - 1)]
         temp_list = remove_duplicates(temp_list)
-        print(temp_list)
         
-    return citations
+    return temp_list
 
-def generate_citations( citations ):
-    #todo
-    return
+def generate_citations( citations, bib_list, style, output_dict ):
+    template = Template(style)
 
-def generate_works_cited( citations ):
-    return
+    if any(isinstance(el, list) for el in citations):
+        #TODO
+        return
+
+    else:
+        i = 0
+        for item in citations:
+            dict = get_dict_from_entry(bib_list, item)
+            dict['num'] = i
+            output_dict[item] = template.render(dict)
+            i += 1
+
+    return output_dict
+
+def generate_works_cited( citations, bib_list, style, output_dict ):
+    
+    bib_string = ""
+
+    if any(isinstance(el, list) for el in citations):
+        #TODO
+        return
+
+    else:
+        temp_list = citations[0:(len(citations) - 1)]
+        for item in temp_list:
+
+            dict = get_dict_from_entry(bib_list, item)
+            template = Template(style[dict['ENTRYTYPE']])
+
+            bib_string += template.render(dict)
+
+    output_dict[citations[len(citations) - 1]] = bib_string
+
+    return output_dict
 
 def get_reference_data( style_file, doc_list ):
     return
@@ -176,5 +207,8 @@ with open('test.json', 'r') as f:
         data = {}
 
 organize_citations(test, data, None)
-read_style_file('style.json', 'ccsc')
-
+style_data = read_style_file('style.json', 'ccsc')
+dict = {}
+dict = generate_citations((test[0])[0:3], data, style_data['in_text_style'] , dict )
+dict = generate_works_cited(test[0], data, style_data, dict)
+print(dict)
