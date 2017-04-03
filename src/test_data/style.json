@@ -3,7 +3,7 @@
         "ordering": "fcfs",
         "in_text_style":"[{{num}}]",
         "default_style":"",
-        "journal": "{{num}} {{name}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
+        "article": "{{num}} {{name}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
         "book": "{{num}} {{name}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
         "internet": "{{num}} {{name}}, {{title}}, {{year}}, {{url}}, {{year}}."
     }

@@ -409,4 +409,10 @@ def parse( path ):
 
     return bib_database
 
-parse("test_bib.bib")
+test = parse("test.bib")
+
+import json
+
+# save to file:
+with open('test.json', 'w') as f:
+    json.dump(test, f)
