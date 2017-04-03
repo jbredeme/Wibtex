@@ -1,3 +1,5 @@
+import re
+
 # Style File Extraction
 
 def validate_style_file( file ):
@@ -11,8 +13,11 @@ def read_style_file( file ):
 # Reference Data Generation
 
 def strip_markup( citations ):
-    
-    return
+    for item in range(0, len(citations)):
+        citations[item] = re.sub(r'\\cite\{', '', citations[item])
+        citations[item] = re.sub(r'\\bibliography\{', '', citations[item])
+        citations[item] = re.sub(r'\}', '', citations[item])
+    return citations
 
 def validate_citations( citations ):
     #todo
