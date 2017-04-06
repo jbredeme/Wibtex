@@ -174,7 +174,7 @@ def get_dict_from_entry( dict_list, key ):
             
     return out_dict
 
-def validate_citations( citations ):
+def validate_citations( citations, bib_data ):
     #TODO - Validates that citations are in the dictionary
     return
 
@@ -190,7 +190,7 @@ def remove_duplicates( list ):
     out = [item for item in list if not (item in seen or seen_add(item))]
     return out
 
-def organize_citations( citations ):
+def organize_citations( citations, order ):
     '''
     Removes duplicate values and bibliography tag(s) from a list/list of lists
     of citations
@@ -217,16 +217,17 @@ def organize_citations( citations ):
         
     return temp_list
 
-def generate_citations( citations, bib_list, style, output_dict ):
+def generate_citations( citations, bib_data, style ):
     '''
     Generates in-text citation strings from the style file template
 
     @param  citations   a list or list of lists of unique citations
-    @param  bib_list    a list of BibTeX bibliography entries
+    @param  bib_data    a list of BibTeX bibliography entries
     @param  style       a template representing the in-text citation 
     @param  output_dict the dictionary to store output data in
     @return             a dictionary containing formatted in-text citations
     '''
+    output_dict = {}
 
     template = Template(style)
 
@@ -244,14 +245,14 @@ def generate_citations( citations, bib_list, style, output_dict ):
         # Generate in-text citation and add it to the output dictionary
         for tag in citations:
 
-            dict = get_dict_from_entry(bib_list, tag)
+            dict = get_dict_from_entry(bib_data, tag)
             dict['num'] = index
             output_dict[tag] = template.render(dict)
             index += 1
 
     return output_dict
 
-def generate_works_cited( citations, bib_list, style, output_dict ):
+def generate_works_cited( citations, bib_data, style, output_dict ):
     '''
     Generates a works cited page from the style file template
 
@@ -279,7 +280,7 @@ def generate_works_cited( citations, bib_list, style, output_dict ):
 
         for item in temp_list:
 
-            dict = get_dict_from_entry(bib_list, item)
+            dict = get_dict_from_entry(bib_data, item)
 
             # Generate a template based on the entry type
             template = Template(style[dict['ENTRYTYPE']])
@@ -292,5 +293,38 @@ def generate_works_cited( citations, bib_list, style, output_dict ):
 
     return output_dict
 
-def get_reference_data( style_file, doc_list ):
-    return
+def get_reference_data( style_file, style, doc_list, bib_data ):
+
+    bib_list  = {}
+    cite_list = {}
+    style     = {}
+    output    = {}
+
+    # Validate style chosen from style file
+    validate_style(style_file, style)
+
+    # Read style file and extract style choice
+    style = read_style_file(style_file, style)
+
+    # Validate BibTeX syntax
+    validate_syntax(doc_list)
+
+    # Partition reference sections
+    bib_list = split_citations(doc_list)
+
+    # Strip BibTeX markup
+    bib_list = strip_markup(bib_list)
+
+    # Validate that citations are in BibTeX database
+    validate_citations(bib_list, bib_data)
+
+    # Organize citations according to style
+    cite_list = organize_citations(bib_list, style['order'])
+
+    # Generate in-text citations
+    output = generate_citations(cite_list, bib_data, style)
+
+    # Generate reference page
+    output = generate_works_cited(bib_list, bib_data, style, output)
+
+    return output
