@@ -18,7 +18,7 @@ class Document:
 			self.zipfile = zipfile.ZipFile(filename)
 			
 		except (OSError, IOError) as e:
-			print "Unable to read file:", self.filename
+			print("Unable to read file:", self.filename)
 
 	
 	'''	
@@ -34,7 +34,7 @@ class Document:
 				return xml_content
 
 		except (OSError, IOError) as e:
-			print "Unable to read file:", self.filename
+			print("Unable to read file:", self.filename)
 
 			
 	'''
@@ -68,7 +68,7 @@ class Document:
 			return True
 			
 		except (OSError, IOError) as e:
-			print "Unable to save file:", output_filename
+			print("Unable to save file:", output_filename)
 			return False
 			
 			
