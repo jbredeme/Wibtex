@@ -19,7 +19,7 @@ from jinja2 import Template
 # Function Definitions - Style File Interaction
 ################################################
 
-def validate_style( style_file, style ):
+def validate_style( style_file, style_form ):
     '''
     Validates a specified style from a style file
 
@@ -32,7 +32,7 @@ def validate_style( style_file, style ):
 
     return
 
-def read_style_file( style_file, style ):
+def read_style_file( style_file, style_form ):
     '''
     Extracts a specified style from a style file
 
@@ -48,7 +48,7 @@ def read_style_file( style_file, style ):
             data = {}
             print("Error: Could not read style file.")
 
-    return data[style]
+    return data[style_form]
 
 ################################################
 # Function Definitions - Style Data Formatting
@@ -217,19 +217,19 @@ def organize_citations( citations, order ):
         
     return temp_list
 
-def generate_citations( citations, bib_data, style ):
+def generate_citations( citations, bib_data, style_form ):
     '''
     Generates in-text citation strings from the style file template
 
     @param  citations   a list or list of lists of unique citations
     @param  bib_data    a list of BibTeX bibliography entries
-    @param  style       a template representing the in-text citation 
+    @param  style_form  a template representing the in-text citation 
     @param  output_dict the dictionary to store output data in
     @return             a dictionary containing formatted in-text citations
     '''
     output_dict = {}
 
-    template = Template(style)
+    template = Template(style_form)
 
     # If citations is a list of lists
     if any(isinstance(element, list) for element in citations):
@@ -252,13 +252,13 @@ def generate_citations( citations, bib_data, style ):
 
     return output_dict
 
-def generate_works_cited( citations, bib_data, style, output_dict ):
+def generate_works_cited( citations, bib_data, style_form, output_dict ):
     '''
-    Generates a works cited page from the style file template
+    Generates a works cited page from the style_form file template
 
     @param  citations   a list or list of lists of unique citations
     @param  bib_list    a list of BibTeX bibliography entries
-    @param  style       a template representing the citation output 
+    @param  style_form  a template representing the citation output 
     @param  output_dict the dictionary to store output data in
     @return             a dictionary containing formatted citation data
     '''
@@ -283,7 +283,7 @@ def generate_works_cited( citations, bib_data, style, output_dict ):
             dict = get_dict_from_entry(bib_data, item)
 
             # Generate a template based on the entry type
-            template = Template(style[dict['ENTRYTYPE']])
+            template = Template(style_form[dict['ENTRYTYPE']])
 
             # Append the output to the refernce string
             bib_string += template.render(dict)
@@ -293,18 +293,18 @@ def generate_works_cited( citations, bib_data, style, output_dict ):
 
     return output_dict
 
-def get_reference_data( style_file, style, doc_list, bib_data ):
+def get_reference_data( style_file, style_form, doc_list, bib_data ):
 
-    bib_list  = {}
-    cite_list = {}
-    style     = {}
-    output    = {}
+    bib_list   = {}
+    cite_list  = {}
+    style_data = {}
+    output     = {}
 
     # Validate style chosen from style file
-    validate_style(style_file, style)
+    validate_style(style_file, style_form)
 
     # Read style file and extract style choice
-    style = read_style_file(style_file, style)
+    style_data = read_style_file(style_file, style_form)
 
     # Validate BibTeX syntax
     validate_syntax(doc_list)
@@ -319,12 +319,12 @@ def get_reference_data( style_file, style, doc_list, bib_data ):
     validate_citations(bib_list, bib_data)
 
     # Organize citations according to style
-    cite_list = organize_citations(bib_list, style['order'])
+    cite_list = organize_citations(bib_list, style_data['order'])
 
     # Generate in-text citations
-    output = generate_citations(cite_list, bib_data, style)
+    output = generate_citations(cite_list, bib_data, style_data)
 
     # Generate reference page
-    output = generate_works_cited(bib_list, bib_data, style, output)
+    output = generate_works_cited(bib_list, bib_data, style_data, output)
 
     return output
