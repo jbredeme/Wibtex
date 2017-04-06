@@ -15,12 +15,16 @@ def customizations( record ):
     return record
 
 def validate_entries( database ):
-    """Validates a BibTeX entries for their required fields."""
+    '''
+    Validates a BibTeX database for proper entry inputs
+
+    @param  database a BibTeX database in the form of a dictionary
+    '''
 
     # For each entry in the database
-    for i in range(0, len(database)):
+    for index in range(0, len(database)):
 
-        current_entry = database[i]
+        current_entry = database[index]
 
         try:
 
@@ -374,25 +378,32 @@ def validate_entries( database ):
     return
 
 def fix_escape_chars( database ):
+    #TODO - Properly escape characters for the user
     return database
 
 def latex_to_unicode( database ):
+    #TODO - Convert escaped characters to unicode equivalents
     return database
 
 def remove_brackets( database ):
+    #TODO - Remove preservation brackets
     return database
 
 def parse( path ):
     """Parses a BibTeX database and returns list of BibTeX entries"""
 
-    # Open database and parse it
+    # Open database and parse it, extracting properly formatted data
     try:
+
         with open(path) as bibtex_file:
+
             parser = BibTexParser()
             parser.customization = customizations
             bib_database = bibtexparser.load(bibtex_file, parser=parser)
             bib_database = bib_database.entries
+
     except IOError:
+
         print ("Error: Cannot read BibTeX file or data")
         
     # Validate entries
@@ -408,11 +419,3 @@ def parse( path ):
     bib_database = remove_brackets(bib_database)
 
     return bib_database
-
-test = parse("test.bib")
-
-import json
-
-# save to file:
-with open('test.json', 'w') as f:
-    json.dump(test, f)

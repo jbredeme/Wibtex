@@ -1,146 +1,215 @@
+############################################################
+# @file   style.py
+# @brief  module to handle formatting of data for reference 
+#         styles
+#
+# @author Charles Duso
+# @date   April 5, 2017
+############################################################
+
+################################################
+# Import Python Modules
+################################################
+
 import re
 import json
 from jinja2 import Template
 
-# Style File Extraction
+################################################
+# Function Definitions - Style File Interaction
+################################################
 
-def validate_style( file, style ):
-    #todo
+def validate_style( style_file, style ):
+    '''
+    Validates a specified style from a style file
+
+    @param  file  the file to extract style data from
+    @param  style the style to validate
+    @return       a boolean indicating success or failure
+    '''
+
+    # TODO - Need to flesh out convntions
+
     return
 
-def read_style_file( file, style ):
-    with open(file, 'r') as f:
+def read_style_file( style_file, style ):
+    '''
+    Extracts a specified style from a style file
+
+    @param  file  the file to extract style data from
+    @param  style the style to extract
+    @return       a dictionary containing style data
+    '''
+
+    with open(style_file, 'r') as f:
         try:
             data = json.load(f)
-        # if the file is empty the ValueError will be thrown
         except ValueError:
             data = {}
+            print("Error: Could not read style file.")
 
     return data[style]
 
-# Reference Data Generation
+################################################
+# Function Definitions - Style Data Formatting
+################################################
 
-def validate_syntax( bib_list ):
-    regexp = re.compile(r'\\bibliography\{(.*?)\}')
-    
-    # Ensure that last item is bibliography tag - TODO may be dropped
-    if not regexp.search(bib_list[(len(bib_list) - 1)]):
-        print("Error: '\\bibliography{}' should be final tag in document.")
+def validate_syntax( doc_list ):
+    '''
+    Validates Word document syntax 
 
-    # Validate that a bibliography tag exists
+    @param  doc_list a list of BibTeX markup extracted from the document
+    @return          a boolean indicating success or failure
+    '''
+
+    #TODO - Function may be dropped or reformatted
+
     valid = False
-    for item in range(0, len(bib_list)):
-        if regexp.search(bib_list[item]):
+
+    # Check for any markup containing a \bibliography{ ... }
+    reg_exp = re.compile(r'\\bibliography\{(.*?)\}')
+    
+    # Ensure that last item is bibliography tag
+    if not reg_exp.search(doc_list[(len(doc_list) - 1)]):
+        print("Error: '\\bibliography{}' should be final tag in document.")
+    else:
+        valid = True
+
+    for item in range(0, len(doc_list)):
+
+        if reg_exp.search(doc_list[item]):
+
             valid = True
 
-    return
+    if valid == False:
+        print("Error: Missing \bibliography{} markup in document.")
+
+    return valid
 
 def split_citations( doc_list ):
+    '''
+    Splits citations into separate lists for each \bibliography{} tag
 
-    regexp = re.compile(r'\\bibliography\{(.*?)\}')
+    @param  doc_list  a list of BibTeX markup extracted from the document
+    @return           a list or list of lists containing BibTeX markup
+    '''
+
+    reg_exp = re.compile(r'\\bibliography\{(.*?)\}')
     bib_count = 0
     num_list  = []
 
     # Count the number of bibliography tags
-    for item in range(0, len(doc_list)):
-        if regexp.search(doc_list[item]):
-            num_list.append(item)
+    for index in range(0, len(doc_list)):
+
+        # If bibliography tag found, append its index to the list 
+        if reg_exp.search(doc_list[index]):
+            num_list.append(index)
             bib_count += 1
 
-    # Create a list or list of lists
+    # Create a list or list of lists separated by bibliography tag
     if bib_count > 1:
+
         bib_list  = []
         temp_list = []
-        for item in range(0, len(doc_list)):
-            if item in num_list:
-                temp_list.append(doc_list[item])
+
+        for index in range(0, len(doc_list)):
+
+            # Add list to list of lists
+            if index in num_list:
+                temp_list.append(doc_list[index])
                 bib_list.append(temp_list)
                 temp_list = []
+            # Add item to list
             else:
-                temp_list.append(doc_list[item])
+                temp_list.append(doc_list[index])
+
+    # Create a single list
     else:
         bib_list = doc_list
 
     return bib_list
 
-def extract_citations( doc_list ):
-    #TODO - May not be needed
-    return
-
-def extract_bibliography( doc_list ):
-    #TODO - May not be needed
-    return
-
 def strip_markup( doc_list ):
+    '''
+    Splits BibTeX markup from tags contained in the document
 
-    if any(isinstance(el, list) for el in doc_list):
+    @param  doc_list  a list of BibTeX markup extracted from the document
+    @return           a list or list of lists without BibTeX markup
+    '''
+
+    # If the doc_list is a list of lists
+    if any(isinstance(element, list) for element in doc_list):
+
         for sub_list in doc_list:
-            for item in range(0, len(sub_list)):
-                sub_list[item] = re.sub(r'\\cite\{', '', sub_list[item])
-                sub_list[item] = re.sub(r'\\bibliography\{', '', sub_list[item])
-                sub_list[item] = re.sub(r'\}', '', sub_list[item])
+            for index in range(0, len(sub_list)):
+                sub_list[index] = re.sub(r'\\cite\{', '', sub_list[index])
+                sub_list[index] = re.sub(r'\\bibliography\{', '', sub_list[index])
+                sub_list[index] = re.sub(r'\}', '', sub_list[index])
+
+    # If the doc_list is a single list
     else:
-        for item in range(0, len(doc_list)):
-            doc_list[item] = re.sub(r'\\cite\{', '', doc_list[item])
-            doc_list[item] = re.sub(r'\\bibliography\{', '', doc_list[item])
-            doc_list[item] = re.sub(r'\}', '', doc_list[item])
+
+        for index in range(0, len(doc_list)):
+            doc_list[index] = re.sub(r'\\cite\{', '', doc_list[index])
+            doc_list[index] = re.sub(r'\\bibliography\{', '', doc_list[index])
+            doc_list[index] = re.sub(r'\}', '', doc_list[index])
 
     return doc_list
 
-def get_dict_from_entry( bib_list, key ):
-    for dict in bib_list:
-        if dict['ID'] == key:
-            return dict
+def get_dict_from_entry( dict_list, key ):
+    '''
+    Returns a dictionary from a dictionary of dictionaries based on key
 
-def set_dict_index( bib_list, index, author, id, value):
-    for item in range(0, len(bib_list)):
-        if bib_list[item]['ID'] == id and  bib_list[item]['author'] == author :
-             bib_list[item]['value'] = value
-    return bib_list
+    @param  dict_list a dictionary of dictionaries
+    @param  key       the key to find the dictionary from
+    @return           a dictionary whose "ID" matches the key
+    '''
+
+    out_dict = None
+
+    for dict in dict_list:
+
+        if dict['ID'] == key:
+            out_dict = dict
+            
+    return out_dict
 
 def validate_citations( citations ):
-    #todo
+    #TODO - Validates that citations are in the dictionary
     return
 
 def remove_duplicates( list ):
+    '''
+    Removes duplicate values from a list while preserving order
+
+    @param  list a list of items
+    @return      a list of items in their original order without duplicates
+    '''
     seen = set()
     seen_add = seen.add
-    return [x for x in list if not (x in seen or seen_add(x))]
+    out = [item for item in list if not (item in seen or seen_add(item))]
+    return out
 
-def organize_citations( citations, bib_list, style_data ):
+def organize_citations( citations ):
+    '''
+    Removes duplicate values and bibliography tag(s) from a list/list of lists
+    of citations
 
-    """ TODO - if alpha:
-        value = 0
-        temp_list = citations[0:(len(citations) - 1)]
-        auth_list = []
-        auth_dict_list = []
-        auth_entry_dict = {}
-        
-        # Get the authors from the list of citations
-        for entry in temp_list:
-            id = (get_dict_from_entry(bib_list, entry)['author'])[0]
+    @param  citations a list or list of lists of extracted data
+    @return           a list or list of lists of citation data
+    '''
 
-            auth_entry_dict[id] = entry
-            auth_dict_list.append(auth_entry_dict)
-            auth_entry_dict = {}
+    # TODO - Handle alphabetic ordering (default and backup methods)
 
-            auth_list.append(id)
+    # If citations is a list of lists
+    if any(isinstance(element, list) for element in citations):
 
-        auth_list = sorted(auth_list, key=str.lower)
-        print(auth_list)
-        print(auth_dict_list)
+        for index in range(0, len(citations)):
 
-        #for item in range(0, len(auth_list)):
-        #    auth_list[item] = auth_entry_dict[auth_list[item]]            
-
-        #print(auth_list) """
-
-    if any(isinstance(el, list) for el in citations):
-
-        for i in range(0, len(citations)):
-            temp_list = (citations[i])[0:(len(citations[i]) - 1)]
+            temp_list = (citations[index])[0:(len(citations[index]) - 1)]
             temp_list = remove_duplicates(temp_list)
 
+    # If citations is a single list
     else:
         # Remove duplicate data
         temp_list = citations[0:(len(citations) - 1)]
@@ -149,66 +218,79 @@ def organize_citations( citations, bib_list, style_data ):
     return temp_list
 
 def generate_citations( citations, bib_list, style, output_dict ):
+    '''
+    Generates in-text citation strings from the style file template
+
+    @param  citations   a list or list of lists of unique citations
+    @param  bib_list    a list of BibTeX bibliography entries
+    @param  style       a template representing the in-text citation 
+    @param  output_dict the dictionary to store output data in
+    @return             a dictionary containing formatted in-text citations
+    '''
+
     template = Template(style)
 
-    if any(isinstance(el, list) for el in citations):
-        #TODO
+    # If citations is a list of lists
+    if any(isinstance(element, list) for element in citations):
+
+        #TODO - Generate unique citations for sources shared across bibliographies
+
         return
 
+    # If citations is a single list
     else:
-        i = 0
-        for item in citations:
-            dict = get_dict_from_entry(bib_list, item)
-            dict['num'] = i
-            output_dict[item] = template.render(dict)
-            i += 1
+
+        index = 0
+        # Generate in-text citation and add it to the output dictionary
+        for tag in citations:
+
+            dict = get_dict_from_entry(bib_list, tag)
+            dict['num'] = index
+            output_dict[tag] = template.render(dict)
+            index += 1
 
     return output_dict
 
 def generate_works_cited( citations, bib_list, style, output_dict ):
-    
-    bib_string = ""
+    '''
+    Generates a works cited page from the style file template
 
-    if any(isinstance(el, list) for el in citations):
-        #TODO
+    @param  citations   a list or list of lists of unique citations
+    @param  bib_list    a list of BibTeX bibliography entries
+    @param  style       a template representing the citation output 
+    @param  output_dict the dictionary to store output data in
+    @return             a dictionary containing formatted citation data
+    '''
+    
+    bib_string = "" #' String containing works cited
+
+    # If citations is a list of lists
+    if any(isinstance(element, list) for element in citations):
+
+        #TODO - Generate works cited for sources shared across bibliographies
+
         return
 
+    # If citations is a single list
     else:
+
+        # Extract the list of citations
         temp_list = citations[0:(len(citations) - 1)]
+
         for item in temp_list:
 
             dict = get_dict_from_entry(bib_list, item)
+
+            # Generate a template based on the entry type
             template = Template(style[dict['ENTRYTYPE']])
 
+            # Append the output to the refernce string
             bib_string += template.render(dict)
 
+    # Set the bibliography key equal to the reference string
     output_dict[citations[len(citations) - 1]] = bib_string
 
     return output_dict
 
 def get_reference_data( style_file, doc_list ):
     return
-
-test = ['\\cite{article_okay}', '\\cite{article_bad}', '\\cite{article_good}', '\\bibliography{test}',
-        '\\cite{demo5}', '\\cite{demo6}', '\\cite{demo7}', '\\bibliography{demo8}',
-        '\\cite{demo92}', '\\cite{demo10}', '\\cite{demo11}', '\\bibliography{demo12}',
-        '\\cite{demo13}', '\\cite{demo14}', '\\cite{demo15}', '\\bibliography{demo16}']
-
-validate_syntax(test)
-test = split_citations(test)
-test = strip_markup(test)
-
-# load from file:
-with open('test.json', 'r') as f:
-    try:
-        data = json.load(f)
-    # if the file is empty the ValueError will be thrown
-    except ValueError:
-        data = {}
-
-organize_citations(test, data, None)
-style_data = read_style_file('style.json', 'ccsc')
-dict = {}
-dict = generate_citations((test[0])[0:3], data, style_data['in_text_style'] , dict )
-dict = generate_works_cited(test[0], data, style_data, dict)
-print(dict)
