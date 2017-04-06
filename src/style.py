@@ -82,7 +82,7 @@ def validate_syntax( doc_list ):
             valid = True
 
     if valid == False:
-        print("Error: Missing \bibliography{} markup in document.")
+        print("Error: Missing \\bibliography{} markup in document.")
 
     return valid
 
@@ -93,6 +93,7 @@ def split_citations( doc_list ):
     @param  doc_list  a list of BibTeX markup extracted from the document
     @return           a list or list of lists containing BibTeX markup
     '''
+    # TODO - Change to rename bibliographies based on count
 
     reg_exp = re.compile(r'\\bibliography\{(.*?)\}')
     bib_count = 0
@@ -143,7 +144,9 @@ def strip_markup( doc_list ):
         for sub_list in doc_list:
             for index in range(0, len(sub_list)):
                 sub_list[index] = re.sub(r'\\cite\{', '', sub_list[index])
+                sub_list[index] = re.sub(r'cite\{', '', sub_list[index])
                 sub_list[index] = re.sub(r'\\bibliography\{', '', sub_list[index])
+                sub_list[index] = re.sub(r'bibliography\{', '', sub_list[index])
                 sub_list[index] = re.sub(r'\}', '', sub_list[index])
 
     # If the doc_list is a single list
@@ -151,7 +154,9 @@ def strip_markup( doc_list ):
 
         for index in range(0, len(doc_list)):
             doc_list[index] = re.sub(r'\\cite\{', '', doc_list[index])
+            doc_list[index] = re.sub(r'cite\{', '', doc_list[index])
             doc_list[index] = re.sub(r'\\bibliography\{', '', doc_list[index])
+            doc_list[index] = re.sub(r'bibliography\{', '', doc_list[index])
             doc_list[index] = re.sub(r'\}', '', doc_list[index])
 
     return doc_list
@@ -227,9 +232,10 @@ def generate_citations( citations, bib_data, style_form ):
     @param  output_dict the dictionary to store output data in
     @return             a dictionary containing formatted in-text citations
     '''
+
     output_dict = {}
 
-    template = Template(style_form)
+    template = Template(style_form['in_text_style'])
 
     # If citations is a list of lists
     if any(isinstance(element, list) for element in citations):
@@ -241,7 +247,7 @@ def generate_citations( citations, bib_data, style_form ):
     # If citations is a single list
     else:
 
-        index = 0
+        index = 1
         # Generate in-text citation and add it to the output dictionary
         for tag in citations:
 

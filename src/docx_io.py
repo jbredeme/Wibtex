@@ -28,7 +28,7 @@ class Document:
 			with open(self.filename, 'rb') as fh:
 				unzipped = zipfile.ZipFile(fh)
 				xml_content = unzipped.read('word/document.xml')	#<= Retrieve Open XML
-				return xml_content
+				return xml_content.decode("utf-8")
 
 		except (OSError, IOError) as e:
 			print("Unable to read file:", self.filename)
@@ -50,7 +50,7 @@ class Document:
 		
 		try:
 			with open(os.path.join(dir,'word/document.xml'), 'w') as f:
-				xml_str = etree.tostring(xml_content, pretty_print=True)
+				xml_str = etree.tostring(xml_content, pretty_print=True).decode("utf-8")
 				f.write(xml_str)
 				
 			filenames = self.zipfile.namelist()	#<= Get a list of all the files in the original docx zipfile
@@ -86,7 +86,7 @@ class Document:
 	@returns a list of matching regular expression elements \cite{...} and \bib{...}
 	'''
 	def get_latex(self, xml_content):
-		pattern = re.compile(b'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*}')	#<= Define regular expression
+		pattern = re.compile(r'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*}')	#<= Define regular expression
 		list = pattern.findall(xml_content, re.IGNORECASE)
 		return list
 		
@@ -112,14 +112,15 @@ class Document:
 	TODO
 	'''
 	def insert_vars(self, xml, list):
+
 		bib = cite = 0;
 		
 		for x in range(0, len(list)):
-			if not re.search(b'\bbibliography|\bbib\b', list[x]) is None:
+			if not re.search(r'\bbibliography|\bbib\b', list[x]) is None:
 				bib += 1
 				xml = xml.replace(list[x], "{{ bibliography" + str(bib) + " }}")
 				
-			if not re.search(b'\bcite\b', list[x]) is None:
+			if not re.search(r'\bcite\b', list[x]) is None:
 				cite += 1
 				xml = xml.replace(list[x], "{{ cite" + str(cite) + " }}")
 
