@@ -53,20 +53,27 @@ bib_tags = docx.get_latex(xml)
 # Insert jinja variables into the XML
 xml = docx.insert_vars(xml, bib_tags)
 
-################################################
-# Generate Reference Data (style.py)
-################################################
+print(bib_tags)
 
-cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data)
+for i in range(0, len(bib_tags)):
+    bib_tags[i] = str(bib_tags[i],'utf-8')
 
-################################################
-# Write to Word Document (docx_io.py)
-################################################
+print(bib_tags)
 
-# Take the dictonary with the template and run Jinja2 over it
-xml = docx.jinja_it(xml, cite_data)
+# ################################################
+# # Generate Reference Data (style.py)
+# ################################################
 
-# Save the results into a new document
-docx.save_xml(docx.get_xml_tree(xml), output)
+# cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data)
+
+# ################################################
+# # Write to Word Document (docx_io.py)
+# ################################################
+
+# # Take the dictonary with the template and run Jinja2 over it
+# xml = docx.jinja_it(xml, cite_data)
+
+# # Save the results into a new document
+# docx.save_xml(docx.get_xml_tree(xml), output)
 
 # DONE :)

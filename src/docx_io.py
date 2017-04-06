@@ -1,9 +1,6 @@
-import sys, os, shutil, re, zipfile, tempfile, sys
+import sys, os, shutil, re, zipfile, tempfile
 from jinja2 import Template, Environment
 from lxml import etree
-
-reload(sys)  
-sys.setdefaultencoding('utf-8')
 
 class Document:
 	'''
@@ -89,8 +86,8 @@ class Document:
 	@returns a list of matching regular expression elements \cite{...} and \bib{...}
 	'''
 	def get_latex(self, xml_content):
-		pattern = re.compile(r'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*}')	#<= Define regular expression
-		list = pattern.findall(xml_content.encode("utf-8"), re.IGNORECASE)
+		pattern = re.compile(b'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*}')	#<= Define regular expression
+		list = pattern.findall(xml_content, re.IGNORECASE)
 		return list
 		
 		
@@ -118,11 +115,11 @@ class Document:
 		bib = cite = 0;
 		
 		for x in range(0, len(list)):
-			if not re.search(r'\bbibliography|\bbib\b', list[x]) is None:
+			if not re.search(b'\bbibliography|\bbib\b', list[x]) is None:
 				bib += 1
 				xml = xml.replace(list[x], "{{ bibliography" + str(bib) + " }}")
 				
-			if not re.search(r'\bcite\b', list[x]) is None:
+			if not re.search(b'\bcite\b', list[x]) is None:
 				cite += 1
 				xml = xml.replace(list[x], "{{ cite" + str(cite) + " }}")
 
@@ -138,35 +135,35 @@ class Document:
 		return xml			
 	
 	
-# Testing Section
-docx = Document(sys.argv[1])
+# # Testing Section
+# docx = Document(sys.argv[1])
 
-# Sample dictionary
-example = {
-    'bibliography1': '[1] This is a sample reference page. [2] We can worry about formatting later.',
-    'cite1' : '[1]',
-    'cite2' : '[2]',
-    'cite3' : '[3]',
-}
+# # Sample dictionary
+# example = {
+#     'bibliography1': '[1] This is a sample reference page. [2] We can worry about formatting later.',
+#     'cite1' : '[1]',
+#     'cite2' : '[2]',
+#     'cite3' : '[3]',
+# }
 
 
-# Read in the document
-docx = Document(sys.argv[1])
+# # Read in the document
+# docx = Document(sys.argv[1])
 
-# Extract XML
-xml = docx.get_xml()
+# # Extract XML
+# xml = docx.get_xml()
 
-# Get the Latex Markup
-list = docx.get_latex(xml)
+# # Get the Latex Markup
+# list = docx.get_latex(xml)
 
-# Insert jinja variables into the XML
-xml = docx.insert_vars(xml, list)
+# # Insert jinja variables into the XML
+# xml = docx.insert_vars(xml, list)
 
-# Take the dictonary with the template and run Jinja2 over it
-xml = docx.jinja_it(xml, example)
+# # Take the dictonary with the template and run Jinja2 over it
+# xml = docx.jinja_it(xml, example)
 
-# Save the results into a new document
-docx.save_xml(docx.get_xml_tree(xml), "output.docx")
+# # Save the results into a new document
+# docx.save_xml(docx.get_xml_tree(xml), "output.docx")
 
 
 
