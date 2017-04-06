@@ -89,8 +89,8 @@ class Document:
 	@returns a list of matching regular expression elements \cite{...} and \bib{...}
 	'''
 	def get_latex(self, xml_content):
-		pattern = re.compile(r'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}')	#<= Define regular expression
-		list = pattern.findall(xml_content, re.IGNORECASE)
+		pattern = re.compile(r'\\cite\s*{[^}]*}|\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*}')	#<= Define regular expression
+		list = pattern.findall(xml_content.encode("utf-8"), re.IGNORECASE)
 		return list
 		
 		
@@ -134,7 +134,7 @@ class Document:
 	'''
 	def jinja_it(self, xml, dict):
 		template = Template(xml)
-		xml = template.render(dict).encode( "utf-8" )
+		xml = template.render(dict).encode("utf-8")
 		return xml			
 	
 	
