@@ -40,6 +40,7 @@ bib_data = wibtex_parser.parse(input_bib)
 ################################################
 
 # TODO - Jarid's Code goes here
+# bib_tags is the list of BibTeX markup from the document
 
 ################################################
 # Generate Reference Data (style.py)
@@ -52,5 +53,6 @@ cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data
 ################################################
 
 # TODO - Jarid's Code goes here
+# cite_data is the dictionary containing strings to inject in the XML
 
 # DONE :)
