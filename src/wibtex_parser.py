@@ -1,7 +1,22 @@
+############################################################
+# @file   wibtex_parser.py
+# @brief  module to extraction of BibTeX databases
+#
+# @author Charles Duso
+# @date   April 5, 2017
+############################################################
+
+################################################
+# Import Python Modules
+################################################
+
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import *
 
+################################################
+# Function Definitions
+################################################
 def customizations( record ):
     """Callback function to properly separate fields"""
 
