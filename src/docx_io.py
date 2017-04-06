@@ -1,6 +1,9 @@
 import sys, os, shutil, re, zipfile, tempfile, sys
+from jinja2 import Template, Environment
 from lxml import etree
 
+reload(sys)  
+sys.setdefaultencoding('utf-8')
 
 class Document:
 	'''
@@ -106,4 +109,67 @@ class Document:
 			list[i] = pattern.sub('', list[i])
 		
 		return list
+		
+		
+	'''
+	TODO
+	'''
+	def insert_vars(self, xml, list):
+		bib = cite = 0;
+		
+		for x in range(0, len(list)):
+			if not re.search(r'\bbibliography|\bbib\b', list[x]) is None:
+				bib += 1
+				xml = xml.replace(list[x], "{{ bibliography" + str(bib) + " }}")
+				
+			if not re.search(r'\bcite\b', list[x]) is None:
+				cite += 1
+				xml = xml.replace(list[x], "{{ cite" + str(cite) + " }}")
+
+		return xml
+
+
+	'''
+	TODO
+	'''
+	def jinja_it(self, xml, dict):
+		template = Template(xml)
+		xml = template.render(dict).encode( "utf-8" )
+		return xml			
+	
+	
+# Testing Section
+docx = Document(sys.argv[1])
+
+# Sample dictionary
+example = {
+    'bibliography1': '[1] This is a sample reference page. [2] We can worry about formatting later.',
+    'cite1' : '[1]',
+    'cite2' : '[2]',
+    'cite3' : '[3]',
+}
+
+
+# Read in the document
+docx = Document(sys.argv[1])
+
+# Extract XML
+xml = docx.get_xml()
+
+# Get the Latex Markup
+list = docx.get_latex(xml)
+
+# Insert jinja variables into the XML
+xml = docx.insert_vars(xml, list)
+
+# Take the dictonary with the template and run Jinja2 over it
+xml = docx.jinja_it(xml, example)
+
+# Save the results into a new document
+docx.save_xml(docx.get_xml_tree(xml), "output.docx")
+
+
+
+
+
 
