@@ -2,9 +2,10 @@
     "ccsc": {
         "order": "fcfs",
         "in_text_style":"[{{num}}]",
-        "default_style":"[{{num}}] {{name}}, {{title}}.",
-        "article": "[{{num}}] {{author}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
-        "book": "[{{num}}] {{author}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
+        "default_style":"<w:br/>[{{num}}] {{name}}, {{title}}.",
+        "title":"<w:br/>Works Cited",
+        "article": "<w:br/>[{{num}}] {{author}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
+        "book": "<w:br/>[{{num}}] {{author}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
         "internet": "[{{num}}] {{author}}, {{title}}, {{year}}, {{url}}, {{year}}."
     }
 }

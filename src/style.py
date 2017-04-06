@@ -271,6 +271,8 @@ def generate_works_cited( citations, bib_data, style_form, output_dict ):
     
     bib_string = "" #' String containing works cited
 
+    bib_string += style_form['title']
+
     # If citations is a list of lists
     if any(isinstance(element, list) for element in citations):
 

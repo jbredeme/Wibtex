@@ -21,7 +21,7 @@ def customizations( record ):
     """Callback function to properly separate fields"""
 
     record = type(record)
-    record = author(record)
+    #record = author(record)
     record = keyword(record)
     record = link(record)
     record = page_double_hyphen(record)
@@ -402,6 +402,10 @@ def latex_to_unicode( database ):
 
 def remove_brackets( database ):
     #TODO - Remove preservation brackets
+    return database
+
+def fix_arrays ( database ):
+    #TODO - Remove arrays
     return database
 
 def parse( path ):
