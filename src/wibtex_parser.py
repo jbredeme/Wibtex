@@ -10,6 +10,7 @@
 # Import Python Modules
 ################################################
 
+import re
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import *
@@ -21,7 +22,7 @@ def customizations( record ):
     """Callback function to properly separate fields"""
 
     record = type(record)
-    #record = author(record)
+    record = author(record)
     record = keyword(record)
     record = link(record)
     record = page_double_hyphen(record)
@@ -401,12 +402,62 @@ def latex_to_unicode( database ):
     return database
 
 def remove_brackets( database ):
-    #TODO - Remove preservation brackets
+    """ Strips preservation braces from a BibTeX dictionary """
+
+    temp_dict = {}
+    temp_list = []
+
+    for index in range(0, len(database)):
+        temp_dict = database[index]
+
+        for key in temp_dict:
+
+            # If entry is a list
+            # TODO - Check for nested lists?
+            if isinstance(temp_dict[key], list):
+
+                for item in temp_dict[key]:
+
+                    temp_list.append(re.sub(r'[\{\}]', '', item))
+
+                temp_dict[key] = temp_list
+                temp_list = []
+
+            else:
+                temp_dict[key] = re.sub(r'[\{\}]', '', temp_dict[key])
+
+        database[index] = temp_dict
+
     return database
 
-def fix_arrays ( database ):
-    #TODO - Remove arrays
-    return database
+# TODO - Verify if needed
+# def fix_arrays ( database ):
+#     """ Converts nested lists to single lists """
+
+#     temp_dict = {}
+#     temp_list = []
+
+#     for index in range(0, len(database)):
+#         temp_dict = database[index]
+
+#         for key in temp_dict:
+#             # If entry is a list
+#             if isinstance(temp_dict[key], list):
+
+#                 # If entry is a list of lists
+#                 if any(isinstance(element, list) for element in temp_dict[key]):
+
+#                     # Append to a temporary list
+#                     for item in temp_dict[key]:
+
+#                         temp_list.append(item)
+
+#                     temp_dict[key] = temp_list
+#                     temp_list = []
+
+#         database[index] = temp_dict
+
+#     return database
 
 def parse( path ):
     """Parses a BibTeX database and returns list of BibTeX entries"""
@@ -427,6 +478,9 @@ def parse( path ):
         
     # Validate entries
     validate_entries(bib_database)
+
+    # # Convert nested lists to lists
+    # bib_databsae = fix_arrays(bib_database)
 
     # Properly escape special characters
     bib_database = fix_escape_chars(bib_database)
