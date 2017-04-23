@@ -3,413 +3,584 @@
 # @brief  module to extraction of BibTeX databases
 #
 # @author Charles Duso
-# @date   April 5, 2017
+# @date   April 22, 2017
 ############################################################
 
 ################################################
 # Import Python Modules
 ################################################
 
+import re
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import *
+from bibtexparser.latexenc import *
 
 ################################################
 # Function Definitions
 ################################################
-def customizations( record ):
-    """Callback function to properly separate fields"""
 
+def customizations( record ):
+    '''
+        Callback function to properly separate fields
+    '''
+
+    # First, we convert everything to unicode
     record = type(record)
-    #record = author(record)
+    record = author(record)
     record = keyword(record)
     record = link(record)
     record = page_double_hyphen(record)
     record = doi(record)
-    
+    record = convert_to_unicode(record)
+
     return record
 
-def validate_entries( database ):
+def validate_entries( database, flag = True):
     '''
     Validates a BibTeX database for proper entry inputs
 
     @param  database a BibTeX database in the form of a dictionary
     '''
 
-    # For each entry in the database
-    for index in range(0, len(database)):
+    if flag:
+        # For each entry in the database
+        for index in range(0, len(database)):
 
-        current_entry = database[index]
+            current_entry = database[index]
 
-        try:
+            try:
 
-            entry_id = (current_entry)['ID']
+                entry_id = (current_entry)['ID']
 
-        except KeyError:
+            except KeyError:
 
-            print("Error: BibTeX entry #%d does not have an ID" % i)
+                print("Error: BibTeX entry #%d does not have an ID" % i)
 
-        # Verify entries have their respective, required fields
-        try:
+            # Verify entries have their respective, required fields
+            try:
 
-            error_string = ""
+                error_string = ""
 
-            if current_entry['ENTRYTYPE'] == "article":
+                if current_entry['ENTRYTYPE'] == "article":
 
-                if "author" not in current_entry:
-                    error_string += "author"
+                    if "author" not in current_entry:
+                        error_string += "author"
 
-                if "title" not in current_entry:
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "journal" not in current_entry:
+                        if error_string != "":
+                            error_string += ", journal"
+                        else:
+                            error_string += "journal"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "journal" not in current_entry:
+                
+                elif current_entry['ENTRYTYPE'] == "book":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "publisher" not in current_entry:
+                        if error_string != "":
+                            error_string += ", publisher"
+                        else:
+                            error_string += "publisher"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", journal"
-                    else:
-                        error_string += "journal"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "year" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "booklet":
+
+                    if "title" not in current_entry:
+                            error_string += "title"
+
                     if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
+                elif current_entry['ENTRYTYPE'] == "conference":
+
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "booktitle" not in current_entry:
+                        if error_string != "":
+                            error_string += ", booktitle"
+                        else:
+                            error_string += "booktitle"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
+                    if error_string != "":
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+
+
+                elif current_entry['ENTRYTYPE'] == "inbook":
+
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "editor" not in current_entry:
+                        if error_string != "":
+                            error_string += ", editor"
+                        else:
+                            error_string += "editor"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "chapter" not in current_entry:
+                        if error_string != "":
+                            error_string += ", chapter"
+                        else:
+                            error_string += "chapter"
+
+                    if "pages" not in current_entry:
+                        if error_string != "":
+                            error_string += ", pages"
+                        else:
+                            error_string += "pages"
+                    
+                    if "publisher" not in current_entry:
+                        if error_string != "":
+                            error_string += ", publisher"
+                        else:
+                            error_string += "publisher"
+
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
+                    if error_string != "":
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+
+                elif current_entry['ENTRYTYPE'] == "incollection":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "booktitle" not in current_entry:
+                        if error_string != "":
+                            error_string += ", booktitle"
+                        else:
+                            error_string += "booktitle"
             
-            elif current_entry['ENTRYTYPE'] == "book":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
+                    if "publisher" not in current_entry:
+                        if error_string != "":
+                            error_string += ", publisher"
+                        else:
+                            error_string += "publisher"
 
-                if "title" not in current_entry:
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "publisher" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "inproceedings":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "booktitle" not in current_entry:
+                        if error_string != "":
+                            error_string += ", booktitle"
+                        else:
+                            error_string += "booktitle"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", publisher"
-                    else:
-                        error_string += "publisher"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "year" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "manual":
+                    
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
                     if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
-            elif current_entry['ENTRYTYPE'] == "booklet":
+                elif current_entry['ENTRYTYPE'] == "mastersthesis":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
 
-                if "title" not in current_entry:
-                        error_string += "title"
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
 
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                    if "school" not in current_entry:
+                        if error_string != "":
+                            error_string += ", school"
+                        else:
+                            error_string += "school"
 
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
 
-            elif current_entry['ENTRYTYPE'] == "conference":
-
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
                     if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "booktitle" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "misc":
+                    continue
+
+                elif current_entry['ENTRYTYPE'] == "phdthesis":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "school" not in current_entry:
+                        if error_string != "":
+                            error_string += ", school"
+                        else:
+                            error_string += "school"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", booktitle"
-                    else:
-                        error_string += "booktitle"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "year" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "proceedings":
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
-            elif current_entry['ENTRYTYPE'] == "inbook":
+                elif current_entry['ENTRYTYPE'] == "techreport":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
 
-                if "author" not in current_entry:
-                    error_string += "author"
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
 
-                if "editor" not in current_entry:
+                    if "institution" not in current_entry:
+                        if error_string != "":
+                            error_string += ", institution"
+                        else:
+                            error_string += "institution"
+
+                    if "year" not in current_entry:
+                        if error_string != "":
+                            error_string += ", year"
+                        else:
+                            error_string += "year"
+
                     if error_string != "":
-                        error_string += ", editor"
-                    else:
-                        error_string += "editor"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
-                if "title" not in current_entry:
+
+                elif current_entry['ENTRYTYPE'] == "unpublished":
+                    
+                    if "author" not in current_entry:
+                        error_string += "author"
+
+                    if "title" not in current_entry:
+                        if error_string != "":
+                            error_string += ", title"
+                        else:
+                            error_string += "title"
+
+                    if "note" not in current_entry:
+                        if error_string != "":
+                            error_string += ", note"
+                        else:
+                            error_string += "note"
+
                     if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "chapter" not in current_entry:
-                    if error_string != "":
-                        error_string += ", chapter"
-                    else:
-                        error_string += "chapter"
-
-                if "pages" not in current_entry:
-                    if error_string != "":
-                        error_string += ", pages"
-                    else:
-                        error_string += "pages"
-                
-                if "publisher" not in current_entry:
-                    if error_string != "":
-                        error_string += ", publisher"
-                    else:
-                        error_string += "publisher"
+                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
+                else:
+                    print("error")
 
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-            elif current_entry['ENTRYTYPE'] == "incollection":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "booktitle" not in current_entry:
-                    if error_string != "":
-                        error_string += ", booktitle"
-                    else:
-                        error_string += "booktitle"
-        
-                if "publisher" not in current_entry:
-                    if error_string != "":
-                        error_string += ", publisher"
-                    else:
-                        error_string += "publisher"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "inproceedings":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "booktitle" not in current_entry:
-                    if error_string != "":
-                        error_string += ", booktitle"
-                    else:
-                        error_string += "booktitle"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "manual":
-                
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "mastersthesis":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "school" not in current_entry:
-                    if error_string != "":
-                        error_string += ", school"
-                    else:
-                        error_string += "school"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "misc":
-                continue
-
-            elif current_entry['ENTRYTYPE'] == "phdthesis":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "school" not in current_entry:
-                    if error_string != "":
-                        error_string += ", school"
-                    else:
-                        error_string += "school"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "proceedings":
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "techreport":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "institution" not in current_entry:
-                    if error_string != "":
-                        error_string += ", institution"
-                    else:
-                        error_string += "institution"
-
-                if "year" not in current_entry:
-                    if error_string != "":
-                        error_string += ", year"
-                    else:
-                        error_string += "year"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            elif current_entry['ENTRYTYPE'] == "unpublished":
-                
-                if "author" not in current_entry:
-                    error_string += "author"
-
-                if "title" not in current_entry:
-                    if error_string != "":
-                        error_string += ", title"
-                    else:
-                        error_string += "title"
-
-                if "note" not in current_entry:
-                    if error_string != "":
-                        error_string += ", note"
-                    else:
-                        error_string += "note"
-
-                if error_string != "":
-                    print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
-
-            else:
-                print("error")
-
-        except KeyError:
-            print("Error: Entry type not listed in BibTeX entry #%d" % i)
+            except KeyError:
+                print("Error: Entry type not listed in BibTeX entry #%d" % i)
 
     return
 
 def fix_escape_chars( database ):
-    #TODO - Properly escape characters for the user
+    '''
+    Strips backslashes from a BibTeX database
+
+    @param  database a BibTeX database in the form of a dictionary
+    '''
+
+    temp_dict = {}
+    temp_list = []
+
+    # For each dictionary
+    for index in range(0, len(database)):
+
+        temp_dict = database[index]
+        
+        # For each key
+        for key in temp_dict:
+
+            # If entry is a list
+            # TODO - Check for nested lists?
+            if isinstance(temp_dict[key], list):
+
+                for item in temp_dict[key]:
+
+                    temp_list.append(item.replace("\\", ""))
+
+                temp_dict[key] = temp_list
+                temp_list = []
+
+            else:
+                temp_dict[key] = temp_dict[key].replace("\\", "")
+
+        database[index] = temp_dict
+
     return database
 
+# TODO - Optional as callback function appears robust enough to handle
 def latex_to_unicode( database ):
-    #TODO - Convert escaped characters to unicode equivalents
+    '''
+    Converts a TeX character codes to Unicode
+
+    @param  database a BibTeX database in the form of a dictionary
+    '''
+
+#     temp_dict = {}
+#     temp_list = []
+#     latex_list = []
+#     out = ""
+#     temp_str = ""
+
+
+#     regex = r"\\.*?\{.*?\}|\\(?:[^a-zA-Z]|[a-zA-Z]+[*=']?)"
+
+#     for index in range(0, len(database)):
+
+#         temp_dict = database[index]
+
+#         for key in temp_dict:
+
+#             # If entry is a list
+#             # TODO - Check for nested lists?
+#             if isinstance(temp_dict[key], list):
+
+#                 for item in range(0, len(temp_dict[key])):
+
+#                     latex_list = re.findall(regex, temp_dict[key][item])
+#                     temp_str = temp_dict[key][item]
+
+#                     if not latex_list :
+#                         continue
+
+#                     for sym in latex_list:
+#                         out = unicode_tex.tex_to_unicode_map.get(sym, sym)
+#                         temp_list.append(out)
+                    
+#                     for index in range(0, len(latex_list)):
+#                         latex_list[index] = re.escape(latex_list[index])
+
+#                     for index in range(0, len(latex_list)):
+#                         temp_str = re.sub(latex_list[index], temp_list[index], temp_str)
+                    
+#                     temp_dict[key][item] = temp_str
+#                     temp_str = ""
+
+#             else:
+
+#                 temp_str   = temp_dict[key]
+#                 latex_list = re.findall(regex, temp_dict[key])
+
+#                 if not latex_list :
+#                     continue
+
+#                 for sym in latex_list:
+#                     out = unicode_tex.tex_to_unicode_map.get(sym, sym)
+#                     temp_list.append(out)
+
+#                 for index in range(0, len(latex_list)):
+#                     latex_list[index] = re.escape(latex_list[index])
+                
+#                 for index in range(0, len(latex_list)):
+#                         temp_str = re.sub(latex_list[index], temp_list[index], temp_str)
+
+#                 temp_dict[key] = temp_str
+#                 temp_str = ""
+
+#         database[index] = temp_dict
+
     return database
 
 def remove_brackets( database ):
-    #TODO - Remove preservation brackets
+    '''
+    Strips preservation braces from a BibTeX database
+
+    @param  database a BibTeX database in the form of a dictionary
+    '''
+
+    temp_dict = {}
+    temp_list = []
+
+    for index in range(0, len(database)):
+        temp_dict = database[index]
+
+        for key in temp_dict:
+
+            # If entry is a list
+            # TODO - Check for nested lists?
+            if isinstance(temp_dict[key], list):
+
+                for item in temp_dict[key]:
+
+                    temp_list.append(re.sub(r'[\{\}]', '', item))
+
+                temp_dict[key] = temp_list
+                temp_list = []
+
+            else:
+                temp_dict[key] = re.sub(r'[\{\}]', '', temp_dict[key])
+
+        database[index] = temp_dict
+
     return database
 
-def fix_arrays ( database ):
-    #TODO - Remove arrays
-    return database
+# TODO - Verify if needed
+# def fix_arrays ( database ):
+    # '''
+    # Converts a list of lists to a single list within a BibTeX dictionary
+
+    # @param  database a BibTeX database in the form of a dictionary
+    # '''
+
+#     temp_dict = {}
+#     temp_list = []
+
+#     for index in range(0, len(database)):
+#         temp_dict = database[index]
+
+#         for key in temp_dict:
+#             # If entry is a list
+#             if isinstance(temp_dict[key], list):
+
+#                 # If entry is a list of lists
+#                 if any(isinstance(element, list) for element in temp_dict[key]):
+
+#                     # Append to a temporary list
+#                     for item in temp_dict[key]:
+
+#                         temp_list.append(item)
+
+#                     temp_dict[key] = temp_list
+#                     temp_list = []
+
+#         database[index] = temp_dict
+
+#     return database
 
 def parse( path ):
-    """Parses a BibTeX database and returns list of BibTeX entries"""
+    '''
+    Parses a BibTeX database and returns list of BibTeX entries
+
+    @param  path a BibTeX database file path
+    '''
 
     # Open database and parse it, extracting properly formatted data
     try:
@@ -428,13 +599,10 @@ def parse( path ):
     # Validate entries
     validate_entries(bib_database)
 
-    # Properly escape special characters
-    bib_database = fix_escape_chars(bib_database)
-
-    # Convert special characters to Unicode
-    bib_database = latex_to_unicode(bib_database)
-
     # Parse out preservation brackets
     bib_database = remove_brackets(bib_database)
+
+    # Parse out backslashes
+    bib_database = fix_escape_chars(bib_database)
 
     return bib_database
