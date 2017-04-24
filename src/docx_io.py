@@ -1,3 +1,10 @@
+ #
+ # Author: Jarid Bredemeier
+ # Email: jpb64@nau.edu
+ # File: docx_io.py
+ # Copyright © 2017 All rights reserved 
+ #
+ 
 import sys, os, shutil, re, zipfile, tempfile
 from jinja2 import Template, Environment
 from lxml import etree
@@ -88,9 +95,8 @@ class Document:
 			list[i] = pattern.sub('', list[i])
 		
 		return list
-
 		
-	# 
+		
 	# This function calls the Jinja2 templating service on an Open XML docx content string in conjunction with a dictionary to match variable and value
 	# pairs for substitution.
 	#
@@ -104,8 +110,7 @@ class Document:
 		
 		return xml
 
-
-	# 
+		
 	# This function removes any embedded Open XML markup inside a latex tag that is a result of formatting durning document creation / editing.
 	# Next it extracts and returns only the content inside the curly braces to the calling function. This is used to generate bibtex database
 	# reference keys.
@@ -124,9 +129,8 @@ class Document:
 		
 		else:
 			return None
-	
-	
-	# 
+
+			
 	# This function reads in an Open XML string from a docx document and parses any latex markup. Next it takes the latex markup and generates a dictionary
 	# of bibliographies and nested inside each dictionary entry is another dictionary of associated citations. The design objective is to allow support for
 	# referencing multiple bibliographies in a single docx document and their assoicate citations.
@@ -182,9 +186,8 @@ class Document:
 		xml = ''.join(list)			#<= convert list back into a string		
 		
 		return bibs, xml
+
 		
-		
-	#
 	# This is a utility function that prints the contents of a Wibtex document dictionary
 	#
 	# @pram dictionary is a reference variable to a dictionary object.
@@ -204,40 +207,3 @@ class Document:
 			print("------------------------------------------------------------")
 			print("------------------------------------------------------------\n")
 		
-		
-		
-		
-		
-		
-# *********************************************************************************************************************
-# testing Section
-docx = Document('test_data\example2.docx')
-
-# Extract XML
-xml = docx.get_xml()
-
-# call new function
-my_dict, jinja_xml = docx.get_dict_xml(xml)
-
-#print dictionary
-docx.print_dict(my_dict)
-
-# save the jinja ready xml to a new docx file for visual verification
-docx.save_xml(docx.get_xml_tree(jinja_xml.encode('utf-8')), "test_data\example2_output.docx")
-
-# bibliography dictionary
-	# dictionary entry:
-		# Jinja Variable: Variable that is been inserted in the xml for template processing i.e. {{ B0 }}
-		# Bib Key:        Is the key used to lookup content in a bibtex database i.e. bib
-		# Bib Payload:    Is the original latex markup found in the text block i.e. \bibliography{bib} notice that the bib key is just the contents in the curly braces {...}
-		# Citations: (references a dictionary of citations)
-			# Citations Entries:
-				# bibs['bib0']['citations']['cite1']
-				# bibs['bib0']['citations']['cite2']
-				# etc...
-					# Cite:
-						# Jinja Variable: B0C0
-						# Bib Key:        bredemeier
-						# Payload:        \cite{bredemeier}
-						
-# *********************************************************************************************************************
