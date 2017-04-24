@@ -14,6 +14,7 @@ These instructions will get you a copy of the project up and running on your loc
 What you need to install the software and how to install them
 * [Jinja2](http://jinja.pocoo.org/docs/2.9/) - Templating engine
 * [Bibtexparser 0.6.2](https://pypi.python.org/pypi/bibtexparser) - Bibtex database parsing package
+* [lxml 3.7.2](http://lxml.de/) - XML toolkit is a Pythonic binding
 
 ### Installation
 A step by step series of examples that tell you how to get a development env running
