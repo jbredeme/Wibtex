@@ -141,29 +141,34 @@ class Document:
 		bib_count = 0				#<= bibliography counter
 		cite_count = 0				#<= citation counter
 
-		list = re.split(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', xml)					#<= spit xml string into a list defined by a pattern, capture pattern
+		list = re.split(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', xml)						#<= spit xml string into a list defined by a pattern, capture pattern
 		
-		for x in range(0, len(list)):														#<= iterate through the list from regex split	
-			if not re.search(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', list[x]) is None:					#<= check for a list entry for bibliography data
+		for x in range(0, len(list)):															#<= iterate through the list from regex split	
+			if not re.search(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', list[x]) is None:	#<= check for a list entry for bibliography data
 				try:
-					cites = re.findall(r'\\cite\s*{[^}]*}', list[x - 1], re.IGNORECASE) 	#<= step back one index and find all the cite markup in the text block
+					cites = re.findall(r'\\cite\s*{[^}]*}', list[x - 1], re.IGNORECASE) 		#<= step back one index and find all the cite markup in the text block
 					
-					for i in range(0, len(cites)):											#<=  iterate through the parsed cite markup
+					for i in range(0, len(cites)):												#<=  iterate through the parsed cite markup
 						is_duplicate = False												
 						
-						for key, val in citations.items():									#<= avoid dupicate dictionary entries by checking bib_key values for matches
+						for key, val in citations.items():										#<= avoid dupicate dictionary entries by checking bib_key values for matches
 							if 'bib_key' in val:
 								if val['bib_key'] == str(self.get_bib_key(cites[i])):
 									is_duplicate = True
+									
+									if not val['payload'] == cites[i]:							#<= check if payload is different this can happen when the contents are the same but markup is not
+										list[x - 1] = list[x - 1].replace(str(cites[i]), '{{ ' + val['jinja_var'] + ' }}')
+						
 									break
 									
-						if is_duplicate == False:											#<= add new entry if a dupicate is not found
+						if is_duplicate == False:												#<= add new entry if a dupicate is not found
 							citations["cite" + str(cite_count)] = {'jinja_var': 'B' + str(bib_count) + 'C' + str(cite_count), 'bib_key': str(self.get_bib_key(cites[i])), 'payload': cites[i]}
+							list[x - 1] = list[x - 1].replace(str(cites[i]), '{{ ' + 'B' + str(bib_count) + 'C' + str(cite_count) + ' }}')
 							cite_count += 1		
 							
-					for key2, val2 in citations.items():									#<= insert jinja variable(s) for citation(s)
-						if 'payload' in val2:
-							list[x - 1] = list[x - 1].replace(str(val2['payload']), '{{ ' + str(val2['jinja_var']) + ' }}')
+					# for key2, val2 in citations.items():										#<= insert jinja variable(s) for citation(s)
+						# if 'payload' in val2:
+							# list[x - 1] = list[x - 1].replace(str(val2['payload']), '{{ ' + str(val2['jinja_var']) + ' }}')
 																							#<= added a bibliography dictionary entry and associated citations dictionary
 					bibs["bib" + str(bib_count)] = {'jinja_var': 'B' + str(bib_count), 'bib_key': str(self.get_bib_key(list[x])), 'payload': list[x], 'citations': citations}
 					list[x] = '{{ ' + str(bibs["bib" + str(bib_count)]['jinja_var']) + ' }}'
