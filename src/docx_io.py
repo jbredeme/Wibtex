@@ -170,10 +170,6 @@ class Document:
 							list[x - 1] = list[x - 1].replace(str(cites[i]), '{{ ' + 'B' + str(bib_count) + 'C' + str(cite_count) + ' }}')
 							cite_count += 1		
 							
-					# for key2, val2 in citations.items():										#<= insert jinja variable(s) for citation(s)
-						# if 'payload' in val2:
-							# list[x - 1] = list[x - 1].replace(str(val2['payload']), '{{ ' + str(val2['jinja_var']) + ' }}')
-																							#<= added a bibliography dictionary entry and associated citations dictionary
 					bibs["bib" + str(bib_count)] = {'jinja_var': 'B' + str(bib_count), 'bib_key': str(self.get_bib_key(list[x])), 'payload': list[x], 'citations': citations}
 					list[x] = '{{ ' + str(bibs["bib" + str(bib_count)]['jinja_var']) + ' }}'
 					bib_count += 1
