@@ -32,7 +32,7 @@ class Document:
 		try:
 			with open(self.filename, 'rb') as fh:
 				unzipped = zipfile.ZipFile(fh)
-				xml_content = unzipped.read(os.path.join('word', 'document.xml'))	#<= Retrieve Open XML
+				xml_content = unzipped.read(os.path.join('word', 'document.xml'))	#=> Retrieve Open XML
 				return xml_content.decode("utf-8")
 
 		except(OSError, IOError) as e:
@@ -57,7 +57,7 @@ class Document:
 				xml_str = etree.tostring(xml_content, pretty_print=True).decode("utf-8")
 				f.write(xml_str)
 				
-			filenames = self.zipfile.namelist()	#<= Get a list of all the files in the original docx zipfile
+			filenames = self.zipfile.namelist()	#=> Get a list of all the files in the original docx zipfile
 
 			# Create the new zip file and add all the files into the archive
 			zip_copy_filename = output_filename
@@ -65,7 +65,7 @@ class Document:
 				for filename in filenames:
 					docx.write(os.path.join(dir, filename), filename)
 					
-			shutil.rmtree(dir)	#<= Clean up the dir
+			shutil.rmtree(dir)	#=> Clean up the dir
 			return True
 			
 		except(OSError, IOError) as e:
@@ -140,40 +140,36 @@ class Document:
 	#          is a string containing the Open XML content of a docx document with the latex markup replaced with jinja templating variables.
 	#
 	def get_dict_xml(self, xml):
-		bibs = dict()				#<= stores all bibliography enties
-		citations = dict()			#<= stores all citation entries
-		bib_count = 0				#<= bibliography counter
-		cite_count = 0				#<= citation counter
+		bibs = dict()				#=> stores all bibliography enties
+		citations = dict()			#=> stores all citation entries
+		bib_count = 0				#=> bibliography counter
+		cite_count = 0				#=> citation counter
 
-		list = re.split(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', xml)						#<= spit xml string into a list defined by a pattern, capture pattern
+		list = re.split(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', xml)						#=> spit xml string into a list defined by a pattern, capture pattern
 		
-		for x in range(0, len(list)):															#<= iterate through the list from regex split	
-			if not re.search(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', list[x]) is None:	#<= check for a list entry for bibliography data
+		for x in range(0, len(list)):															#=> iterate through the list from regex split	
+			if not re.search(r'(\\bibliography\s*{[^}]*}|\\bib\s*{[^}]*})', list[x]) is None:	#=> check for a list entry for bibliography data
 				try:
-					cites = re.findall(r'\\cite\s*{[^}]*}', list[x - 1], re.IGNORECASE) 		#<= step back one index and find all the cite markup in the text block
+					cites = re.findall(r'\\cite\s*{[^}]*}', list[x - 1], re.IGNORECASE) 		#=> step back one index and find all the cite markup in the text block
 					
-					for i in range(0, len(cites)):												#<=  iterate through the parsed cite markup
+					for i in range(0, len(cites)):												#=>  iterate through the parsed cite markup
 						is_duplicate = False												
 						
-						for key, val in citations.items():										#<= avoid dupicate dictionary entries by checking bib_key values for matches
+						for key, val in citations.items():										#=> avoid dupicate dictionary entries by checking bib_key values for matches
 							if 'bib_key' in val:
 								if val['bib_key'] == str(self.get_bib_key(cites[i])):
 									is_duplicate = True
 									
-									if not val['payload'] == cites[i]:							#<= check if payload is different this can happen when the contents are the same but markup is not
+									if not val['payload'] == cites[i]:							#=> check if payload is different this can happen when the contents are the same but markup is not
 										list[x - 1] = list[x - 1].replace(str(cites[i]), '{{ ' + val['jinja_var'] + ' }}')
 						
 									break
 									
-						if is_duplicate == False:												#<= add new entry if a dupicate is not found
+						if is_duplicate == False:												#=> add new entry if a dupicate is not found
 							citations["cite" + str(cite_count)] = {'jinja_var': 'B' + str(bib_count) + 'C' + str(cite_count), 'bib_key': str(self.get_bib_key(cites[i])), 'payload': cites[i]}
 							list[x - 1] = list[x - 1].replace(str(cites[i]), '{{ ' + 'B' + str(bib_count) + 'C' + str(cite_count) + ' }}')
 							cite_count += 1		
 							
-					# for key2, val2 in citations.items():										#<= insert jinja variable(s) for citation(s)
-						# if 'payload' in val2:
-							# list[x - 1] = list[x - 1].replace(str(val2['payload']), '{{ ' + str(val2['jinja_var']) + ' }}')
-																							#<= added a bibliography dictionary entry and associated citations dictionary
 					bibs["bib" + str(bib_count)] = {'jinja_var': 'B' + str(bib_count), 'bib_key': str(self.get_bib_key(list[x])), 'payload': list[x], 'citations': citations}
 					list[x] = '{{ ' + str(bibs["bib" + str(bib_count)]['jinja_var']) + ' }}'
 					bib_count += 1
@@ -183,7 +179,7 @@ class Document:
 				except IndexError:
 					return None
 					
-		xml = ''.join(list)			#<= convert list back into a string		
+		xml = ''.join(list)			#=> convert list back into a string		
 		
 		return bibs, xml
 
