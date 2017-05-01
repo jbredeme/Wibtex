@@ -48,265 +48,319 @@ def read_style_file( style_file, style_form ):
             data = {}
             print("Error: Could not read style file.")
 
-    return data[style_form]
+    return data.get(style_form)
 
 ################################################
 # Function Definitions - Style Data Formatting
 ################################################
 
-def validate_syntax( doc_list ):
+def validate_syntax( bib_tags ):
     '''
     Validates Word document syntax 
 
-    @param  doc_list a list of BibTeX markup extracted from the document
+    @param  bib_tags a list of BibTeX markup extracted from the document
     @return          a boolean indicating success or failure
     '''
-
-    #TODO - Function may be dropped or reformatted
-
-    valid = False
-
-    # Check for any markup containing a \bibliography{ ... }
-    reg_exp = re.compile(r'\\bibliography\{(.*?)\}')
     
-    # Ensure that last item is bibliography tag
-    if not reg_exp.search(doc_list[(len(doc_list) - 1)]):
-        print("Error: '\\bibliography{}' should be final tag in document.")
-    else:
-        valid = True
+    # TODO - Is it needed?
 
-    for item in range(0, len(doc_list)):
+    return True
 
-        if reg_exp.search(doc_list[item]):
+def validate_citations( bib_tags, bib_data ):
 
-            valid = True
+    sub_dict = {}  #' Dictionary for reference sections
+    cite_dict = {} #' Dictionary of citations found for a reference section
+    key = ''       #' Temporary key to see if entry in BibTeX database
+    log = "" 
 
-    if valid == False:
-        print("Error: Missing \\bibliography{} markup in document.")
+    #TODO - User logger or flag?
 
-    return valid
+    # For each bibliography
+    for super_key in bib_tags:
 
-def split_citations( doc_list ):
-    '''
-    Splits citations into separate lists for each \bibliography{} tag
+        sub_dict = bib_tags.get(super_key)
+        cite_dict = sub_dict.get('citations')
+        
+        # For each citation
+        for sub_key in cite_dict:
 
-    @param  doc_list  a list of BibTeX markup extracted from the document
-    @return           a list or list of lists containing BibTeX markup
-    '''
-    # TODO - Change to rename bibliographies based on count
+            key = cite_dict.get(sub_key).get('bib_key')
 
-    reg_exp = re.compile(r'\\bibliography\{(.*?)\}')
-    bib_count = 0
-    num_list  = []
-
-    # Count the number of bibliography tags
-    for index in range(0, len(doc_list)):
-
-        # If bibliography tag found, append its index to the list 
-        if reg_exp.search(doc_list[index]):
-            num_list.append(index)
-            bib_count += 1
-
-    # Create a list or list of lists separated by bibliography tag
-    if bib_count > 1:
-
-        bib_list  = []
-        temp_list = []
-
-        for index in range(0, len(doc_list)):
-
-            # Add list to list of lists
-            if index in num_list:
-                temp_list.append(doc_list[index])
-                bib_list.append(temp_list)
-                temp_list = []
-            # Add item to list
+            if key in bib_data:
+                # TODO - Do anything?
+                continue
             else:
-                temp_list.append(doc_list[index])
+                # TODO - Verify and log?
+                continue
 
-    # Create a single list
-    else:
-        bib_list = doc_list
-
-    return bib_list
-
-def strip_markup( doc_list ):
-    '''
-    Splits BibTeX markup from tags contained in the document
-
-    @param  doc_list  a list of BibTeX markup extracted from the document
-    @return           a list or list of lists without BibTeX markup
-    '''
-
-    # If the doc_list is a list of lists
-    if any(isinstance(element, list) for element in doc_list):
-
-        for sub_list in doc_list:
-            for index in range(0, len(sub_list)):
-                sub_list[index] = re.sub(r'\\cite\{', '', sub_list[index])
-                sub_list[index] = re.sub(r'cite\{', '', sub_list[index])
-                sub_list[index] = re.sub(r'\\bibliography\{', '', sub_list[index])
-                sub_list[index] = re.sub(r'bibliography\{', '', sub_list[index])
-                sub_list[index] = re.sub(r'\}', '', sub_list[index])
-
-    # If the doc_list is a single list
-    else:
-
-        for index in range(0, len(doc_list)):
-            doc_list[index] = re.sub(r'\\cite\{', '', doc_list[index])
-            doc_list[index] = re.sub(r'cite\{', '', doc_list[index])
-            doc_list[index] = re.sub(r'\\bibliography\{', '', doc_list[index])
-            doc_list[index] = re.sub(r'bibliography\{', '', doc_list[index])
-            doc_list[index] = re.sub(r'\}', '', doc_list[index])
-
-    return doc_list
-
-def get_dict_from_entry( dict_list, key ):
-    '''
-    Returns a dictionary from a dictionary of dictionaries based on key
-
-    @param  dict_list a dictionary of dictionaries
-    @param  key       the key to find the dictionary from
-    @return           a dictionary whose "ID" matches the key
-    '''
-
-    out_dict = None
-
-    for dict in dict_list:
-
-        if dict['ID'] == key:
-            out_dict = dict
-            
-    return out_dict
-
-def validate_citations( citations, bib_data ):
-    #TODO - Validates that citations are in the dictionary
     return
 
-def remove_duplicates( list ):
-    '''
-    Removes duplicate values from a list while preserving order
+def sort_alphabetical( bib_key, sort_list, ordered_cites ):
 
-    @param  list a list of items
-    @return      a list of items in their original order without duplicates
-    '''
-    seen = set()
-    seen_add = seen.add
-    out = [item for item in list if not (item in seen or seen_add(item))]
-    return out
+    sorted_list = []
+    sorted_tags = []
+    to_sort = []
+    jinja_list = []
+    outer_list = []
 
-def organize_citations( citations, order ):
-    '''
-    Removes duplicate values and bibliography tag(s) from a list/list of lists
-    of citations
+    temp_str = ""
 
-    @param  citations a list or list of lists of extracted data
-    @return           a list or list of lists of citation data
-    '''
+    # For each entry in bibliography
+    for item in sort_list:
 
-    # TODO - Handle alphabetic ordering (default and backup methods)
+        # Sort a list of authors or titles
+        item[2] = sorted(item[2], key=str.swapcase)
 
-    # If citations is a list of lists
-    if any(isinstance(element, list) for element in citations):
+        to_sort.append(item[2][0])
 
-        for index in range(0, len(citations)):
+    # Sort the list of authors/titles/other
+    sorted_list = sorted(to_sort, key=str.swapcase)
 
-            temp_list = (citations[index])[0:(len(citations[index]) - 1)]
-            temp_list = remove_duplicates(temp_list)
+    # Create a list equal to the size of the sorted list
+    sorted_tags = sorted_list
 
-    # If citations is a single list
-    else:
-        # Remove duplicate data
-        temp_list = citations[0:(len(citations) - 1)]
-        temp_list = remove_duplicates(temp_list)
+    for index in sorted_list:
+        jinja_list.append(0)
+
+    # Extract the citation tags
+    for index in range(0, len(sorted_list)):
+
+        for item in range(0, len(sorted_list)):
+
+            if sorted_list[item] in sort_list[index][2]:
+
+                jinja_list[item] = sort_list[index][0]
+                sorted_tags[item] = sort_list[index][1]
+                sort_list[index][2] = ['#']
+    
+    outer_list.append(sorted_tags)
+    outer_list.append(jinja_list)
+
+    ordered_cites[bib_key] = outer_list
+
+    return ordered_cites
+
+def organize_citations( bib_tags, bib_data, order ):
+
+    method = order.get('method')
+    sort_by = order.get('sortby')
+
+    jinja_var = ''
+    sort_item = ''
+
+    tag_list = []
+    jinja_list = []
+    outer_list = []
+    triplet = []
+
+    ordered_cites = {}
+
+    if method == 'alpha':
+
+        # Sort via authors
+        if sort_by == 'author':
+
+            # For each bibliography section
+            for bib in bib_tags:
+
+                # Grab the list of citations
+                citations = bib_tags.get(bib).get('citations')
+                
+                # Grab the entry key and sorting token
+                for entry_key in citations:
+                    
+                    bib_key = citations.get(entry_key).get('bib_key')
+                    jinja_var = citations.get(entry_key).get('jinja_var')
+
+                    if 'author' in bib_data.get(bib_key):
+
+                        sort_item = bib_data.get(bib_key).get('author')
+
+                    elif 'title' in bib_data.get(bib_key):
+
+                        sort_item = bib_data.get(bib_key).get('title') 
+
+                    else:
+                        # Grab next available value
+                        sort_item = next (iter (bib_data.get(bib_key).values()))
+
+                    triplet.append(jinja_var)
+                    triplet.append(bib_key)
+                    triplet.append(sort_item)
+
+                    tag_list.append(triplet)
+
+                    triplet = []
+
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
+                                                 ordered_cites)
+                tag_list = []
+
+        # Sort via titles
+        elif sort_by == 'title':
+
+            # For each bibliography section
+            for bib in bib_tags:
+
+                # Grab the list of citations
+                citations = bib_tags.get(bib).get('citations')
+                
+                # Grab the entry key and sorting token
+                for entry_key in citations:
+                    
+                    bib_key = citations.get(entry_key).get('bib_key')
+                    jinja_var = citations.get(entry_key).get('jinja_var')
+
+                    if 'title' in bib_data.get(bib_key):
+
+                        sort_item = bib_data.get(bib_key).get('title')
+
+                    elif 'author' in bib_data.get(bib_key):
+
+                        sort_item = bib_data.get(bib_key).get('author') 
+
+                    else:
+                        # Grab next available value
+                        sort_item = next (iter (bib_data.get(bib_key).values()))
+
+                    triplet.append(jinja_var)
+                    triplet.append(bib_key)
+                    triplet.append(sort_item)
+
+                    tag_list.append(triplet)
+
+                    triplet = []
+
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
+                                                 ordered_cites)
+                tag_list = []
+
+        # Default to first-available field
+        else:
+            # For each bibliography section
+            for bib in bib_tags:
+
+                # Grab the list of citations
+                citations = bib_tags.get(bib).get('citations')
+                
+                # Grab the entry key and sorting token
+                for entry_key in citations:
+                    
+                    bib_key = citations.get(entry_key).get('bib_key')
+                    jinja_var = citations.get(entry_key).get('jinja_var')
+
+                    sort_item = next (iter (bib_data.get(bib_key).values()))
+
+                    triplet.append(jinja_var)
+                    triplet.append(bib_key)
+                    triplet.append(sort_item)
+
+                    tag_list.append(triplet)
+
+                    triplet = []
         
-    return temp_list
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
+                                                 ordered_cites)
+                tag_list = []
 
-def generate_citations( citations, bib_data, style_form ):
-    '''
-    Generates in-text citation strings from the style file template
-
-    @param  citations   a list or list of lists of unique citations
-    @param  bib_data    a list of BibTeX bibliography entries
-    @param  style_form  a template representing the in-text citation 
-    @param  output_dict the dictionary to store output data in
-    @return             a dictionary containing formatted in-text citations
-    '''
-
-    output_dict = {}
-
-    template = Template(style_form['in_text_style'])
-
-    # If citations is a list of lists
-    if any(isinstance(element, list) for element in citations):
-
-        #TODO - Generate unique citations for sources shared across bibliographies
-
-        return
-
-    # If citations is a single list
+    # Default to first-written-first-cited
     else:
 
-        index = 1
-        # Generate in-text citation and add it to the output dictionary
-        for tag in citations:
+        c_count = 0
 
-            dict = get_dict_from_entry(bib_data, tag)
-            dict['num'] = index
-            output_dict[tag] = template.render(dict)
+        acccess_str = ""
+        
+        for key in bib_tags:
+
+            citations = bib_tags.get(key).get('citations')
+
+            for tag in range(0, len(citations.keys())):
+
+                access_str = "cite" + str(c_count)
+
+                tag_list.append(citations[access_str]['bib_key'])
+                jinja_list.append(citations[access_str]['jinja_var'])
+
+                c_count += 1
+
+            c_count = 0
+
+            outer_list.append(tag_list)
+            outer_list.append(jinja_list)
+            
+            ordered_cites[key] = outer_list
+            tag_list = []
+            jinja_list = []
+            outer_list = []
+    
+    return ordered_cites
+
+def generate_citations( bib_data, ordered_cites, style_data ):
+
+    output = {}
+    cur_bib = {}
+
+    index = 1
+
+    token = style_data.get('index')
+    template = style_data.get('template')
+
+    templator = Template(template)
+
+    for bib in ordered_cites:
+
+        cur_bib = ordered_cites.get(bib)
+
+        for item in cur_bib[0]:
+
+            bib_data[item][token] = index
+
             index += 1
 
-    return output_dict
+        for item in range(0, len(cur_bib[1])):
 
-def generate_works_cited( citations, bib_data, style_form, output_dict ):
-    '''
-    Generates a works cited page from the style_form file template
+            output[cur_bib[1][item]] = templator.render(bib_data[cur_bib[0][item]])
 
-    @param  citations   a list or list of lists of unique citations
-    @param  bib_list    a list of BibTeX bibliography entries
-    @param  style_form  a template representing the citation output 
-    @param  output_dict the dictionary to store output data in
-    @return             a dictionary containing formatted citation data
-    '''
-    
+        index = 1
+
+    return output
+
+def generate_works_cited( bib_data, ordered_cites, style_data, output ):
+
+    index = 1
+
+    token = style_data.get('in_text_style').get('index')
+
+    bib_list = []
+
     bib_string = "" #' String containing works cited
 
-    bib_string += style_form['title']
+    bib_string += style_data.get('title')
 
-    # If citations is a list of lists
-    if any(isinstance(element, list) for element in citations):
+    for bib in ordered_cites:
 
-        #TODO - Generate works cited for sources shared across bibliographies
+        bib_list = ordered_cites.get(bib)
 
-        return
+        for key in bib_list[0]:
 
-    # If citations is a single list
-    else:
+            bib_data[key][token] = index
 
-        # Extract the list of citations
-        temp_list = citations[0:(len(citations) - 1)]
+            templator = Template(style_data.get(bib_data[key].get('ENTRYTYPE')))
+            bib_string += templator.render(bib_data[key])
 
-        for item in temp_list:
+            index += 1
 
-            dict = get_dict_from_entry(bib_data, item)
+        output[bib] = bib_string
+        bib_string = ""
+        index = 0
 
-            # Generate a template based on the entry type
-            template = Template(style_form[dict['ENTRYTYPE']])
+    return output
 
-            # Append the output to the refernce string
-            bib_string += template.render(dict)
+def get_reference_data( style_file, style_form, bib_tags, bib_data ):
 
-    # Set the bibliography key equal to the reference string
-    output_dict[citations[len(citations) - 1]] = bib_string
-
-    return output_dict
-
-def get_reference_data( style_file, style_form, doc_list, bib_data ):
-
-    bib_list   = {}
-    cite_list  = {}
-    style_data = {}
-    output     = {}
+    style_data = {}    #' A dictionary containing style information
+    ordered_cites = {} #' A dictionary containing ordered citations
+    output     = {}    #' A dictionary for Jinja2 templating on the final document
 
     # Validate style chosen from style file
     validate_style(style_file, style_form)
@@ -315,24 +369,18 @@ def get_reference_data( style_file, style_form, doc_list, bib_data ):
     style_data = read_style_file(style_file, style_form)
 
     # Validate BibTeX syntax
-    validate_syntax(doc_list)
-
-    # Partition reference sections
-    bib_list = split_citations(doc_list)
-
-    # Strip BibTeX markup
-    bib_list = strip_markup(bib_list)
+    validate_syntax(bib_tags)
 
     # Validate that citations are in BibTeX database
-    validate_citations(bib_list, bib_data)
+    validate_citations(bib_tags, bib_data)
 
     # Organize citations according to style
-    cite_list = organize_citations(bib_list, style_data['order'])
+    ordered_cites = organize_citations(bib_tags, bib_data, style_data.get('order'))
 
     # Generate in-text citations
-    output = generate_citations(cite_list, bib_data, style_data)
+    output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'))
 
     # Generate reference page
-    output = generate_works_cited(bib_list, bib_data, style_data, output)
+    output = generate_works_cited(bib_data, ordered_cites, style_data, output)
 
     return output
