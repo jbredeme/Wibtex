@@ -542,38 +542,23 @@ def remove_brackets( database ):
 
     return database
 
-# TODO - Verify if needed
-# def fix_arrays ( database ):
-    # '''
-    # Converts a list of lists to a single list within a BibTeX dictionary
+def convert_to_dictionary( bib_database ):
 
-    # @param  database a BibTeX database in the form of a dictionary
-    # '''
+    final_dict = {} #' Dictionary with which we store items by BibTeX entry key
+    entry_key = ''  #' The entry key to a BibTeX entry
 
-#     temp_dict = {}
-#     temp_list = []
+    for item in bib_database:
 
-#     for index in range(0, len(database)):
-#         temp_dict = database[index]
+        entry_key = item.get('ID')
 
-#         for key in temp_dict:
-#             # If entry is a list
-#             if isinstance(temp_dict[key], list):
+        if entry_key is not None and entry_key not in final_dict:
+            final_dict[entry_key] = item
 
-#                 # If entry is a list of lists
-#                 if any(isinstance(element, list) for element in temp_dict[key]):
-
-#                     # Append to a temporary list
-#                     for item in temp_dict[key]:
-
-#                         temp_list.append(item)
-
-#                     temp_dict[key] = temp_list
-#                     temp_list = []
-
-#         database[index] = temp_dict
-
-#     return database
+        else:
+            print("Entry key already exists in database")
+            # TODO - LOG?
+    
+    return final_dict
 
 def parse( path ):
     '''
@@ -604,5 +589,8 @@ def parse( path ):
 
     # Parse out backslashes
     bib_database = fix_escape_chars(bib_database)
+
+    # Convert to dictionary of dictionaries with access via entry key
+    bib_database = convert_to_dictionary(bib_database)
 
     return bib_database
