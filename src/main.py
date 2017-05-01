@@ -13,6 +13,7 @@
 import style
 import wibtex_parser
 import docx_io
+import pprint
 
 ################################################
 # Construct Input Data
@@ -26,7 +27,7 @@ style_form  = "ccsc"
 # Construct Output Data
 ################################################
 bib_data    = {} #' The BibTeX database
-bib_tags    = [] #' The list of BibTeX tags in the Word document
+bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
 cite_data   = {} #' The formatted reference data to insert in the document
 xml         = "" #' The document string
 output      = "test_data/demo_output.docx"
@@ -45,25 +46,20 @@ bib_data = wibtex_parser.parse(input_bib)
 docx = docx_io.Document(input_doc)
 
 # Extract XML
-xml  = docx.get_xml()
+xml  = (docx.get_xml())
 
-# Get the Latex Markup
-bib_tags = docx.get_latex(xml)
+# Extract BibTeX markup
+bib_tags = docx.get_dict_xml(xml)[0]
 
-# Insert jinja variables into the XML
-xml = docx.insert_vars(xml, bib_tags)
-
-bib_tags = docx.remove_markup(bib_tags)
-
-# ################################################
-# # Generate Reference Data (style.py)
-# ################################################
+################################################
+# Generate Reference Data (style.py)
+################################################
 
 cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data)
 
-# ################################################
-# # Write to Word Document (docx_io.py)
-# ################################################
+# # ################################################
+# # # Write to Word Document (docx_io.py)
+# # ################################################
 
 # Take the dictonary with the template and run Jinja2 over it
 xml = docx.jinja_it(xml, cite_data)
