@@ -1,7 +1,13 @@
 {
     "ccsc": {
-        "order": "fcfs",
-        "in_text_style":"[{{num}}]",
+        "order": {
+            "method": "alpha",
+            "sortby": "author"
+        },
+        "in_text_style": {
+            "index" : "num",
+            "template": "[{{num}}]"
+        },
         "default_style":"<w:br/>[{{num}}] {{name}}, {{title}}.",
         "title":"<w:br/>Works Cited",
         "article": "<w:br/>[{{num}}] {{author}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
