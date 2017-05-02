@@ -49,7 +49,7 @@ docx = docx_io.Document(input_doc)
 xml  = (docx.get_xml())
 
 # Extract BibTeX markup
-bib_tags = docx.get_dict_xml(xml)[0]
+bib_tags, xml = docx.get_dict_xml(xml)
 
 ################################################
 # Generate Reference Data (style.py)
@@ -57,9 +57,9 @@ bib_tags = docx.get_dict_xml(xml)[0]
 
 cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data)
 
-# # ################################################
-# # # Write to Word Document (docx_io.py)
-# # ################################################
+################################################
+# Write to Word Document (docx_io.py)
+################################################
 
 # Take the dictonary with the template and run Jinja2 over it
 xml = docx.jinja_it(xml, cite_data)
