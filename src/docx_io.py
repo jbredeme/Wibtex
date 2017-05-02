@@ -7,6 +7,7 @@
  
 import sys, os, shutil, re, zipfile, tempfile
 from jinja2 import Template, Environment
+from bs4 import BeautifulSoup
 from lxml import etree
 
 class Document:
@@ -32,7 +33,7 @@ class Document:
 		try:
 			with open(self.filename, 'rb') as fh:
 				unzipped = zipfile.ZipFile(fh)
-				xml_content = unzipped.read(os.path.join('word', 'document.xml'))	#=> Retrieve Open XML
+				xml_content = unzipped.read('word/document.xml')	#=> Retrieve Open XML
 				return xml_content.decode("utf-8")
 
 		except(OSError, IOError) as e:
@@ -202,4 +203,149 @@ class Document:
 				print("\t\tPayload:\t" + str(val2['payload']) + "\n")
 			print("------------------------------------------------------------")
 			print("------------------------------------------------------------\n")
+			
+			
+# -------------------------------------------------------------------------------------------------------------------------
+
+# this html parser takes non-nested html tags content is split up into blocks, blocks are defined by an opening 
+# and closing tag element and any content that they surround. In case where a tag is a nested tag containing two
+# or more children the parent tag is processed first, then the child, and the child of the child and so forth. 
+# To illistrate this idea say you start off with a string like this 'some <b><i>simple</i></b> text' -> 
+# '<b><i>simple</i></b>' -> '<i>simple</i>'. Since we have two of splits of the same content we need to prevent 
+# processing the same tag more then once. In order do accomplish this I compare the contents of the child tag to
+# the contents of its parent. If the contents match I know that the child is a decendant of the parent and I no 
+# longer need to process any sibilings of the parent because the parent tag contains all the relevant data I need.
+
+sampleText = 'This is a <b></b>test string to <i>test</i> simple HTML <u>markup</u> elements <b><i>converson</i></b> to <u><b><font size=18>Open XML markup</font></b></u> for word <font size="15">document</font> formatting. <font size=6><b><u><i>For nested markup they</i></u></b></font> can appear in any order, font size value can be quote or not quoted'
+
+soup = BeautifulSoup(sampleText, 'html.parser')
+print('\n-------------------- Original text feed --------------------')
+print('\n' + sampleText + '\n')
+print('------------------------------------------------------------\n')
+	
+for e in soup.findAll():
+	chowder = BeautifulSoup(str(e), 'html.parser')
+	
+	if chowder.b != None and chowder.font != None and chowder.i != None and chowder.u != None:		#=> contains bold, font, italic, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, font, italic, and underline html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
 		
+	if chowder.b != None and chowder.font != None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains bold, font, and italic html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, font, and italic html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+
+	if chowder.b != None and chowder.font != None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains bold, font, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, font, and underline html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')		
+			
+	if chowder.b != None and chowder.font == None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains bold, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, and underline html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+			
+	if chowder.b != None and chowder.font == None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains bold, and italic html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content	
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, and italic html markup elements\n')	
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+			
+	if chowder.b != None and chowder.font != None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains bold, and font html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains bold, and font html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')	
+			
+	if chowder.b != None and chowder.font == None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains only a bold html markup element
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains only a bold html markup element\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')	
+      
+	if chowder.b == None and chowder.font != None and chowder.i != None and chowder.u != None:		#=> Line analysis: contains font, italic, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains font, italic, and underline html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+	
+	if chowder.b == None and chowder.font != None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains font, and italic html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content	
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains font, and italic html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+      			
+
+	if chowder.b == None and chowder.font != None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains font, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains font, and underline html markup elements\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+      			
+
+	if chowder.b == None and chowder.font != None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains only a font html markup element
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains only a font html markup element\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+			
+      			
+	if chowder.b == None and chowder.font == None and chowder.i != None and chowder.u != None:		#=> Line analysis: contains italic, and underline html markup elements
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains italic, and underline html markup elements\n')	
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+      			
+	if chowder.b == None and chowder.font == None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains only an italic html markup element
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains only an italic html markup element\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')	
+			
+	if chowder.b == None and chowder.font == None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains only an underline html markup element
+		if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
+			print('Oringal markup:\n\t' + str(e))
+			print('\tLine analysis: contains only an underline html markup element\n')
+			print('Open XML Markup Equivalent:')
+			print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
+			print('\n--\n')
+			
+			
+# docx = Document('test_data\html_to_xml_test.docx')
+# xml  = docx.get_xml()
+# type(xml)
+# out = xml.replace('Simple', '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">formatted</w:t></w:r>')
+# print(out)
+# docx.save_xml(docx.get_xml_tree(out.encode('utf-8')), 'xml_out.docx')			
+# -------------------------------------------------------------------------------------------------------------------------
