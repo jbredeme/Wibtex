@@ -6,25 +6,54 @@
         },
         "in_text_style": {
             "index" : "num",
-            "template": "[{{num}}]"
+            "template": "{{num|wrap(']') if num else ''}}"
         },
-        "title": "Works Cited",
-        "default_style": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
+        "title": "REFERENCES|wrap_html('b')",
+        "default_style": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
         "journal": {
             "supported": ["journal", "article", "mastersthesis", "incollection"],
-            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|add_chars(', ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|add_chars(', ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue else ''}}{{pages if pages else ''}}{% if pages is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{{title|add_chars(', ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|add_chars(', ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue else ''}}{{pages if pages else ''}}{% if pages is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
         },
         "book": {
             "supported": ["book", "article", "mastersthesis", "incollection"],
-            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{city|add_chars(': ') if city else ''}}{{publisher if publisher else '' }}{% if publisher is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{city|add_chars(': ') if city else ''}}{{publisher if publisher else '' }}{% if publisher is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
         },
         "internet": {
-            "supported": ["internet", "misc"],
-            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{year|add_chars(', ') if year else ''}}{{url if url else ''}}{% if url is defined and retrieved is defined %}{{retrieved|add_chars('.')|add_to_front(', retrieved ')}}{% elif retrieved is defined %}{{year|add_to_front('retrieved ')|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+            "supported": ["misc"],
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{year|add_chars(', ') if year else ''}}{{url if url else ''}}{% if url is defined and retrieved is defined %}{{retrieved|add_chars('.')|add_to_front(', retrieved ')}}{% elif retrieved is defined %}{{year|add_to_front('retrieved ')|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
         }
     },
     "acm": {
-
+        "order": {
+            "method": "alpha",
+            "sortby": "author"
+        },
+        "in_text_style": {
+            "index" : "num",
+            "template": "{{num|wrap(']') if num else ''}}"
+        },
+        "title": "References|wrap_html('b')",
+        "default_style": "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{editor|authors_acm() if editor else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
+        "book" : {
+            "supported": ["book"],
+            "template": ""
+        },
+        "inbook" : {
+            "supported": ["inbook"],
+            "template": ""
+        },
+        "conference" : {
+            "supported": ["inproceedings", "conference", "proceedings"],
+            "template": ""
+        },
+        "journal" : {
+            "supported": ["journal", "article"],
+            "template": ""
+        },
+        "internet" : {
+            "supported": ["misc"],
+            "template": ""
+        }
     },
     "apa": {
 
