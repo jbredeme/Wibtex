@@ -8,10 +8,28 @@
             "index" : "num",
             "template": "[{{num}}]"
         },
-        "default_style":"<w:br/>[{{num}}] {{name}}, {{title}}.",
-        "title":"<w:br/>Works Cited",
-        "article": "<w:br/>[{{num}}] {{author}}, {{title}}, {{publisher}}, {{volume}}, {{issue}}, {{pages}}, {{year}}.",
-        "book": "<w:br/>[{{num}}] {{author}}, {{title}}, {{city}}: {{volume}} {{publisher}}, {{year}}.",
-        "internet": "[{{num}}] {{author}}, {{title}}, {{year}}, {{url}}, {{year}}."
+        "title": "Works Cited",
+        "default_style": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
+        "journal": {
+            "supported": ["journal", "article", "mastersthesis", "incollection"],
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|add_chars(', ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|add_chars(', ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue else ''}}{{pages if pages else ''}}{% if pages is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+        },
+        "book": {
+            "supported": ["book", "article", "mastersthesis", "incollection"],
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{city|add_chars(': ') if city else ''}}{{publisher if publisher else '' }}{% if publisher is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+        },
+        "internet": {
+            "supported": ["internet", "misc"],
+            "template": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|add_chars(', ') if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{year|add_chars(', ') if year else ''}}{{url if url else ''}}{% if url is defined and retrieved is defined %}{{retrieved|add_chars('.')|add_to_front(', retrieved ')}}{% elif retrieved is defined %}{{year|add_to_front('retrieved ')|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+        }
+    },
+    "acm": {
+
+    },
+    "apa": {
+
+    },
+    "ieee": {
+
     }
 }
