@@ -137,7 +137,7 @@
             "template": "{{author|get_last()|add_chars(', ')|add_to_front('(') if author and year else ''}}{{author|wrap(')') if author and not year else ''}}{{year|add_chars(')') if year and author else ''}}{{year|wrap(')') if year and not author else ''}}"
         },
         "title": "References",
-        "default_style": "",
+        "default_style": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|wrap_html('i')|add_chars('. ') if title else '' }}{{city|add_chars(', ') if city else ''}}{{state|add_chars(': ') if state and publisher else '' }}{{state|add_chars('.') if state and not publisher else ''}}{{publisher|get_chars('.') if publisher else ''}}",
         "book": {
             "supported": ["book"],
             "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|wrap_html('i')|add_chars('. ') if title else '' }}{{city|add_chars(', ') if city else ''}}{{state|add_chars(': ') if state and publisher else '' }}{{state|add_chars('.') if state and not publisher else ''}}{{publisher|get_chars('.') if publisher else ''}}"
@@ -148,43 +148,43 @@
         },
         "magazine": {
             "supported": ["article"],
-            "template": "{{author|authors_apa() if author else '' }}{{year|get_last()|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and pages else ''}}{{issue|wrap(')')|add_chars('.') if issue and not pages else ''}}{{pages|add_chars('.') if pages else ''}}"
+            "template": "{{author|authors_apa() if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and pages else ''}}{{issue|wrap(')')|add_chars('.') if issue and not pages else ''}}{{pages|add_chars('.') if pages else ''}}"
         },
         "internet_magazine": {
             "supported": ["article", "misc"],
-            "template": "{{author|authors_apa() if author else '' }}{{year|get_last()|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and url else ''}}{{issue|wrap(')')|add_chars('.') if issue and not url else ''}}{{url|add_to_front('Retrieved from ') if url else ''}}"
+            "template": "{{author|authors_apa() if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and url else ''}}{{issue|wrap(')')|add_chars('.') if issue and not url else ''}}{{url|add_to_front('Retrieved from ') if url else ''}}"
         },
         "newspaper": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and pages else ''}}{{issue|wrap(')')|add_chars('.') if issue and not pages else ''}}{{pages|add_chars('.') if pages else ''}}"
         },
-        "website": {
+        "internet": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|add_chars('. ') if title else '' }}{{url|add_to_front('Retrieved from ') if url else ''}}"
         },
         "journal_article": {
             "supported": ["article"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and pages else ''}}{{issue|wrap(')')|add_chars('.') if issue and not pages else ''}}{{pages|add_chars('.') if pages else ''}}"
         },
         "internet_journal_article": {
             "supported": ["article", "misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|wrap_html('i')|add_chars(' ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue and pages else ''}}{{issue|wrap(')')|add_chars('.') if issue and not pages else ''}}{{pages|add_chars('.') if pages else ''}}{{url|add_to_front(' Retrieved from ') if url else ''}}"
         },
         "film": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|wrap_html('i')|add_chars('[Motion Picture]. ') if title else '' }}{{location|add_chars(': ') if location and studio else ''}}{{location|add_chars('.') if location and not studio else '' }}{{studio|add_chars('.') if studio else ''}}"
         },
         "interview": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{type|add_chars('.') if type else ''}}"
         },
         "lecture": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars(' ') if title and format else ''}}{{title|add_chars('. ') if title and not format else ''}}{{format|wrap(']')|add_chars('.') if format else ''}}{{url|add_to_front(' Retrieved from ') if url else '.'}}"
         },
         "broadcast": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars(' [Broadcast].') if title else ''}}{{producer|add_to_front('In Executive Producer, ')|add_chars(', ') if producer else ''}}{{series|wrap_html('i')|add_chars('. ') if series else ''}}{{city|add_chars(', ') if city and state else ''}}{{city|add_chars(': ') if city and channel and not state else '' }}{{city|add_chars('.') if city and not channel and not state else '' }}{{state|add_chars(': ') if state and channel else '' }}{{state|add_chars('.') if state and not channel else ''}}{{channel|add_chars('.') if channel else ''}}"
         },
         "encyclopedia": {
             "supported": ["misc"],
@@ -192,7 +192,7 @@
         },
         "photograph": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa()|add_chars(' (Photographer(s)). ') if author else '' }}{{year|add_chars(', ')|add_to_front('(') if month and year else ''}}{{year|wrap(')')|add_chars('. ') if year and not month else ''}}{{month|add_chars('). ') if year and month else ''}}{{month|wrap(')')|add_chars('. ') if month and not year else ''}}{{title|wrap_html('i')|add_chars(' [Photograph]. ') if title else ''}}{{city|add_chars(', ') if city and state else ''}}{{city|add_chars(': ') if city and publisher and not state else '' }}{{city|add_chars('.') if city and not publisher and not state else '' }}{{state|add_chars(': ') if state and publisher else '' }}{{state|add_chars('.') if state and not publisher else ''}}{{publisher|add_chars('.') if publisher else ''}}"
         }
     }
 }
