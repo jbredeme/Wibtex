@@ -184,11 +184,11 @@
         },
         "broadcast": {
             "supported": ["misc"],
-            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars(' [Broadcast].') if title else ''}}{{producer|add_to_front('In Executive Producer, ')|add_chars(', ') if producer else ''}}{{series|wrap_html('i')|add_chars('. ') if series else ''}}{{city|add_chars(', ') if city and state else ''}}{{city|add_chars(': ') if city and channel and not state else '' }}{{city|add_chars('.') if city and not channel and not state else '' }}{{state|add_chars(': ') if state and channel else '' }}{{state|add_chars('.') if state and not channel else ''}}{{channel|add_chars('.') if channel else ''}}"
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars(' [Broadcast]. ') if title else ''}}{{producer|add_to_front('In Executive Producer, ')|add_chars(', ') if producer else ''}}{{series|wrap_html('i')|add_chars('. ') if series else ''}}{{city|add_chars(', ') if city and state else ''}}{{city|add_chars(': ') if city and channel and not state else '' }}{{city|add_chars('.') if city and not channel and not state else '' }}{{state|add_chars(': ') if state and channel else '' }}{{state|add_chars('.') if state and not channel else ''}}{{channel|add_chars('.') if channel else ''}}"
         },
         "encyclopedia": {
             "supported": ["misc"],
-            "template": ""
+            "template": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|add_chars('. ') if title else ''}}{{booktitle|wrap_html('i')|add_to_front('In ')|add_chars(', ') if booktitle else ''}}{{volume|add_chars(', ')|add_to_front('(') if pages and volume else ''}}{{volume|wrap(')')|add_chars('. ') if volume and not pages else ''}}{{pages|add_chars('). ') if volume and pages else ''}}{{pages|wrap(')')|add_chars('. ') if pages and not volume else ''}}{{city|add_chars(', ') if city and state else ''}}{{city|add_chars(': ') if city and publisher and not state else '' }}{{city|add_chars('.') if city and not publisher and not state else '' }}{{state|add_chars(': ') if state and publisher else '' }}{{state|add_chars('.') if state and not publisher else ''}}{{publisher|add_chars('.') if publisher else ''}}"
         },
         "photograph": {
             "supported": ["misc"],
