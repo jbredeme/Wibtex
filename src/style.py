@@ -13,7 +13,545 @@
 
 import re
 import json
-from jinja2 import Template
+from jinja2 import Template, Environment, BaseLoader
+
+################################################
+# Function Definitions - Jinja2 Pipe & Filters
+################################################
+
+def wrap_html(value, wrapper):
+    '''
+    Wraps Jinja2 contextual data in HTML-like fashion
+
+    @param  value   the data to wrap
+    @param  wrapper the value to generate tags with
+    @return         the wrapped data
+    '''
+    # TODO - Verify
+
+    if isinstance(value, list):
+        data = ""
+        for item in value:
+            data += "<" + wrapper + ">" + str(item) + "</" + wrapper + ">"
+        return data
+
+    elif isinstance(value, str):
+        return "<" + wrapper + ">" + value + "</" + wrapper + ">"
+    else:
+        return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
+
+def add_chars(value, char):
+    '''
+    Adds characters to end of Jinja2 contextual data
+
+    @param  value   the data to filter
+    @param  char    the value to append
+    @return         the modified data
+    '''
+    
+    #TODO - Verify
+    
+    if isinstance(value, str):
+        return value + char
+    elif isinstance(value, list):
+        data = ""
+        for item in value:
+            data += str(item) + char
+        return data
+    else:
+        return str(value) + char
+
+def wrap(value, char):
+    '''
+    Wraps Jinja2 contextual data (specialized for braces/brackets)
+
+    @param  value   the data to filter
+    @param  char    the values to wrap
+    @return         the modified data
+    '''
+    #TODO - Verify
+
+    if isinstance(value, str):
+
+        if char is ')' or char is '(':
+            return '(' + value + ')'
+
+        elif char is ']' or char is '[':
+            return '[' + value + ']'
+
+        return char + value + char
+
+    elif isinstance(value, str):
+
+        data = ""
+
+        for item in value:
+            if char is ')' or char is '(':
+                data += '(' + str(item) + ')'
+            elif char is ']' or char is '[':
+                data += '[' + str(item) + ']'
+            else:
+                data += char + str(item) + char
+        return data
+    
+    else:
+
+        if char is ')' or char is '(':
+            return '(' + str(value) + ')'
+
+        elif char is ']' or char is '[':
+            return '[' + str(value) + ']'
+
+        return char + str(value) + char
+
+def add_to_front(value, char):
+    '''
+    Adds characters to front of Jinja2 contextual data
+
+    @param  value   the data to filter
+    @param  char    the value to append
+    @return         the modified data
+    '''
+    
+    #TODO - Verify
+    
+    if isinstance(value, str):
+        return char + value
+    elif isinstance(value, list):
+        data = ""
+        for item in value:
+            data += char + str(item)
+        return data
+    else:
+        return char + str(value)
+
+def authors_ccsc(value):
+    '''
+    Adds CCSC author format to Jinja2 contextual data
+
+    @param  value   the data to filter
+    @return         the modified data
+    '''
+
+    #TODO - Verify
+
+    if isinstance(value, list):
+
+        if len(value) <= 1:
+            return str(value[0]) + ', '
+        else:
+            string = ""
+            for item in value:
+                string += str(item) + ", "
+            return string
+
+    elif isinstance(value, str):
+        return value + ', '
+        
+    else:
+        return str(value)
+
+def authors_acm(value):
+    '''
+    Adds ACM author format to Jinja2 contextual data
+
+    @param  value   the data to filter
+    @return         the modified data
+    '''
+
+    #TODO - Verify
+
+    f_half = "" #' First half of an author list
+    s_half = "" #' Second half of an author list
+
+    if isinstance(value, list):
+
+        # If list of authors is one
+        if len(value) <= 1:
+
+            f_half = re.findall('\w+,\s+', str(value[0])) #' Grab the author's last name
+            s_half = re.findall('\s(\w)', str(value[0]))  #' Grab the author's initials
+            name   = re.findall('\w+', str(value[0]))     #' Grab the author's name if no initials   
+
+            # If no last name exists return name
+            if not f_half:
+                return name[0] + ' '
+
+            # If the initials don't exist
+            elif not s_half:
+                return f_half[0].split(',')[0] + ' '
+
+            # If initials exist, format them
+            else:
+                out = f_half[0]
+                for item in s_half:
+                    out += item + '.'
+                return out + ' '
+
+        # If list of authors is two
+        elif len(value) == 2:
+            first = ""
+            second = ""
+
+            f_half = re.findall('\w+,\s+', str(value[0]))
+            s_half = re.findall('\s(\w)', str(value[0]))
+            name   = re.findall('\w+', str(value[0]))
+
+            # If no last name exists return name
+            if not f_half:
+                first = name[0]
+
+            # If the initials don't exist
+            elif not s_half:
+                first =  f_half[0].split(',')[0]
+
+            # If initials exist, format them
+            else:
+                first = f_half[0]
+                for item in s_half:
+                    first += item + '.'
+
+            f_half = re.findall('\w+,\s+', str(value[1]))
+            s_half = re.findall('\s(\w)', str(value[1]))
+            name   = re.findall('\w+', str(value[1]))
+            
+            # If no last name exists return name
+            if not f_half:
+                second = name[0]
+
+            # If the initials don't exist
+            elif not s_half:
+                second =  f_half[0].split(',')[0]
+
+            # If initials exist, format them
+            else:
+                second = f_half[0]
+                for item in s_half:
+                    second += item + '.'
+            
+            return first + ' and ' + second + ' '
+
+        # List of 3 or more authors
+        else:
+
+            out = ""
+            temp = ""
+
+            # For each author
+            for index in range(0, len(value)):
+
+                f_half = re.findall('\w+,\s+', str(value[index]))
+                s_half = re.findall('\s(\w)', str(value[index]))
+                name   = re.findall('\w+', str(value[index]))
+
+                # If second to last author
+                if index == len(value) - 2:
+                    print(name)
+                    if not f_half:
+                        temp = name[0] + ' and '
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0] + ' and '
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                        temp += ' and '
+                    out += temp
+
+                # If last author
+                elif index == len(value) - 1:
+                    #print(name)
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ' '
+
+                # If author not last nor second to last
+                else:    
+                    #print(name)                
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ', '
+
+            return out
+
+def authors_apa(value):
+    '''
+    Adds APA author format to Jinja2 contextual data
+
+    @param  value   the data to filter
+    @return         the modified data
+    '''
+
+    #TODO - Verify
+
+    f_half = ""
+    s_half = ""
+
+    # For a list of authors
+    if isinstance(value, list):
+
+        # If we have a single author
+        if len(value) <= 1:
+            f_half = re.findall('\w+,\s+', str(value[0]))
+            s_half = re.findall('\s(\w)', str(value[0]))
+            name   = re.findall('\w+', str(value[0]))
+
+            # If no last name
+            if not f_half:
+                return name[0] + ' '
+
+            # If no initials
+            elif not s_half:
+                return f_half[0].split(',')[0] + ' '
+
+            # If initials and last name
+            else:
+                out = f_half[0]
+                for item in s_half:
+                    out += item + '.'
+
+                return out + ' '
+
+        # If we have two authors
+        elif len(value) == 2:
+            first = ""
+            second = ""
+
+            f_half = re.findall('\w+,\s+', str(value[0]))
+            s_half = re.findall('\s(\w)', str(value[0]))
+            name   = re.findall('\w+', str(value[0]))
+
+            # If no last name
+            if not f_half:
+                first = name[0]
+
+            # If no initials
+            elif not s_half:
+                first =  f_half[0].split(',')[0]
+
+            # If initials and last name
+            else:
+                first = f_half[0]
+                for item in s_half:
+                    first += item + '.'
+
+            f_half = re.findall('\w+,\s+', str(value[1]))
+            s_half = re.findall('\s(\w)', str(value[1]))
+            name   = re.findall('\w+', str(value[1]))
+
+            # If no last name
+            if not f_half:
+                second = name[0]
+
+            # If no initials
+            elif not s_half:
+                second =  f_half[0].split(',')[0]
+
+            # If initials and last name
+            else:
+                second = f_half[0]
+                for item in s_half:
+                    second += item + '.'
+            
+            return first + ' and ' + second + ' '
+
+        # If number of authors greater than 7
+        elif len(value) > 7:
+
+            out = ""
+            temp = ""
+
+            # For each author
+            for index in range(0, len(value)):
+
+                f_half = re.findall('\w+,\s+', str(value[index]))
+                s_half = re.findall('\s(\w)', str(value[index]))
+                name   = re.findall('\w+', str(value[index]))
+
+                # If we are at the sixth author
+                if index == 6:
+                    out += ' ... '
+
+                # If we are between the first and last authors
+                elif index > 6 and index <= len(value) - 2:
+                    continue
+
+                # If we are the second to last author
+                elif index == len(value) - 1:
+
+                    # If no last name
+                    if not f_half:
+                        temp = name[0]
+
+                    # If no initials
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+
+                    # If initials and last name
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ' '
+
+                # If we are the first author
+                else:      
+
+                    # If no last name
+                    if not f_half:
+                        temp = name[0]
+
+                    # If no initials
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+
+                    # If initials and last name
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ', '
+
+            return out
+
+        # If we have > 2 and < 7 authors
+        else:
+
+            out = ""
+            temp = ""
+
+            for index in range(0, len(value)):
+
+                f_half = re.findall('\w+,\s+', str(value[index]))
+                s_half = re.findall('\s(\w)', str(value[index]))
+                name   = re.findall('\w+', str(value[index]))
+
+                if index == len(value) - 2:
+
+                    # If no last name
+                    if not f_half:
+                        temp = name[0] + ' and '
+
+                    # If no initials
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0] + ' and '
+
+                    # If initials and last name
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                        temp += ' and '
+                    out += temp
+
+                elif index == len(value) - 1:
+
+                    # If no last name
+                    if not f_half:
+                        temp = name[0]
+
+                    # If no initials
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+
+                    # If initials and last name
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ' '
+
+                else:              
+
+                    # If no last name
+                    if not f_half:
+                        temp = name[0]
+
+                    # If no initials
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+
+                    # If initials and last name
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ', '
+
+            return out
+
+    elif isinstance(value, str):
+        return value + ', '
+
+    else:
+        return str(value) + ', '
+
+def get_last(value):
+    '''
+    Extracts the last name of an author from Jinja2 contextual data
+
+    @param  value   the data to filter
+    @return         the modified data
+    '''
+
+    #TODO - Verify
+
+    result = ""
+
+    if isinstance(value, list):
+
+        result = re.findall('^(.+?),', str(value[0]))
+
+        if result != []:
+            return result[0]
+        else:
+            return str(value[0])
+
+    elif isinstance(value, str):
+
+        result = re.findall('^(.+?),', value)
+
+        if result != []:
+            return result[0]
+
+        else:
+            return value
+
+    else:
+        return str(value)
+
+
+def construct_env():
+    '''
+    Constructs a Jinja2 environment with all filter functions added
+
+    @return the Jinja2 custom environment
+    '''
+
+    environment = Environment(loader=BaseLoader)
+    environment.filters['datetimeformat'] = datetimeformat
+    environment.filters['wrap_html'] = wrap_html
+    environment.filters['add_chars'] = add_chars
+    environment.filters['wrap'] = wrap
+    environment.filters['add_to_front'] = add_to_front
+    environment.filters['authors_ccsc'] = authors_ccsc
+    environment.filters['authors_acm'] = authors_acm
+    environment.filters['authors_apa'] = authors_apa
+    environment.filters['get_last'] = get_last
+
+    return environment
 
 ################################################
 # Function Definitions - Style File Interaction
@@ -487,6 +1025,9 @@ def get_reference_data( style_form, bib_tags, bib_data ):
 
     # Organize citations according to style
     ordered_cites = organize_citations(bib_tags, bib_data, style_data.get('order'))
+
+    # Construct the Jinja2 environment
+    environment = construct_env()
 
     # Generate in-text citations
     output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'))
