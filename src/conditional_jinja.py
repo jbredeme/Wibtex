@@ -157,13 +157,18 @@ environment.filters['authors_acm'] = authors_acm
 
 dict = {'variable' : 'test',
         'data': ['tee, bob', 'john, ', 'tony,bro', 'alex, m'],
+        'author': ['tee, bob', 'john, ', 'tony,bro', 'alex, m'],
+        'editor': ['tee, bob', 'john, ', 'tony, bro', 'alex'],
         'date': '2006',
-        'author': ['alex'],
         'title': 'Shitty book',
+        'source': 'asgard',
+        'title_conference' : 'shitty conference',
+        'edit_title': 'Shitty book',
         'journal':'Wall Street',
         'volume': '1000',
         'issue':'green',
         'pages':'97-100',
+        'location': 'Phoenix, AZ',
         'year':'2007',
         'num': '1',
         'publisher': 'scholastic',
@@ -171,7 +176,7 @@ dict = {'variable' : 'test',
         'retrieved': 'March 3, 2017',
         'url': 'www.google.com'}
 template_string = "{% if variable is defined %}{{ variable|wrap_html('b')|add_chars('#$$') }}{{ data[1:3]|join(',')|add_chars('#')|wrap('(') }}{% else %}{{ data2|join(',') if data2 else '' }}{{','}}{% endif %}"
-ts = "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{editor|authors_acm() if editor else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+ts = "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else '' }}{{volume|add_chars(' ') if volume and issue else '' }}{{volume|add_chars(', ') if volume and not issue else '' }}{{issue|wrap(')')|add_chars(', ') if issue else '' }}{{retrieved|add_to_front('Retrieved ')|add_chars(', ') if retrieved else ''}}{{source|add_to_front('from ') if source else ''}}{% if url is defined and source is defined %}{{url|add_chars('.')|add_to_front(': ')}}{% elif url is defined %}{{url|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
 template = environment.from_string(ts)
 output = template.render(dict)
 print(output)
