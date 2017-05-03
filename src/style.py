@@ -28,10 +28,12 @@ def get_valid_styles():
     '''
 
     #TODO - Log invalid styles
+    #TODO - Investigate pathing on different operating systems
 
     style_file = "../config/styles.json"
     valid_styles = []
 
+    # Open the pre-pathed style file
     with open(style_file, 'r') as f:
         try:
             data = json.load(f)
@@ -39,19 +41,23 @@ def get_valid_styles():
             print("Error: Could not read style file.")
             return ""
 
+    # For each style in the style file
     for key in data:
 
         style_data = data.get(key)
 
+        # If style cannot be accessed log it
         if style_data is None:
             print('ERROR - Could not retrieve style template')
             continue
+
         else:
             order = {}
             in_text = {}
             title = ""
             default = ""
 
+            # Verify order field and its sub-fields exist
             order = style_data.get('order')
             if order is None:
                 print('ERROR - Could not access "order" field in style template')
@@ -61,6 +67,7 @@ def get_valid_styles():
                     print('ERROR - Missing "method" or "sortby" values in "order" field of style template.')
                     continue
 
+            # Verify in_text_style field and its sub-fields exist
             in_text = style_data.get('in_text_style')
             if in_text is None:
                 print('ERROR - Could not access "in_text_style" field in style template')
@@ -70,16 +77,19 @@ def get_valid_styles():
                     print('ERROR - Could not access "index" or "template" in "in_text_style" field of style template')
                     continue
 
+            # Verify title field exists
             title = style_data.get('title')
             if title is None:
                 print('ERROR - Could not access "title" field in style template')
                 continue
 
+            # Verify default_style field exists
             default = style_data.get('default_style')
             if default is None:
                 print('ERROR - Could not access "default_style" field in style template')
                 continue
-            
+        
+        # If key is valid, then append it to the list
         valid_styles.append(key)
 
     return valid_styles
@@ -88,9 +98,8 @@ def read_style_file( style_form ):
     '''
     Extracts a specified style from a style file
 
-    @param  file  the file to extract style data from
-    @param  style the style to extract
-    @return       a dictionary containing style data
+    @param  style_form the style format to extract
+    @return            a dictionary containing style data
     '''
 
     style_file = "../config/styles.json"
@@ -101,6 +110,7 @@ def read_style_file( style_form ):
         except ValueError:
             data = {}
             print("Error: Could not read style file.")
+            # TODO - Handle this error. Maybe log it?
 
     return data.get(style_form)
 
@@ -109,13 +119,20 @@ def read_style_file( style_form ):
 ################################################
 
 def validate_citations( bib_tags, bib_data ):
+    '''
+    Verifies that a set of BibTeX tags extracted from a BibTeX database exist
 
-    sub_dict = {}  #' Dictionary for reference sections
-    cite_dict = {} #' Dictionary of citations found for a reference section
-    key = ''       #' Temporary key to see if entry in BibTeX database
-    log = "" 
+    @param  bib_tags BibTeX tags extracted from a document
+    @param  bib_data BibTeX database
+    '''
 
-    #TODO - User logger or flag?
+    sub_dict = {}     #' Dictionary for reference sections
+    cite_dict = {}    #' Dictionary of citations found for a reference section
+    key = ''          #' Temporary key to see if entry in BibTeX database
+    invalid_keys = [] #' A set of invalid keys from the document
+
+    #TODO - Use logger/flag?
+    #TODO - Test to ensure that invalid keys are removed and in a correct manner
 
     # For each bibliography
     for super_key in bib_tags:
@@ -129,13 +146,18 @@ def validate_citations( bib_tags, bib_data ):
             key = cite_dict.get(sub_key).get('bib_key')
 
             if key in bib_data:
-                # TODO - Do anything?
                 continue
             else:
-                # TODO - Verify and log?
+                # Remove it from the key list
+                cite_dict.pop(sub_key, None)
+                sub_dict['citations'] = cite_dict
+                bib_tags[super_key] = sub_dict
+                invalid_keys.append(key)
                 continue
 
-    return
+    #Log invalid keys
+        
+    return bib_tags
 
 def sort_alphabetical( bib_key, sort_list, ordered_cites ):
 
@@ -183,18 +205,28 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
     return ordered_cites
 
 def organize_citations( bib_tags, bib_data, order ):
+    '''
+    Sorts a set of citations based on order chosen (alphabetic/first-encountered)
 
+    @param  bib_tags BibTeX tags extracted from a document
+    @param  bib_data BibTeX database
+    @param  order    the order with which to arrange the tags
+    @return          ordered list of the citations extracted
+    '''
+
+    # Extract sorting method from style format
     method = order.get('method')
     sort_by = order.get('sortby')
 
-    jinja_var = ''
-    sort_item = ''
+    jinja_var = ''  #' The templating variable associated with the citations
+    sort_item = ''  #" 
 
     tag_list = []
     jinja_list = []
     outer_list = []
     triplet = []
 
+    # Dictionary that will contain sets of ordered citations
     ordered_cites = {}
 
     if method == 'alpha':
@@ -408,7 +440,7 @@ def get_reference_data( style_form, bib_tags, bib_data ):
     validate_syntax(bib_tags)
 
     # Validate that citations are in BibTeX database
-    validate_citations(bib_tags, bib_data)
+    bib_tags = validate_citations(bib_tags, bib_data)
 
     # Organize citations according to style
     ordered_cites = organize_citations(bib_tags, bib_data, style_data.get('order'))
