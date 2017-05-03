@@ -156,7 +156,7 @@ environment.filters['authors_acm'] = authors_acm
 
 
 dict = {'variable' : 'test',
-        'data': ['teemo, bob', 'john, ', 'tony, eskimo bro', 'alex, m is ass hole'],
+        'data': ['tee, bob', 'john, ', 'tony,bro', 'alex, m'],
         'date': '2006',
         'author': ['alex'],
         'title': 'Shitty book',
