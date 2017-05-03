@@ -142,7 +142,170 @@ def authors_acm(value):
     else:
         return ''
 
-#\w+,\s+\w? <=^|\s\w
+# If authors > 7 then (6, .... X) 
+def authors_apa(value):
+    f_half = ""
+    s_half = ""
+
+    if isinstance(value, list):
+
+        if len(value) <= 1:
+            f_half = re.findall('\w+,\s+', value[0])
+            s_half = re.findall('\s(\w)', value[0])
+            name   = re.findall('\w+', value[0])
+
+            if not f_half:
+                return name[0] + ' '
+            elif not s_half:
+                return f_half[0].split(',')[0] + ' '
+            else:
+                out = f_half[0]
+                for item in s_half:
+                    out += item + '.'
+                return out + ' '
+
+        elif len(value) == 2:
+            first = ""
+            second = ""
+
+            f_half = re.findall('\w+,\s+', value[0])
+            s_half = re.findall('\s(\w)', value[0])
+            name   = re.findall('\w+', value[0])
+
+            if not f_half:
+                first = name[0]
+            elif not s_half:
+                first =  f_half[0].split(',')[0]
+            else:
+                first = f_half[0]
+                for item in s_half:
+                    first += item + '.'
+
+            f_half = re.findall('\w+,\s+', value[1])
+            s_half = re.findall('\s(\w)', value[1])
+            name   = re.findall('\w+', value[1])
+
+            if not f_half:
+                second = name[0]
+            elif not s_half:
+                second =  f_half[0].split(',')[0]
+            else:
+                second = f_half[0]
+                for item in s_half:
+                    second += item + '.'
+            
+            return first + ' and ' + second + ' '
+
+        elif len(value) > 7:
+
+            out = ""
+            temp = ""
+
+            for index in range(0, len(value)):
+
+                f_half = re.findall('\w+,\s+', value[index])
+                s_half = re.findall('\s(\w)', value[index])
+                name   = re.findall('\w+', value[index])
+
+                if index == 6:
+                    out += ' ... '
+
+                elif index > 6 and index <= len(value) - 2:
+                    continue
+
+                elif index == len(value) - 1:
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ' '
+
+                else:                    
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ', '
+
+            return out
+
+        else:
+
+            out = ""
+            temp = ""
+
+            for index in range(0, len(value)):
+
+                f_half = re.findall('\w+,\s+', value[index])
+                s_half = re.findall('\s(\w)', value[index])
+                name   = re.findall('\w+', value[index])
+
+                if index == len(value) - 2:
+                    if not f_half:
+                        temp = name[0] = 'and '
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0] + 'and '
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                        temp += ' and '
+                    out += temp
+
+                elif index == len(value) - 1:
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ' '
+
+                else:                    
+                    if not f_half:
+                        temp = name[0]
+                    elif not s_half:
+                        temp = f_half[0].split(',')[0]
+                    else:
+                        temp = f_half[0]
+                        for item in s_half:
+                            temp += item + '.'
+                    out += temp + ', '
+
+            return out
+
+    elif isinstance(value, str):
+        return value + ', '
+
+    else:
+        return ''
+
+def get_last(value):
+    result = ""
+    if isinstance(value, list):
+        result = re.findall('^(.+?),', value[0])
+        if result != []:
+            return result[0]
+        else:
+            return value[0]
+    elif isinstance(value, str):
+        result = re.findall('^(.+?),', value)
+        if result != []:
+            return result[0]
+        else:
+            return value
+    else:
+        return result
 
 environment = Environment(loader=BaseLoader)
 environment.filters['datetimeformat'] = datetimeformat
@@ -152,13 +315,15 @@ environment.filters['wrap'] = wrap
 environment.filters['add_to_front'] = add_to_front
 environment.filters['authors_ccsc'] = authors_ccsc
 environment.filters['authors_acm'] = authors_acm
+environment.filters['authors_apa'] = authors_apa
+environment.filters['get_last'] = get_last
 
 
 
 dict = {'variable' : 'test',
         'data': ['tee, bob', 'john, ', 'tony,bro', 'alex, m'],
-        'author': ['tee, bob', 'john, ', 'tony,bro', 'alex, m'],
-        'editor': ['tee, bob', 'john, ', 'tony, bro', 'alex'],
+        'author': ['bob', 'john, '],
+        'editor': ['bob', 'john, ', 'tony, bro', 'alex', 'tee, bob', 'john, ', 'tony, bro', 'alex'],
         'date': '2006',
         'title': 'Shitty book',
         'source': 'asgard',
@@ -170,13 +335,15 @@ dict = {'variable' : 'test',
         'pages':'97-100',
         'location': 'Phoenix, AZ',
         'year':'2007',
+        'month': 'october',
         'num': '1',
         'publisher': 'scholastic',
         'city': 'narnia',
+        'state': 'Arizona',
         'retrieved': 'March 3, 2017',
         'url': 'www.google.com'}
 template_string = "{% if variable is defined %}{{ variable|wrap_html('b')|add_chars('#$$') }}{{ data[1:3]|join(',')|add_chars('#')|wrap('(') }}{% else %}{{ data2|join(',') if data2 else '' }}{{','}}{% endif %}"
-ts = "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{title|add_chars('. ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else '' }}{{volume|add_chars(' ') if volume and issue else '' }}{{volume|add_chars(', ') if volume and not issue else '' }}{{issue|wrap(')')|add_chars(', ') if issue else '' }}{{retrieved|add_to_front('Retrieved ')|add_chars(', ') if retrieved else ''}}{{source|add_to_front('from ') if source else ''}}{% if url is defined and source is defined %}{{url|add_chars('.')|add_to_front(': ')}}{% elif url is defined %}{{url|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+ts = ""
 template = environment.from_string(ts)
 output = template.render(dict)
 print(output)
