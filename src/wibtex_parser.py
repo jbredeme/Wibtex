@@ -26,12 +26,8 @@ def customizations( record ):
     '''
 
     # First, we convert everything to unicode
-    record = type(record)
     record = author(record)
-    record = keyword(record)
-    record = link(record)
-    record = page_double_hyphen(record)
-    record = doi(record)
+    record = editor(record)
     record = convert_to_unicode(record)
 
     return record
