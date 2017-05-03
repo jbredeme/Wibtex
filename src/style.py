@@ -160,29 +160,42 @@ def validate_citations( bib_tags, bib_data ):
     return bib_tags
 
 def sort_alphabetical( bib_key, sort_list, ordered_cites ):
+    '''
+    Sorts a set of citations alphabetically
 
-    sorted_list = []
-    sorted_tags = []
-    to_sort = []
-    jinja_list = []
-    outer_list = []
+    @param  bib_key         the associated reference section
+    @param  sort_list       the list of items to sort
+    @param  orderered_cites the dictionary containing sorted reference sections
+    @return                 ordered dictionary sections of the citations extracted
+    '''
+
+    sorted_list = [] #' Sorted content
+    sorted_tags = [] #' Sorted tags corresponding to respective content
+    to_sort = []     #' Items to sort
+    jinja_list = []  #' List of jinja vars associated with sorted content
+    outer_list = []  #' Master list
 
     temp_str = ""
 
     # For each entry in bibliography
     for item in sort_list:
 
-        # Sort a list of authors or titles
+        # Sort a list of authors or titles for a BibTeX entry
+        # TODO - Utilize in BibTeX database
         item[2] = sorted(item[2], key=str.swapcase)
 
+        # Append the list of sorted authors/titles
         to_sort.append(item[2][0])
 
-    # Sort the list of authors/titles/other
+    # Sort the list of authors/titles/other from all acquired BibTeX entries
     sorted_list = sorted(to_sort, key=str.swapcase)
 
     # Create a list equal to the size of the sorted list
-    sorted_tags = sorted_list
+    # TODO - Verify
+    for index in sorted_list:
+        sorted_tags.append(0)
 
+    # Create a list equal to the size of the sorted list
     for index in sorted_list:
         jinja_list.append(0)
 
@@ -191,15 +204,21 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
 
         for item in range(0, len(sorted_list)):
 
+            # If item is in list to sort
             if sorted_list[item] in sort_list[index][2]:
 
+                # Extract information and negate this item
+                # The same author may appear for many entries
+                # We choose the first available match and then nullify it from matching
                 jinja_list[item] = sort_list[index][0]
                 sorted_tags[item] = sort_list[index][1]
                 sort_list[index][2] = ['#']
-    
+
+    # Add sorted items to the master list
     outer_list.append(sorted_tags)
     outer_list.append(jinja_list)
 
+    # Associate the master list with a reference section
     ordered_cites[bib_key] = outer_list
 
     return ordered_cites
@@ -219,19 +238,20 @@ def organize_citations( bib_tags, bib_data, order ):
     sort_by = order.get('sortby')
 
     jinja_var = ''  #' The templating variable associated with the citations
-    sort_item = ''  #" 
+    sort_item = ''  #' The item to sort by
 
-    tag_list = []
-    jinja_list = []
-    outer_list = []
-    triplet = []
+    tag_list = []   #' List of citations found in single section to be referenced
+    jinja_list = [] #'
+    outer_list = [] #'
+    triplet = []    #' A triplet containing jinja var, bibtex key, and content
 
     # Dictionary that will contain sets of ordered citations
     ordered_cites = {}
 
+    # If we are to sort alphabetically
     if method == 'alpha':
 
-        # Sort via authors
+        # If we are to sort via authors
         if sort_by == 'author':
 
             # For each bibliography section
@@ -246,30 +266,36 @@ def organize_citations( bib_tags, bib_data, order ):
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
+                    # If author in BibTeX database
                     if 'author' in bib_data.get(bib_key):
 
                         sort_item = bib_data.get(bib_key).get('author')
 
+                    # If title in BibTeX database and NOT author
                     elif 'title' in bib_data.get(bib_key):
 
                         sort_item = bib_data.get(bib_key).get('title') 
 
+                    # No title and no author (unlikely), but grab next resource to sort by
                     else:
                         # Grab next available value
                         sort_item = next (iter (bib_data.get(bib_key).values()))
 
+                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
 
+                    # Append triplet to list to sort
                     tag_list.append(triplet)
 
                     triplet = []
 
+                # Sort this set of bibtex citations for this reference section and add it to the dictionary
                 ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
-        # Sort via titles
+        # If we are to sort via titles
         elif sort_by == 'title':
 
             # For each bibliography section
@@ -284,26 +310,32 @@ def organize_citations( bib_tags, bib_data, order ):
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
+                    # If title in BibTeX database
                     if 'title' in bib_data.get(bib_key):
 
                         sort_item = bib_data.get(bib_key).get('title')
 
+                    # If author in BibTeX database and NOT title
                     elif 'author' in bib_data.get(bib_key):
 
                         sort_item = bib_data.get(bib_key).get('author') 
 
+                    # If author and title NOT in BibTeX database
                     else:
                         # Grab next available value
                         sort_item = next (iter (bib_data.get(bib_key).values()))
 
+                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
 
+                    # Append triplet to list to sort
                     tag_list.append(triplet)
 
                     triplet = []
 
+                # Sort this set of bibtex citations for this reference section and add it to the dictionary
                 ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
@@ -323,6 +355,7 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     sort_item = next (iter (bib_data.get(bib_key).values()))
 
+                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
@@ -331,34 +364,44 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
         
+                # Sort this set of bibtex citations for this reference section and add it to the dictionary
                 ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
     # Default to first-written-first-cited
     else:
 
+        # This is the count of citations used to interface with the Jinja templates
         c_count = 0
 
-        acccess_str = ""
+        # Access string used to retrieve document keys extracted
+        access_str = ""
         
+        # For each reference section
         for key in bib_tags:
 
             citations = bib_tags.get(key).get('citations')
 
+            # For each tag in the reference section
             for tag in range(0, len(citations.keys())):
 
+                # Generate the access key (i.e. 'cite + X')
                 access_str = "cite" + str(c_count)
 
+                # Append bib key and corresponding jinja var to their respective lists
                 tag_list.append(citations[access_str]['bib_key'])
                 jinja_list.append(citations[access_str]['jinja_var'])
 
                 c_count += 1
 
+            # Reset count for next access section
             c_count = 0
 
+            # Append list of jinja vars and bib keys to master list
             outer_list.append(tag_list)
             outer_list.append(jinja_list)
             
+            # Associate a reference section with the master list and reset
             ordered_cites[key] = outer_list
             tag_list = []
             jinja_list = []
