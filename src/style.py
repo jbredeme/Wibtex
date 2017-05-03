@@ -4,7 +4,7 @@
 #         styles
 #
 # @author Charles Duso
-# @date   April 5, 2017
+# @date   May 3, 2017
 ############################################################
 
 ################################################
@@ -19,20 +19,72 @@ from jinja2 import Template
 # Function Definitions - Style File Interaction
 ################################################
 
-def validate_style( style_file, style_form ):
+def get_valid_styles():
     '''
-    Validates a specified style from a style file
+    Validates the styles from the config folder and returns
+    a list of valid styles
 
-    @param  file  the file to extract style data from
-    @param  style the style to validate
-    @return       a boolean indicating success or failure
+    @return a list of valid styles
     '''
 
-    # TODO - Need to flesh out convntions
+    #TODO - Log invalid styles
 
-    return
+    style_file = "../config/styles.json"
+    valid_styles = []
 
-def read_style_file( style_file, style_form ):
+    with open(style_file, 'r') as f:
+        try:
+            data = json.load(f)
+        except ValueError:
+            print("Error: Could not read style file.")
+            return ""
+
+    for key in data:
+
+        style_data = data.get(key)
+
+        if style_data is None:
+            print('ERROR - Could not retrieve style template')
+            continue
+        else:
+            order = {}
+            in_text = {}
+            title = ""
+            default = ""
+
+            order = style_data.get('order')
+            if order is None:
+                print('ERROR - Could not access "order" field in style template')
+                continue
+            else:
+                if 'method' not in order or 'sortby' not in order:
+                    print('ERROR - Missing "method" or "sortby" values in "order" field of style template.')
+                    continue
+
+            in_text = style_data.get('in_text_style')
+            if in_text is None:
+                print('ERROR - Could not access "in_text_style" field in style template')
+                continue
+            else:
+                if 'index' not in in_text or 'template' not in in_text:
+                    print('ERROR - Could not access "index" or "template" in "in_text_style" field of style template')
+                    continue
+
+            title = style_data.get('title')
+            if title is None:
+                print('ERROR - Could not access "title" field in style template')
+                continue
+
+            default = style_data.get('default_style')
+            if default is None:
+                print('ERROR - Could not access "default_style" field in style template')
+                continue
+            
+        valid_styles.append(key)
+
+    return valid_styles
+
+def read_style_file( style_form ):
     '''
     Extracts a specified style from a style file
 
@@ -40,6 +92,8 @@ def read_style_file( style_file, style_form ):
     @param  style the style to extract
     @return       a dictionary containing style data
     '''
+
+    style_file = "../config/styles.json"
 
     with open(style_file, 'r') as f:
         try:
@@ -53,18 +107,6 @@ def read_style_file( style_file, style_form ):
 ################################################
 # Function Definitions - Style Data Formatting
 ################################################
-
-def validate_syntax( bib_tags ):
-    '''
-    Validates Word document syntax 
-
-    @param  bib_tags a list of BibTeX markup extracted from the document
-    @return          a boolean indicating success or failure
-    '''
-    
-    # TODO - Is it needed?
-
-    return True
 
 def validate_citations( bib_tags, bib_data ):
 
@@ -192,8 +234,7 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
 
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
-                                                 ordered_cites)
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
         # Sort via titles
@@ -231,8 +272,7 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
 
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
-                                                 ordered_cites)
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
         # Default to first-available field
@@ -259,8 +299,7 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
         
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list,
-                                                 ordered_cites)
+                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
                 tag_list = []
 
     # Default to first-written-first-cited
@@ -352,22 +391,19 @@ def generate_works_cited( bib_data, ordered_cites, style_data, output ):
 
         output[bib] = bib_string
         bib_string = ""
-        index = 0
+        index = 1
 
     return output
 
-def get_reference_data( style_file, style_form, bib_tags, bib_data ):
+def get_reference_data( style_form, bib_tags, bib_data ):
 
     style_data = {}    #' A dictionary containing style information
     ordered_cites = {} #' A dictionary containing ordered citations
     output     = {}    #' A dictionary for Jinja2 templating on the final document
 
-    # Validate style chosen from style file
-    validate_style(style_file, style_form)
-
     # Read style file and extract style choice
-    style_data = read_style_file(style_file, style_form)
-
+    style_data = read_style_file(style_form)
+    
     # Validate BibTeX syntax
     validate_syntax(bib_tags)
 
