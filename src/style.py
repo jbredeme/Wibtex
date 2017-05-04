@@ -28,19 +28,17 @@ def font(value, size):
     @param  size    the value to generate tags with
     @return         the wrapped data
     '''
-    return value
-    # # TODO - Verify
 
-    # if isinstance(value, list):
-    #     data = ""
-    #     for item in value:
-    #         data += '<font size="' + size + '">' + str(item) + '</font>'
-    #     return data
+    if isinstance(value, list):
+        data = ""
+        for item in value:
+            data += '<font size="' + size + '">' + str(item) + '</font>'
+        return data
 
-    # elif isinstance(value, str):
-    #     return '<font size="' + size + '">' + value + '</font>'
-    # else:
-    #     return '<font size="' + size + '">' + str(value) + '</font>'
+    elif isinstance(value, str):
+        return '<font size="' + size + '">' + value + '</font>'
+    else:
+        return '<font size="' + size + '">' + str(value) + '</font>'
 
 def wrap_html(value, wrapper):
     '''
@@ -50,18 +48,17 @@ def wrap_html(value, wrapper):
     @param  wrapper the value to generate tags with
     @return         the wrapped data
     '''
-    # TODO - Verify
-    return value
-    # if isinstance(value, list):
-    #     data = ""
-    #     for item in value:
-    #         data += "<" + wrapper + ">" + str(item) + "</" + wrapper + ">"
-    #     return data
 
-    # elif isinstance(value, str):
-    #     return "<" + wrapper + ">" + value + "</" + wrapper + ">"
-    # else:
-    #     return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
+    if isinstance(value, list):
+        data = ""
+        for item in value:
+            data += "<" + wrapper + ">" + str(item) + "</" + wrapper + ">"
+        return data
+
+    elif isinstance(value, str):
+        return "<" + wrapper + ">" + value + "</" + wrapper + ">"
+    else:
+        return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
 
 def add_chars(value, char):
     '''
