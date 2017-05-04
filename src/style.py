@@ -618,6 +618,10 @@ def get_valid_styles():
             if title is None:
                 log.log_data('\nERROR - Could not access "title" field in style template')
                 continue
+            else:
+                if 'key' not in title or 'template' not in title:
+                    log.log_data('\nERROR - Missing "key" or "template" values in "title" field of style template.')
+                    continue
 
             # Verify default_style field exists
             default = style_data.get('default_style')
@@ -1020,7 +1024,7 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
     bib_string = "" #' String containing works cited
 
     # TODO - Verify
-    empty_dict = {'title':'References'} #' Used for rendering title data ()
+    header = {} #' Used for rendering title data ()
 
     extended_styles = {} #' Constructs the extended styles (if any)
     alt_style = {}       #' A specific alternate style
@@ -1035,8 +1039,9 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
     for bib in ordered_cites:
 
         # Constrtuct the reference title
-        templator = environment.from_string(style_data.get('title'))
-        bib_string += templator.render(empty_dict)
+        header[style_data.get('title').get('key')] = style_data.get('title').get('key')
+        templator = environment.from_string(style_data.get('title').get('template'))
+        bib_string += templator.render(header)
 
         # Extract the reference section
         bib_list = ordered_cites.get(bib)

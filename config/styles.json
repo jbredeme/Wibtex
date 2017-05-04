@@ -8,7 +8,10 @@
             "index" : "num",
             "template": "{{num|wrap(']') if num else ''}}"
         },
-        "title": "REFERENCES|wrap_html('b')",
+        "title": {
+            "key" : "REFERENCES",
+            "template": "{{REFERENCES|wrap_html('b')}}"
+        },
         "default_style": "{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
         "extended_styles": {
             "journal": {
@@ -37,7 +40,10 @@
             "index" : "num",
             "template": "{{num|wrap(']') if num else ''}}"
         },
-        "title": "References|wrap_html('b')",
+        "title": {
+            "key" : "References",
+            "template": "{{References|wrap_html('b')}}"
+        },
         "default_style": "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{editor|authors_acm() if editor else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
         "extended_styles": {
             "book" : {
@@ -76,7 +82,10 @@
             "index" : "num",
             "template": "{{num|wrap(']') if num else ''}}"
         },
-        "title": "References|wrap_html('b')",
+        "title": {
+            "key" : "References",
+            "template": "{{References|wrap_html('b')}}"
+        },
         "default_style": "",
         "extended_styles": {
             "book": {
@@ -150,7 +159,10 @@
             "index" : "num",
             "template": "{{author|get_last()|add_chars(', ')|add_to_front('(') if author and year else ''}}{{author|wrap(')') if author and not year else ''}}{{year|add_chars(')') if year and author else ''}}{{year|wrap(')') if year and not author else ''}}"
         },
-        "title": "References",
+        "title": {
+            "key" : "References",
+            "template": "{{References}}"
+        },
         "default_style": "{{author|authors_apa() if author else '' }}{{year|wrap(')')|add_chars('. ') if year else ''}}{{title|wrap_html('i')|add_chars('. ') if title else '' }}{{city|add_chars(', ') if city else ''}}{{state|add_chars(': ') if state and publisher else '' }}{{state|add_chars('.') if state and not publisher else ''}}{{publisher|get_chars('.') if publisher else ''}}",
         "extended_styles": {
             "book": {
