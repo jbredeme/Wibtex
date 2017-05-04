@@ -558,6 +558,10 @@ def convert_to_dictionary( bib_database ):
         # Get the ID and use it as the key for the entry
         entry_key = item.get('ID')
 
+        # Sort authors if possible
+        if item.get('author'):
+            item['author'] = sorted(item['author'], key=str.swapcase)
+
         # If key not in new dictionary, store it
         if entry_key is not None and entry_key not in final_dict:
             final_dict[entry_key] = item

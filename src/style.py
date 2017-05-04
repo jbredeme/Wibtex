@@ -13,6 +13,7 @@
 
 import re
 import json
+import logger
 from jinja2 import Template, Environment, BaseLoader
 
 ################################################
@@ -653,7 +654,7 @@ def read_style_file( style_form, log ):
 # Function Definitions - Style Data Formatting
 ################################################
 
-def validate_citations( bib_tags, bib_data ):
+def validate_citations( bib_tags, bib_data, log ):
     '''
     Verifies that a set of BibTeX tags extracted from a BibTeX database exist
 
@@ -666,7 +667,6 @@ def validate_citations( bib_tags, bib_data ):
     key = ''          #' Temporary key to see if entry in BibTeX database
     invalid_keys = [] #' A set of invalid keys from the document
 
-    #TODO - Use logger/flag?
     #TODO - Test to ensure that invalid keys are removed and in a correct manner
 
     # For each bibliography
@@ -684,6 +684,7 @@ def validate_citations( bib_tags, bib_data ):
                 continue
             else:
                 # Remove it from the key list
+                log.log_data("\nERROR: Could not find key referened in document within BibTeX database: " + str(sub_key))
                 cite_dict.pop(sub_key, None)
                 sub_dict['citations'] = cite_dict
                 bib_tags[super_key] = sub_dict
@@ -716,7 +717,6 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
     for item in sort_list:
 
         # Sort a list of authors or titles for a BibTeX entry
-        # TODO - Utilize in BibTeX database
         item[2] = sorted(item[2], key=str.swapcase)
 
         # Append the list of sorted authors/titles
@@ -1097,7 +1097,7 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
 
     return output
 
-def get_reference_data( style_form, bib_tags, bib_data ):
+def get_reference_data( style_form, bib_tags, bib_data, log ):
 
     style_data = {}    #' A dictionary containing style information
     ordered_cites = {} #' A dictionary containing ordered citations
@@ -1110,7 +1110,7 @@ def get_reference_data( style_form, bib_tags, bib_data ):
     validate_syntax(bib_tags)
 
     # Validate that citations are in BibTeX database
-    bib_tags = validate_citations(bib_tags, bib_data)
+    bib_tags = validate_citations(bib_tags, bib_data, log)
 
     # Organize citations according to style
     ordered_cites = organize_citations(bib_tags, bib_data, style_data.get('order'))
