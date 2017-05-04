@@ -159,12 +159,33 @@ def authors_ccsc(value):
 
     if isinstance(value, list):
 
+        f_half = "" #' First half of an author list
+        s_half = "" #' Second half of an author list
+
         if len(value) <= 1:
-            return str(value[0]) + ', '
+            f_half = re.findall('\w+,\s+', str(value[0])) #' Grab the author's last name
+            s_half = re.findall('\s(\w)', str(value[0]))  #' Grab the author's initials
+            name   = re.findall('\w+', str(value[0]))     #' Grab the author's name if no initials
+
+            if s_half and f_half:
+                return str(value[0]) + ", "
+            else:
+                return str(name[0]) + ", "
+            return ''
+
         else:
             string = ""
+            
             for item in value:
-                string += str(item) + ", "
+                f_half = re.findall('\w+,\s+', str(item)) #' Grab the author's last name
+                s_half = re.findall('\s(\w)', str(item))  #' Grab the author's initials
+                name   = re.findall('\w+', str(item))     #' Grab the author's name if no initials
+
+                if s_half and f_half:
+                    string += str(item) + ", "
+                else:
+                    string += str(name[0]) + ", "
+
             return string
 
     elif isinstance(value, str):
