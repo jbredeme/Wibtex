@@ -669,6 +669,8 @@ def validate_citations( bib_tags, bib_data, log ):
     cite_dict = {}    #' Dictionary of citations found for a reference section
     key = ''          #' Temporary key to see if entry in BibTeX database
     invalid_keys = [] #' A set of invalid keys from the document
+    temp_sub = {}
+    temp_final = {}
 
     #TODO - Test to ensure that invalid keys are removed and in a correct manner
 
@@ -688,9 +690,6 @@ def validate_citations( bib_tags, bib_data, log ):
             else:
                 # Remove it from the key list
                 log.log_data("\nERROR: Could not find key referened in document within BibTeX database: " + str(sub_key))
-                cite_dict.pop(sub_key, None)
-                sub_dict['citations'] = cite_dict
-                bib_tags[super_key] = sub_dict
                 invalid_keys.append(key)
                 continue
 
@@ -804,6 +803,9 @@ def organize_citations( bib_tags, bib_data, order ):
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
+                    if not bib_data.get(bib_key):
+                        continue
+
                     # If author in BibTeX database
                     if 'author' in bib_data.get(bib_key):
 
@@ -848,6 +850,9 @@ def organize_citations( bib_tags, bib_data, order ):
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
+                    if not bib_data.get(bib_key):
+                        continue
+                        
                     # If title in BibTeX database
                     if 'title' in bib_data.get(bib_key):
 
