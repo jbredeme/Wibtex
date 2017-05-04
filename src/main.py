@@ -66,9 +66,9 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
     # Take the dictonary with the template and run Jinja2 over it
     xml = docx.jinja_it(xml, cite_data)
 
-    # # Convert the html to xml
+    # Convert the html to xml
     xml = docx.html_to_xml(xml)
-
+    
     # Save the results into a new document
     docx.save_xml(docx.get_xml_tree(xml), output_doc)
 
