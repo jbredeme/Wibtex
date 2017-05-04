@@ -18,5 +18,5 @@ setup(
         'install': Install,
     },
     packages=find_packages(),
-    install_requires=['bibtexparser', 'jinja2', 'lxml']
+    install_requires=['bibtexparser', 'jinja2', 'lxml', 'bs4']
 )
