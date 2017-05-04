@@ -597,7 +597,7 @@ def construct_env():
 # Function Definitions - Style File Interaction
 ################################################
 
-def get_valid_styles():
+def get_valid_styles( log ):
     '''
     Validates the styles from the config folder and returns
     a list of valid styles
@@ -610,7 +610,6 @@ def get_valid_styles():
 
     style_file = "../config/styles.json"
     valid_styles = []
-    log = logger.SimpleLogger()
 
     # Open the pre-pathed style file
     with open(style_file, 'r') as f:

@@ -592,6 +592,7 @@ def parse( path, log ):
         with open(path) as bibtex_file:
 
             parser = BibTexParser()
+            parser.ignore_nonstandard_types = False
             parser.customization = customizations
             bib_database = bibtexparser.load(bibtex_file, parser=parser)
             bib_database = bib_database.entries

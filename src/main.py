@@ -16,7 +16,7 @@ import style
 import wibtex_parser
 import docx_io
 
-def execute( input_bib, input_doc, style_form, output_doc ):
+def execute( input_bib, input_doc, style_form, output_doc, log ):
     '''
     Executes the WibTeX RMS
 
@@ -33,7 +33,6 @@ def execute( input_bib, input_doc, style_form, output_doc ):
     bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
     cite_data   = {} #' The formatted reference data to insert in the document
     xml         = "" #' The document string
-    log         = logger.SimpleLogger()
 
     ################################################
     # Read BibTeX Database (wibtex_parser.py)
@@ -67,17 +66,8 @@ def execute( input_bib, input_doc, style_form, output_doc ):
     # Take the dictonary with the template and run Jinja2 over it
     xml = docx.jinja_it(xml, cite_data)
 
+    print(cite_data)
     # Save the results into a new document
     docx.save_xml(docx.get_xml_tree(xml), output_doc)
 
     # DONE :)
-
-################################################
-# Construct Input Data & Test
-################################################
-input_bib   = "test_data/demo_bib.bib"
-input_doc   = "test_data/example.docx"
-style_form  = "CCSC"
-output      = "test_data/demo_output1.docx"
-
-execute( input_bib, input_doc, style_form, output)
