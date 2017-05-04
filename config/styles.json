@@ -1,5 +1,5 @@
 {
-    "ccsc": {
+    "CCSC": {
         "order": {
             "method": "alpha",
             "sortby": "author"
@@ -28,7 +28,7 @@
             }
         }
     },
-    "acm": {
+    "ACM": {
         "order": {
             "method": "alpha",
             "sortby": "author"
@@ -67,7 +67,7 @@
             }
         }
     },
-    "ieee": {
+    "IEEE": {
         "order": {
             "method": "inorder",
             "sortby": "NA"
@@ -141,7 +141,7 @@
             }
         }
     },
-    "apa": {
+    "APA": {
         "order": {
             "method": "alpha",
             "sortby": "author"
