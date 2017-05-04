@@ -10,6 +10,8 @@
 ################################################
 # Import Python Modules
 ################################################
+
+import logger
 import style
 import wibtex_parser
 import docx_io
@@ -31,12 +33,13 @@ def execute( input_bib, input_doc, style_form, output_doc ):
     bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
     cite_data   = {} #' The formatted reference data to insert in the document
     xml         = "" #' The document string
+    log         = logger.SimpleLogger()
 
     ################################################
     # Read BibTeX Database (wibtex_parser.py)
     ################################################
 
-    bib_data = wibtex_parser.parse(input_bib)
+    bib_data = wibtex_parser.parse(input_bib, log)
 
     ################################################
     # Read Word Document (docx_io.py)
@@ -55,7 +58,7 @@ def execute( input_bib, input_doc, style_form, output_doc ):
     # Generate Reference Data (style.py)
     ################################################
 
-    cite_data = style.get_reference_data(style_form, bib_tags, bib_data)
+    cite_data = style.get_reference_data(style_form, bib_tags, bib_data, log)
 
     ################################################
     # Write to Word Document (docx_io.py)
@@ -67,4 +70,13 @@ def execute( input_bib, input_doc, style_form, output_doc ):
     # Save the results into a new document
     docx.save_xml(docx.get_xml_tree(xml), output_doc)
 
-    # # DONE :)
+    # DONE :)
+
+################################################
+# Construct Input Data & Test
+################################################
+input_bib   = "test_data/demo_bib.bib"
+input_doc   = "test_data/example.docx"
+style_form  = "CCSC"
+output      = "test_data/demo_output.docx"
+execute(input_bib, input_doc, style_form, output)

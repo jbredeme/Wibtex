@@ -539,7 +539,6 @@ def construct_env():
     '''
 
     environment = Environment(loader=BaseLoader)
-    environment.filters['datetimeformat'] = datetimeformat
     environment.filters['wrap_html'] = wrap_html
     environment.filters['add_chars'] = add_chars
     environment.filters['wrap'] = wrap
@@ -1065,7 +1064,7 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
                 for type in extended_styles:
 
                     # Grab the alternate style
-                    alt_style = extended_style.get(type)
+                    alt_style = extended_styles.get(type)
 
                     # If BibTeX entry part of preferred
                     if entrytype in alt_style.get('preferred'):
@@ -1104,11 +1103,8 @@ def get_reference_data( style_form, bib_tags, bib_data, log ):
     output     = {}    #' A dictionary for Jinja2 templating on the final document
 
     # Read style file and extract style choice
-    style_data = read_style_file(style_form)
+    style_data = read_style_file(style_form, log)
     
-    # Validate BibTeX syntax
-    validate_syntax(bib_tags)
-
     # Validate that citations are in BibTeX database
     bib_tags = validate_citations(bib_tags, bib_data, log)
 
