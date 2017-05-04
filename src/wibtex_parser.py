@@ -3,7 +3,7 @@
 # @brief  module to extraction of BibTeX databases
 #
 # @author Charles Duso
-# @date   April 22, 2017
+# @date   May 3, 2017
 ############################################################
 
 ################################################
@@ -11,6 +11,7 @@
 ################################################
 
 import re
+import logger
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import *
@@ -22,7 +23,9 @@ from bibtexparser.latexenc import *
 
 def customizations( record ):
     '''
-        Callback function to properly separate fields
+    Callback function to properly separate fields
+
+    @param record the value we wish to modify
     '''
 
     # First, we convert everything to unicode
@@ -32,7 +35,7 @@ def customizations( record ):
 
     return record
 
-def validate_entries( database, flag = True):
+def validate_entries( database, log, flag = True):
     '''
     Validates a BibTeX database for proper entry inputs
 
@@ -51,7 +54,7 @@ def validate_entries( database, flag = True):
 
             except KeyError:
 
-                print("Error: BibTeX entry #%d does not have an ID" % i)
+                log.log_data("\nError: BibTeX entry #%d does not have an ID" % i)
 
             # Verify entries have their respective, required fields
             try:
@@ -82,7 +85,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string))
 
                 
                 elif current_entry['ENTRYTYPE'] == "book":
@@ -109,7 +112,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "booklet":
@@ -118,7 +121,7 @@ def validate_entries( database, flag = True):
                             error_string += "title"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "conference":
@@ -145,7 +148,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "inbook":
@@ -191,7 +194,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
                 elif current_entry['ENTRYTYPE'] == "incollection":
                     
@@ -223,7 +226,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "inproceedings":
@@ -250,8 +253,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
-
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string))
 
                 elif current_entry['ENTRYTYPE'] == "manual":
                     
@@ -262,7 +264,7 @@ def validate_entries( database, flag = True):
                             error_string += "title"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "mastersthesis":
@@ -289,7 +291,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "misc":
@@ -319,7 +321,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "proceedings":
@@ -337,7 +339,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "techreport":
@@ -364,7 +366,7 @@ def validate_entries( database, flag = True):
                             error_string += "year"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 elif current_entry['ENTRYTYPE'] == "unpublished":
@@ -385,14 +387,14 @@ def validate_entries( database, flag = True):
                             error_string += "note"
 
                     if error_string != "":
-                        print("Error: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
+                        log.log_data("\nError: Entry {:20s} missing: {:20s}".format(entry_id, error_string)) 
 
 
                 else:
-                    print("error")
+                    return
 
             except KeyError:
-                print("Error: Entry type not listed in BibTeX entry #%d" % i)
+                log.log_data("\nError: Entry type not listed in BibTeX entry #%d" % i)
 
     return
 
@@ -515,9 +517,11 @@ def remove_brackets( database ):
     temp_dict = {}
     temp_list = []
 
+    # For item in database
     for index in range(0, len(database)):
         temp_dict = database[index]
 
+        # For each key strip brackets
         for key in temp_dict:
 
             # If entry is a list
@@ -539,24 +543,31 @@ def remove_brackets( database ):
     return database
 
 def convert_to_dictionary( bib_database ):
+    '''
+    Converts a BibTeX database to a dictionary
+
+    @param bib_database the database to convert to
+    '''
 
     final_dict = {} #' Dictionary with which we store items by BibTeX entry key
     entry_key = ''  #' The entry key to a BibTeX entry
 
+    # For each item in the database
     for item in bib_database:
 
+        # Get the ID and use it as the key for the entry
         entry_key = item.get('ID')
 
+        # If key not in new dictionary, store it
         if entry_key is not None and entry_key not in final_dict:
             final_dict[entry_key] = item
 
         else:
-            print("Entry key already exists in database")
-            # TODO - LOG?
+            log.log_data("\nEntry key already exists in database")
     
     return final_dict
 
-def parse( path ):
+def parse( path, log ):
     '''
     Parses a BibTeX database and returns list of BibTeX entries
 
@@ -575,10 +586,10 @@ def parse( path ):
 
     except IOError:
 
-        print ("Error: Cannot read BibTeX file or data")
+        log.log_data("\nError: Cannot read BibTeX file or data")
         
     # Validate entries
-    validate_entries(bib_database)
+    validate_entries(bib_database, log)
 
     # Parse out preservation brackets
     bib_database = remove_brackets(bib_database)

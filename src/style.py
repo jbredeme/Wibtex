@@ -246,7 +246,6 @@ def authors_acm(value):
 
                 # If second to last author
                 if index == len(value) - 2:
-                    print(name)
                     if not f_half:
                         temp = name[0] + ' and '
                     elif not s_half:
@@ -260,7 +259,6 @@ def authors_acm(value):
 
                 # If last author
                 elif index == len(value) - 1:
-                    #print(name)
                     if not f_half:
                         temp = name[0]
                     elif not s_half:
@@ -272,8 +270,7 @@ def authors_acm(value):
                     out += temp + ' '
 
                 # If author not last nor second to last
-                else:    
-                    #print(name)                
+                else:               
                     if not f_half:
                         temp = name[0]
                     elif not s_half:
@@ -565,18 +562,19 @@ def get_valid_styles():
     @return a list of valid styles
     '''
 
-    #TODO - Log invalid styles
     #TODO - Investigate pathing on different operating systems
+    #TODO - Incorporate logging better
 
     style_file = "../config/styles.json"
     valid_styles = []
+    log = logger.SimpleLogger()
 
     # Open the pre-pathed style file
     with open(style_file, 'r') as f:
         try:
             data = json.load(f)
         except ValueError:
-            print("Error: Could not read style file.")
+            log.log_data("\nError: Could not read style file.")
             return ""
 
     # For each style in the style file
@@ -586,7 +584,7 @@ def get_valid_styles():
 
         # If style cannot be accessed log it
         if style_data is None:
-            print('ERROR - Could not retrieve style template')
+            log.log_data('\nERROR - Could not retrieve style template')
             continue
 
         else:
@@ -598,33 +596,33 @@ def get_valid_styles():
             # Verify order field and its sub-fields exist
             order = style_data.get('order')
             if order is None:
-                print('ERROR - Could not access "order" field in style template')
+                log.log_data('\nERROR - Could not access "order" field in style template')
                 continue
             else:
                 if 'method' not in order or 'sortby' not in order:
-                    print('ERROR - Missing "method" or "sortby" values in "order" field of style template.')
+                    log.log_data('\nERROR - Missing "method" or "sortby" values in "order" field of style template.')
                     continue
 
             # Verify in_text_style field and its sub-fields exist
             in_text = style_data.get('in_text_style')
             if in_text is None:
-                print('ERROR - Could not access "in_text_style" field in style template')
+                log.log_data('\nERROR - Could not access "in_text_style" field in style template')
                 continue
             else:
                 if 'index' not in in_text or 'template' not in in_text:
-                    print('ERROR - Could not access "index" or "template" in "in_text_style" field of style template')
+                    log.log_data('\nERROR - Could not access "index" or "template" in "in_text_style" field of style template')
                     continue
 
             # Verify title field exists
             title = style_data.get('title')
             if title is None:
-                print('ERROR - Could not access "title" field in style template')
+                log.log_data('\nERROR - Could not access "title" field in style template')
                 continue
 
             # Verify default_style field exists
             default = style_data.get('default_style')
             if default is None:
-                print('ERROR - Could not access "default_style" field in style template')
+                log.log_data('\nERROR - Could not access "default_style" field in style template')
                 continue
         
         # If key is valid, then append it to the list
@@ -632,7 +630,7 @@ def get_valid_styles():
 
     return valid_styles
 
-def read_style_file( style_form ):
+def read_style_file( style_form, log ):
     '''
     Extracts a specified style from a style file
 
@@ -647,8 +645,7 @@ def read_style_file( style_form ):
             data = json.load(f)
         except ValueError:
             data = {}
-            print("Error: Could not read style file.")
-            # TODO - Handle this error. Maybe log it?
+            log.log_data("\nError: Could not read style file.")
 
     return data.get(style_form)
 
