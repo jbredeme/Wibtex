@@ -70,6 +70,7 @@ def run(event, arg):
         return
 
     main.execute(input_bib_entry.get(), input_doc_entry.get(), initial.get(), output_doc_entry.get(), log)
+    showinfo("Window", "Execution is complete! :)")
     return
 
 # Construct buttons

@@ -58,3 +58,4 @@ else:
     # Otherwise execute the program
     print("Executing WibTeX RMS...")
     main.execute(input_bib, input_doc, style_input, output, log)
+    print("Execution is complete (:")

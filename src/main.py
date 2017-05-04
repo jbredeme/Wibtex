@@ -33,16 +33,16 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
     bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
     cite_data   = {} #' The formatted reference data to insert in the document
     xml         = "" #' The document string
-
+    
     ################################################
     # Read BibTeX Database (wibtex_parser.py)
     ################################################
 
     bib_data = wibtex_parser.parse(input_bib, log)
 
-    ################################################
-    # Read Word Document (docx_io.py)
-    ################################################
+    # ################################################
+    # # Read Word Document (docx_io.py)
+    # ################################################
 
     # Read in the document
     docx = docx_io.Document(input_doc)
@@ -59,9 +59,9 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
 
     cite_data = style.get_reference_data(style_form, bib_tags, bib_data, log)
 
-    ################################################
-    # Write to Word Document (docx_io.py)
-    ################################################
+    # ################################################
+    # # Write to Word Document (docx_io.py)
+    # ################################################
 
     # Take the dictonary with the template and run Jinja2 over it
     xml = docx.jinja_it(xml, cite_data)
