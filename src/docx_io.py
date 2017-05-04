@@ -32,7 +32,7 @@ class Document:
 		try:
 			with open(self.filename, 'rb') as fh:
 				unzipped = zipfile.ZipFile(fh)
-				xml_content = unzipped.read(os.path.join('word', 'document.xml'))	#=> Retrieve Open XML
+				xml_content = unzipped.read('word/document.xml')	#=> Retrieve Open XML
 				return xml_content.decode("utf-8")
 
 		except(OSError, IOError) as e:
