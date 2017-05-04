@@ -210,8 +210,8 @@ class Document:
 	# @pram xml
 	#
 	def html_to_xml(self, xml):
-		xml = xml.replace(b'&quot;', b'"')										#=> markup clean up required													            
-		xml = xml.replace(b'<br />', b'</w:t><w:br/><w:t xml:space="preserve">')	#=> line break injections													
+		xml = xml.replace('&quot;', '"')										#=> markup clean up required													            
+		xml = xml.replace('<br />', '</w:t><w:br/><w:t xml:space="preserve">')	#=> line break injections													
 		gumbo = BeautifulSoup(xml, "lxml")										#=> XML Parser
 
 		for item in gumbo.findAll('w:r'): 					#=> find all the word runs
@@ -348,14 +348,14 @@ class Document:
 			
 				for index in range(len(list2)):
 					if str(key_list[index]) != '</w:t>':
-						xml = xml.replace(bytes(key_list[index], 'utf8'), bytes(list2[index], 'utf8'))
+						xml = xml.replace(str(key_list[index]), str(list2[index]))
 						
 					# print('------------ OUTPUT Chcker -------------')	
 					# print(key_list[index])
 					# print(list2[index])
 					# print('-----------------------------------------')
 					
-					xml = xml.replace(b'</w:t></w:r></w:t></w:r>', b'</w:t></w:r>')
+					xml = xml.replace('</w:t></w:r></w:t></w:r>', '</w:t></w:r>')
 					
 		return xml		
 
