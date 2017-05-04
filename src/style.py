@@ -33,13 +33,13 @@ def font(value, size):
     if isinstance(value, list):
         data = ""
         for item in value:
-            data += '<font size="' + str(size) + '">' + str(item) + '</font>'
+            data += '<font size="' + size + '">' + str(item) + '</font>'
         return data
 
     elif isinstance(value, str):
-        return '<font size="' + str(size) + '">' + value + '</font>'
+        return '<font size="' + size + '">' + value + '</font>'
     else:
-        return '<font size="' + str(size) + '">' + str(value) + '</font>'
+        return '<font size="' + size + '">' + str(value) + '</font>'
 
 def wrap_html(value, wrapper):
     '''
