@@ -31,8 +31,6 @@ def customizations( record ):
 
     # First, we convert everything to unicode
     record = author(record)
-    record = editor(record)
-    # record = convert_to_unicode(record)
 
     return record
 
@@ -601,7 +599,7 @@ def parse( path, log ):
     except IOError:
 
         log.log_data("\nError: Cannot read BibTeX file or data")
-        
+
     # Validate entries
     validate_entries(bib_database, log)
 
