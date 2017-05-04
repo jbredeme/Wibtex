@@ -205,368 +205,172 @@ class Document:
 			print("------------------------------------------------------------\n")
 			
 			
-# -------------------------------------------------------------------------------------------------------------------------
+	# html_to_xml: todo
+	#
+	# @pram xml
+	#
+	def html_to_xml(self, xml):
+		xml = xml.replace('&quot;', '"')										#=> markup clean up required													            
+		xml = xml.replace('<br />', '</w:t><w:br/><w:t xml:space="preserve">')	#=> line break injections													
+		gumbo = BeautifulSoup(xml, "lxml")										#=> XML Parser
 
-# this html parser takes non-nested html tags content is split up into blocks, blocks are defined by an opening 
-# and closing tag element and any content that they surround. In case where a tag is a nested tag containing two
-# or more children the parent tag is processed first, then the child, and the child of the child and so forth. 
-# To illistrate this idea say you start off with a string like this 'some <b><i>simple</i></b> text' -> 
-# '<b><i>simple</i></b>' -> '<i>simple</i>'. Since we have two of splits of the same content we need to prevent 
-# processing the same tag more then once. In order do accomplish this I compare the contents of the child tag to
-# the contents of its parent. If the contents match I know that the child is a decendant of the parent and I no 
-# longer need to process any sibilings of the parent because the parent tag contains all the relevant data I need.
-
-#sampleText = 'This is a <b></b>test string to <i>test</i> simple HTML <u>markup</u> elements <b><i>converson</i></b> to <u><b><font size=18>Open XML markup</font></b></u> for word <font size="15">document</font> formatting. <font size=6><b><u><i>For nested markup they</i></u></b></font> can appear in any order, font size value can be quote or not quoted'
-# sampleText = '<u><i><b>Simple text substitution</b></i></u>'
-# soup = BeautifulSoup(sampleText, 'html.parser')
-# print('\n-------------------- Original text feed --------------------')
-# print('\n' + sampleText + '\n')
-# print('------------------------------------------------------------\n')
-	
-# for e in soup.findAll():
-	# chowder = BeautifulSoup(str(e), 'html.parser')
-	
-	# if chowder.b != None and chowder.font != None and chowder.i != None and chowder.u != None:		#=> contains bold, font, italic, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, font, italic, and underline html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-		
-	# if chowder.b != None and chowder.font != None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains bold, font, and italic html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, font, and italic html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-
-	# if chowder.b != None and chowder.font != None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains bold, font, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, font, and underline html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')		
+		for item in gumbo.findAll('w:r'): 					#=> find all the word runs
+			bisque = BeautifulSoup(str(item), "lxml")	
+			rpr = bisque.find('w:rpr')						#=> find the rPr data
+			rpr2 = rpr
 			
-	# if chowder.b != None and chowder.font == None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains bold, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, and underline html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
+			# correct auto formatting
+			rpr = str(rpr).replace('rpr', 'rPr')
+			rpr = rpr.replace('<w:rtl w:val="0"></w:rtl>', '<w:rtl w:val="0"/>')
 			
-	# if chowder.b != None and chowder.font == None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains bold, and italic html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content	
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, and italic html markup elements\n')	
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:i w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
 			
-	# if chowder.b != None and chowder.font != None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains bold, and font html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains bold, and font html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')	
-			
-	# if chowder.b != None and chowder.font == None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains only a bold html markup element
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains only a bold html markup element\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:b w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')	
-      
-	# if chowder.b == None and chowder.font != None and chowder.i != None and chowder.u != None:		#=> Line analysis: contains font, italic, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains font, italic, and underline html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-	
-	# if chowder.b == None and chowder.font != None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains font, and italic html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content	
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains font, and italic html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-      			
-
-	# if chowder.b == None and chowder.font != None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains font, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains font, and underline html markup elements\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-      			
-
-	# if chowder.b == None and chowder.font != None and chowder.i == None and chowder.u == None:		#=> Line analysis: contains only a font html markup element
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains only a font html markup element\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:sz w:val="' + str(chowder.font['size']) + '"/><w:szCs w:val="' + str(chowder.font['size']) + '"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-			
-      			
-	# if chowder.b == None and chowder.font == None and chowder.i != None and chowder.u != None:		#=> Line analysis: contains italic, and underline html markup elements
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains italic, and underline html markup elements\n')	
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-      			
-	# if chowder.b == None and chowder.font == None and chowder.i != None and chowder.u == None:		#=> Line analysis: contains only an italic html markup element
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains only an italic html markup element\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')	
-			
-	# if chowder.b == None and chowder.font == None and chowder.i == None and chowder.u != None:		#=> Line analysis: contains only an underline html markup element
-		# if e.getText() != e.parent.getText():														#=> check to see if this element is a descendant of a parent with the same content
-			# print('Oringal markup:\n\t' + str(e))
-			# print('\tLine analysis: contains only an underline html markup element\n')
-			# print('Open XML Markup Equivalent:')
-			# print('<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + e.getText() + '</w:t></w:r>')
-			# print('\n--\n')
-	
-
-
-docx = Document('test_data\html_to_xml_test.docx')
-xml  = docx.get_xml()
-
-#xml = '<w:document xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:lc="http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas" xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"> <w:background w:color="FFFFFF"/> <w:body> <w:p w:rsidR="00000000" w:rsidDel="00000000" w:rsidP="00000000" w:rsidRDefault="00000000" w:rsidRPr="00000000"> <w:pPr> <w:pBdr/> <w:contextualSpacing w:val="0"/> <w:rPr/> </w:pPr> <w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> <w:rPr> <w:rtl w:val="0"/> </w:rPr> <w:t xml:space="preserve">Simple text <font size=12>substitution</font> test for formatting purposes. Simple text <b><i>substitution</i></b> test for formatting purposes. Simple {{ B0C0 }} text <u>substitution</u> test for formatting purposes. Simple text substitution test for <i>formatting purposes</i>. Simple text substitution {{ B0C1 }} test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. </w:t> </w:r> <w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> <w:rPr> <w:i w:val="1"/> <w:u w:val="single"/> <w:rtl w:val="0"/> </w:rPr> <w:t xml:space="preserve">Simple text substitution {{ B0C0 }} test for formatting purposes.</w:t> </w:r> <w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> <w:rPr> <w:rtl w:val="0"/> </w:rPr> <w:t xml:space="preserve"> Simple text substitution {{ B0C2 }} test for formatting purposes. Simple <b><u>text substitution</u></b> test for formatting purposes. Simple text substitution test for formatting purposes. Simple text <font size="15"><u>substitution</u></font> test for formatting purposes. Simple text substitution test for formatting purposes. <u><i><b>Simple text substitution</b></i></u> test for formatting {{ B0 }} purposes. </w:t> </w:r> </w:p> <w:sectPr> <w:pgSz w:h="15840" w:w="12240"/> <w:pgMar w:bottom="1440" w:top="1440" w:left="1440" w:right="1440" w:header="0"/> <w:pgNumType w:start="1"/> </w:sectPr> </w:body></w:document>'
-xml = '<w:document xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:lc="http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas" xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"><w:background w:color="FFFFFF"/><w:body><w:p w:rsidR="00000000" w:rsidDel="00000000" w:rsidP="00000000" w:rsidRDefault="00000000" w:rsidRPr="00000000"><w:pPr><w:pBdr/><w:contextualSpacing w:val="0"/><w:rPr/></w:pPr><w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">Simple text substitution test for formatting purposes. <i>Simple text substitution</i> test for formatting purposes. Simple {{ B0C0 }} text <b>substitution</b> test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution {{ B0C1 }} test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. </w:t></w:r><w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:i w:val="1"/><w:u w:val="single"/><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">Simple text substitution {{ B0C0 }} test for formatting purposes.</w:t></w:r><w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr><w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve"> Simple text substitution {{ B0C2 }} test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting {{ B0 }} purposes. </w:t></w:r></w:p><w:sectPr><w:pgSz w:h="15840" w:w="12240"/><w:pgMar w:bottom="1440" w:top="1440" w:left="1440" w:right="1440" w:header="0"/><w:pgNumType w:start="1"/></w:sectPr></w:body></w:document>'
-gumbo = BeautifulSoup(xml, "lxml")					#=> XML Parser
-
-for item in gumbo.findAll('w:r'): 					#=> find all the word runs
-	### print(item.prettify())
-	#print('--')
-	bisque = BeautifulSoup(str(item), "lxml")	
-	rpr = bisque.find('w:rpr')						#=> find the rPr data
-	rpr2 = rpr
-	rpr = str(rpr).replace('rpr', 'rPr')
-	rpr = rpr.replace('<w:rtl w:val="0"></w:rtl>', '<w:rtl w:val="0"/>')
-	#print(rpr2.prettify())
-	#print('--')
-
-	for text in bisque.findAll('w:t'):
-		broth = BeautifulSoup(str(text), 'html.parser')
-		pattern_list = []
-		list2 = []
-		#print('LOOK at ME -> ' + str(text))
-		for element in broth.findAll('b'):
-			if element.getText() != element.parent.getText():
-				pattern_list.append('(' + str(element) + ')')
+			for text in bisque.findAll('w:t'):				#=> look in each text run
+				broth = BeautifulSoup(str(text), 'html.parser')
+				pattern_list = []
+				list2 = []
+				key_list = []
+				# print('---------------------------------------------------')
+				# print(text)
 				
-		for element in broth.findAll('font'):
-			if element.getText() != element.parent.getText():
-				pattern_list.append('(' + str(element) + ')')
 				
-		for element in broth.findAll('i'):
-			if element.getText() != element.parent.getText():
-				pattern_list.append('(' + str(element) + ')')
-			
-		for element in broth.findAll('u'):
-			if element.getText() != element.parent.getText():
-				pattern_list.append('(' + str(element) + ')')
-		
-		pattern_str = '|'.join(pattern_list)
-		ptrn = re.compile(pattern_str)
-		
-		if(pattern_str != ''):
-			list2 = re.split(ptrn, str(text))
-			key_list = re.split(ptrn, str(text))
-	
-			while None in list2:
-				list2.remove(None)
 				
-			while None in key_list:
-				key_list.remove(None)
-				
-			count = 0
-			for i in list2:
-				print('Item ' + str(count)+ " : \n\t" + i)
-				count += 1			
-		
-		if len(list2) > 1:
-			for index in range(len(list2)):
-				if index == 0:
-					list2[index] = list2[index] + '</w:t></w:r>'
-					print("NOW in INDES")
-					print(list2[index])
-					print("IN TEXT")
-					print(str(text))
-					print("\n\n")
-				else:
-					if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-						### print('No html')
-						#print(list2[index])
-						### print('')
-						### list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index] + '</w:t></w:r>'
-						### print(list2[index])
-						if index != (len(list2) - 1):
-							list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index] + '</w:t></w:r>'
-						else:
-							list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index]						
+				if not (len(broth.findAll('b')) == 0 and  len(broth.findAll('font')) == 0 and  len(broth.findAll('i')) == 0 and  len(broth.findAll('u')) == 0):
+					for element in broth.findAll('b'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+							
+					for element in broth.findAll('font'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+							
+					for element in broth.findAll('i'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
 						
-					else:
-						### print('FOUND')
-						### print(list2[index])
-						### print('')
-						rPr_temp = ''
-						
-						#=> B/F/I/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('B/F/I/U')
-							rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
-							### print(rPr_temp)
+					for element in broth.findAll('u'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+					
+					pattern_str = '|'.join(pattern_list)
+					ptrn = re.compile(pattern_str)
+					
+					if(pattern_str != ''):
+						list2 = re.split(ptrn, str(text))
+						key_list = re.split(ptrn, str(text))
+				
+						while None in list2:
+							list2.remove(None)
+							
+						while None in key_list:
+							key_list.remove(None)
+							
+					
+					if len(list2) > 1:
+						for index in range(len(list2)):
+							if index == 0:
+								list2[index] = list2[index] + '</w:t></w:r>'
+								
+							else:
+								if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+									if index != (len(list2) - 1):
+										list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index] + '</w:t></w:r>'
+										
+									else:
+										list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index]						
+									
+								else:
+									rPr_temp = ''
+									
+									#=> B/F/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
 
-						# #=> B/F/I
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('B/F/I')
-							rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
-							### print(rPr_temp)
+									# #=> B/F/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
 
-							
-						#=> B/F/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
-							### print('B/F/U')
-							rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-						#=> B/I/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
-							### print('B/I/U')
-							rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-						#=> B/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('B/U')
-							rPr_temp = '<w:b w:val="1"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-						#=> B/I
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('B/I')
-							rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/>'
-							### print(rPr_temp)
-							
-						#=> B/F
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('B/F')
-							rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
-							### print(rPr_temp)
-							
-							
-						#=> B
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('B')
-							rPr_temp = '<w:b w:val="1"/>'
-							### print(rPr_temp)
-							
-						#=> F/I/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('F/I/U')
-							rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-							
-						#=> F/I
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('F/I')
-							rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
-							### print(rPr_temp)
-							
-						#=> F/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('F/U')
-							rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-						#=> F
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('F')
-							rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
-							### print(rPr_temp)
-							
-						#=> I/U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('I/U')
-							rPr_temp = '<w:i w:val="1"/><w:u w:val="single"/>'
-							### print(rPr_temp)
-							
-						# #=> I
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
-							### print('I')
-							rPr_temp = '<w:i w:val="1"/>'
-							
-							### print(rPr_temp)
-							
-						#=> U
-						if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
-							### print('U')
-							rPr_temp = '<w:u w:val="single"/>'
-							### print(rPr_temp)
-						
-						list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr>' + str(rPr_temp) + '<w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + BeautifulSoup(str(list2[index]), 'html.parser').getText() + '</w:t></w:r>'
-						### print(list2[index])
+									#=> B/F/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
+										rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> B/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:u w:val="single"/>'
+										
+									#=> B/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:b w:val="1"/><w:u w:val="single"/>'
+										
+									#=> B/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/>'
+										
+									#=> B/F
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+											
+									#=> B
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/>'
+										
+									#=> F/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> F/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+										
+									#=> F/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> F
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+										
+									#=> I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:i w:val="1"/><w:u w:val="single"/>'
+										
+									# #=> I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:i w:val="1"/>'
+										
+									#=> U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:u w:val="single"/>'
+									
+									list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr>' + str(rPr_temp) + '<w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + BeautifulSoup(str(list2[index]), 'html.parser').getText() + '</w:t></w:r>'
 
-		#output = ' '.join(list2)
-		#output = output.replace('> <', '><')
-		for x in list2:
-			x = x.replace('> <', '><')
-		print(list2)
-		# print('------OUTPUT-------------')	
-		# print(str(text))
-		# print('-------------------------')	
-		#xml = xml.replace(str(text), output)
-		#print('---')
-		#print(xml)
-		#print('--')
-#print(' ')		
-#print(xml)
-#docx.save_xml(docx.get_xml_tree(xml.encode('utf-8')), 'xml_out.docx')
-
-		
-# for item in chicken.findAll('w:t'):
-	# count = 0	
-	# for item in key_list:
-		# xml = xml.replace(str(item), str(list2[count]))
-		# count += 1
-	print(len(list2))
-	print(len(key_list))
-	for index in range(len(list2)):
-
-		xml = xml.replace(str(key_list[index]), str(list2[index]))
-		
-	# if len(re.findall(r'{{ B0C0 }}', item.getText(), re.IGNORECASE)) != 0:
-		# rpr = item.parent.find('w:rpr')
-		# rpr = str(rpr).replace('rpr', 'rPr')
-print(xml)
-#xml = '<w:document xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:sl="http://schemas.openxmlformats.org/schemaLibrary/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:lc="http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas" xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"> 	<w:background w:color="FFFFFF"/> 	<w:body> 	<w:p w:rsidR="00000000" w:rsidDel="00000000" w:rsidP="00000000" w:rsidRDefault="00000000" w:rsidRPr="00000000"> 	<w:pPr> 		<w:pBdr/> 		<w:contextualSpacing w:val="0"/> 		<w:rPr/> 	</w:pPr> 	<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> 		<w:rPr> 			<w:rtl w:val="0"/> 		</w:rPr> 	<w:t xml:space="preserve">Simple text substitution test for formatting purposes.Simple text substitution test for formatting purposes. Simple {{ B0C0 }} text </w:t> 	</w:r> 	 	<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> 		<w:rPr> 			<w:b w:val="1"/> 			<w:rtl w:val="0"/> 		</w:rPr> 	<w:t xml:space="preserve">substitution</w:t> 	</w:r>  	<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> 		<w:rPr> 			<w:rtl w:val="0"/> 		</w:rPr> 	<w:t xml:space="preserve"> test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution {{ B0C1 }} test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. </w:t>  	</w:r> 	 	<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> 	<w:rPr> 		<w:i w:val="1"/> 		<w:u w:val="single"/> 		<w:rtl w:val="0"/> 	</w:rPr> 	<w:t xml:space="preserve">Simple text substitution {{ B0C0 }} test for formatting purposes.</w:t> 	</w:r> 	 	 	<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"> 	<w:rPr> 		<w:rtl w:val="0"/> 	</w:rPr> 	<w:t xml:space="preserve"> Simple text substitution {{ B0C2 }} test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting purposes. Simple text substitution test for formatting {{ B0 }} purposes. </w:t> 	</w:r> 	 	</w:p> 	 	<w:sectPr> 		<w:pgSz w:h="15840" w:w="12240"/> 		<w:pgMar w:bottom="1440" w:top="1440" w:left="1440" w:right="1440" w:header="0"/> 		<w:pgNumType w:start="1"/> 	</w:sectPr> 	</w:body> 	</w:document>'
-#text = etree.tostring(docx.get_xml_tree(xml.encode('utf-8')), pretty_print = True)
-docx.save_xml(docx.get_xml_tree(xml.encode('utf-8')), 'xml_out.docx')	
-
-
-
-
-
-
-
-	
+					for x in list2:
+						x = x.replace('> <', '><')
 			
-	
-# -------------------------------------------------------------------------------------------------------------------------
+				for index in range(len(list2)):
+					if str(key_list[index]) != '</w:t>':
+						xml = xml.replace(str(key_list[index]), str(list2[index]))
+						
+					# print('------------ OUTPUT Chcker -------------')	
+					# print(key_list[index])
+					# print(list2[index])
+					# print('-----------------------------------------')
+					
+					xml = xml.replace('</w:t></w:r></w:t></w:r>', '</w:t></w:r>')
+					
+		return xml		
+
+		
+# docx = Document('test_data\example2.docx')
+# xml  = docx.get_xml()
+# xml = xml.replace('College', '<font size="45">professor</font>')
+# xml = xml.replace('believable.', '<b>what up</b>')
+# xml = xml.replace('packages', '<i><u>Boya</u></i>')
+# xml = xml.replace('popularised', '<font size="45"><u><b>YES YES YES</b></u></font>')
+# xml = xml.replace('readable', '<br />')
+# xml = xml.replace('Latin', '<br />')
+# xml = xml.replace('\\bibliography{second_bib}', '<b><font size="23">THE real test</font></b>')		
+# xml = xml.replace('\\bibliography{third_bib}', '<b><font size="23"><i>Another Test</i></font></b>')
+# xml = xml.replace('consectetur,', '<br /><br />')
+
+# xml = docx.html_to_xml(xml)
+# docx.save_xml(docx.get_xml_tree(xml.encode('utf-8')), 'xml_out.docx')	
