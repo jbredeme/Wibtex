@@ -947,32 +947,52 @@ def organize_citations( bib_tags, bib_data, order ):
     
     return ordered_cites
 
-def generate_citations( bib_data, ordered_cites, style_data ):
+def generate_citations( bib_data, ordered_cites, style_data, environment ):
+    '''
+    Generates in-text citations for the document from a pre-ordained
+    style
 
-    output = {}
-    cur_bib = {}
+    @param bib_data      a dictionary containing BibTeX database entries
+    @param ordered_cites a dictionary containing citation keys/jinja variables
+    @param style_data    a dicitonary containing style template data
 
-    index = 1
+    @return              a dictionary containing formatted reference data
+    '''
 
-    token = style_data.get('index')
-    template = style_data.get('template')
+    #TODO - Verify
 
-    templator = Template(template)
+    output = {}  #' Dictionary containg jinja variables associated with citation data
+    cur_bib = {} #' The current reference section
 
+    index = 1    #' Key for numbering citations   
+
+    token = style_data.get('index')        # We number citations regardless of if they're used
+    template = style_data.get('template')  # The in-text citation template
+
+    templator = environment.from_string(template) # Construct the templator
+
+    # For each reference section
     for bib in ordered_cites:
 
+        # Extract the current reference section
         cur_bib = ordered_cites.get(bib)
 
+        # For each citation tag
         for item in cur_bib[0]:
 
+            # Set the numerical index of that citation
             bib_data[item][token] = index
 
+            # Increment the index
             index += 1
 
+        # For each item in the current reference section
         for item in range(0, len(cur_bib[1])):
 
+            # Render the template string and assign the key as its jinja variable
             output[cur_bib[1][item]] = templator.render(bib_data[cur_bib[0][item]])
 
+        # Reset the index
         index = 1
 
     return output
@@ -1030,7 +1050,7 @@ def get_reference_data( style_form, bib_tags, bib_data ):
     environment = construct_env()
 
     # Generate in-text citations
-    output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'))
+    output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'), environment)
 
     # Generate reference page
     output = generate_works_cited(bib_data, ordered_cites, style_data, output)
