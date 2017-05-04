@@ -3,3 +3,4 @@ src/.vscode/settings.json
 *.zip
 *.log
 *.properties
+src/demo_data/apa_demo.docx
