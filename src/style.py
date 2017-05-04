@@ -28,18 +28,19 @@ def font(value, size):
     @param  size    the value to generate tags with
     @return         the wrapped data
     '''
-    # TODO - Verify
+    return value
+    # # TODO - Verify
 
-    if isinstance(value, list):
-        data = ""
-        for item in value:
-            data += '<font size="' + size + '">' + str(item) + '</font>'
-        return data
+    # if isinstance(value, list):
+    #     data = ""
+    #     for item in value:
+    #         data += '<font size="' + size + '">' + str(item) + '</font>'
+    #     return data
 
-    elif isinstance(value, str):
-        return '<font size="' + size + '">' + value + '</font>'
-    else:
-        return '<font size="' + size + '">' + str(value) + '</font>'
+    # elif isinstance(value, str):
+    #     return '<font size="' + size + '">' + value + '</font>'
+    # else:
+    #     return '<font size="' + size + '">' + str(value) + '</font>'
 
 def wrap_html(value, wrapper):
     '''
@@ -50,17 +51,17 @@ def wrap_html(value, wrapper):
     @return         the wrapped data
     '''
     # TODO - Verify
+    return value
+    # if isinstance(value, list):
+    #     data = ""
+    #     for item in value:
+    #         data += "<" + wrapper + ">" + str(item) + "</" + wrapper + ">"
+    #     return data
 
-    if isinstance(value, list):
-        data = ""
-        for item in value:
-            data += "<" + wrapper + ">" + str(item) + "</" + wrapper + ">"
-        return data
-
-    elif isinstance(value, str):
-        return "<" + wrapper + ">" + value + "</" + wrapper + ">"
-    else:
-        return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
+    # elif isinstance(value, str):
+    #     return "<" + wrapper + ">" + value + "</" + wrapper + ">"
+    # else:
+    #     return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
 
 def add_chars(value, char):
     '''
@@ -167,8 +168,10 @@ def authors_ccsc(value):
             s_half = re.findall('\s(\w)', str(value[0]))  #' Grab the author's initials
             name   = re.findall('\w+', str(value[0]))     #' Grab the author's name if no initials
 
-            if s_half and f_half:
-                return str(value[0]) + ", "
+            if not f_half:
+                return name[0] + ' '
+            elif not s_half:
+                return f_half[0].split(',')[0] + ' '
             else:
                 return str(name[0]) + ", "
             return ''
@@ -181,8 +184,10 @@ def authors_ccsc(value):
                 s_half = re.findall('\s(\w)', str(item))  #' Grab the author's initials
                 name   = re.findall('\w+', str(item))     #' Grab the author's name if no initials
 
-                if s_half and f_half:
-                    string += str(item) + ", "
+                if not s_half:
+                    string += name[0]  + ", "
+                elif not s_half:
+                    string += f_half.split(',')[0]  + ", "
                 else:
                     string += str(name[0]) + ", "
 
@@ -325,6 +330,8 @@ def authors_acm(value):
                     out += temp + ', '
 
             return out
+        
+    return value
 
 def authors_apa(value):
     '''
@@ -783,14 +790,15 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
         for item in range(0, len(sorted_list)):
 
             # If item is in list to sort
-            if sorted_list[item] in sort_list[index][2]:
+            if sorted_list[index] in sort_list[item][2]:
 
                 # Extract information and negate this item
                 # The same author may appear for many entries
                 # We choose the first available match and then nullify it from matching
-                jinja_list[item] = sort_list[index][0]
-                sorted_tags[item] = sort_list[index][1]
-                sort_list[index][2] = ['#']
+                jinja_list[index] = sort_list[item][0]
+                sorted_tags[index] = sort_list[item][1]
+                sort_list[item][2] = ['#']
+                break
 
     # Add sorted items to the master list
     outer_list.append(sorted_tags)
@@ -990,7 +998,7 @@ def organize_citations( bib_tags, bib_data, order ):
             tag_list = []
             jinja_list = []
             outer_list = []
-    
+
     return ordered_cites
 
 def generate_citations( bib_data, ordered_cites, style_data, environment ):
@@ -1028,7 +1036,8 @@ def generate_citations( bib_data, ordered_cites, style_data, environment ):
         for item in cur_bib[0]:
 
             # Set the numerical index of that citation
-            bib_data[item][token] = index
+            if item:
+                bib_data[item][token] = index
 
             # Increment the index
             index += 1
