@@ -9,6 +9,7 @@ class SimpleLogger:
         self.filepath = '../config/log.properties'
         self.logpath = '../logs/log_default.log'
         self.version = 1
+        self.written = False
 
         try:
             file = open(self.filepath, 'r')
@@ -17,11 +18,7 @@ class SimpleLogger:
 
             # If the file does not contain content
             if self.data is None or self.data is "":
-
-                # Default to version one
-                file = open(self.filepath, 'w')
-                file.write('NEXT ' + str(self.version))
-                file.close()
+                pass
 
             # If the file contains content
             else:
@@ -32,11 +29,6 @@ class SimpleLogger:
                     # If we find the version
                     if self.data[char].isdigit():
                         self.version = int(self.data[char])
-
-                # Rewrite the file and add the new version number
-                file = open(self.filepath, 'w')
-                file.write('NEXT ' + str(self.version + 1))
-                file.close()
             
             # Construct the logpath now
             self.logpath = '../logs/log_' + str(self.version) + '.log'
@@ -50,6 +42,14 @@ class SimpleLogger:
 
         @param data_string the data to log
         '''
+
+        # If we haven't yet written to the file
+        if not self.written:
+            file = open(self.filepath, 'w')
+            file.write('NEXT ' + str(self.version + 1))
+            file.close()
+
+            self.written = True
 
         file = open(self.logpath, 'a')
 
