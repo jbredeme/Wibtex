@@ -13,6 +13,7 @@
 import re
 import logger
 import bibtexparser
+import map
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import *
 from bibtexparser.latexenc import *
@@ -31,7 +32,7 @@ def customizations( record ):
     # First, we convert everything to unicode
     record = author(record)
     record = editor(record)
-    record = convert_to_unicode(record)
+    # record = convert_to_unicode(record)
 
     return record
 
@@ -442,69 +443,78 @@ def latex_to_unicode( database ):
     @param  database a BibTeX database in the form of a dictionary
     '''
 
-#     temp_dict = {}
-#     temp_list = []
-#     latex_list = []
-#     out = ""
-#     temp_str = ""
+    key_item_list = []
+    matches = []
+    converted_matches = []
+    item_string = ""
 
+    convert = map.RosettaStone()
 
-#     regex = r"\\.*?\{.*?\}|\\(?:[^a-zA-Z]|[a-zA-Z]+[*=']?)"
+    regex = r'\\\\.*\{.*\}|\\\\\w+[^\}\{]'
 
-#     for index in range(0, len(database)):
+    # For each entry
+    for index in range(0, len(database)):
 
-#         temp_dict = database[index]
+        sub_dict = database[index]
 
-#         for key in temp_dict:
+        # For each key
+        for key in sub_dict:
 
-#             # If entry is a list
-#             # TODO - Check for nested lists?
-#             if isinstance(temp_dict[key], list):
+            if isinstance(sub_dict[key], list):
 
-#                 for item in range(0, len(temp_dict[key])):
+                for item_i in range(0, len(sub_dict[key])):
 
-#                     latex_list = re.findall(regex, temp_dict[key][item])
-#                     temp_str = temp_dict[key][item]
+                    item_string = sub_dict[key][item_i]
 
-#                     if not latex_list :
-#                         continue
+                    if item_string:
 
-#                     for sym in latex_list:
-#                         out = unicode_tex.tex_to_unicode_map.get(sym, sym)
-#                         temp_list.append(out)
-                    
-#                     for index in range(0, len(latex_list)):
-#                         latex_list[index] = re.escape(latex_list[index])
+                        # Find matches
+                        matches = re.findall(regex, item_string)
 
-#                     for index in range(0, len(latex_list)):
-#                         temp_str = re.sub(latex_list[index], temp_list[index], temp_str)
-                    
-#                     temp_dict[key][item] = temp_str
-#                     temp_str = ""
+                        # Convert matches
+                        if matches:
+                            converted_matches = []
 
-#             else:
+                            for match in matches:
+                                converted_matches.append(convert.get_encoding(match))
 
-#                 temp_str   = temp_dict[key]
-#                 latex_list = re.findall(regex, temp_dict[key])
+                            if len(matches) == len(converted_matches):
 
-#                 if not latex_list :
-#                     continue
+                                for item in range(0, len(matches)):
+                                    item_string = re.sub(regex, converted_matches[item], item_string, count=1)
+                                
+                    key_item_list.append(item_string)
 
-#                 for sym in latex_list:
-#                     out = unicode_tex.tex_to_unicode_map.get(sym, sym)
-#                     temp_list.append(out)
+                sub_dict[key] = key_item_list
+                key_item_list = []
 
-#                 for index in range(0, len(latex_list)):
-#                     latex_list[index] = re.escape(latex_list[index])
-                
-#                 for index in range(0, len(latex_list)):
-#                         temp_str = re.sub(latex_list[index], temp_list[index], temp_str)
+            else:
 
-#                 temp_dict[key] = temp_str
-#                 temp_str = ""
+                # Extract the value associated with the key
+                item_string = sub_dict[key]
 
-#         database[index] = temp_dict
+                if item_string:
 
+                    # Find matches
+                    matches = re.findall(regex, item_string)
+
+                    # Convert matches
+                    if matches:
+
+                        converted_matches = []
+
+                        for match in matches:
+                            converted_matches.append(convert.get_encoding(match))
+
+                        if len(matches) == len(converted_matches):
+
+                            for item in range(0, len(matches)):
+                                item_string = re.sub(regex, converted_matches[item], item_string, count=1)
+                        
+                sub_dict[key] = item_string
+        
+        database[index] = sub_dict
+    
     return database
 
 def remove_brackets( database ):
@@ -542,7 +552,7 @@ def remove_brackets( database ):
 
     return database
 
-def convert_to_dictionary( bib_database ):
+def convert_to_dictionary( bib_database, log ):
     '''
     Converts a BibTeX database to a dictionary
 
@@ -595,6 +605,9 @@ def parse( path, log ):
     # Validate entries
     validate_entries(bib_database, log)
 
+    # Convert characters to unicode
+    bib_database = latex_to_unicode(bib_database)
+
     # Parse out preservation brackets
     bib_database = remove_brackets(bib_database)
 
@@ -602,6 +615,6 @@ def parse( path, log ):
     bib_database = fix_escape_chars(bib_database)
 
     # Convert to dictionary of dictionaries with access via entry key
-    bib_database = convert_to_dictionary(bib_database)
+    bib_database = convert_to_dictionary(bib_database, log)
 
     return bib_database
