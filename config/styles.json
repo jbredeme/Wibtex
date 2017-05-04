@@ -42,14 +42,14 @@
         },
         "title": {
             "key" : "References",
-            "template": "{{References|wrap_html('b')}}"
+            "template": "{{References|wrap_html('b')|add_to_front('<br />')}}"
         },
         "default_style": "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{editor|authors_acm() if editor else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
         "extended_styles": {
             "book" : {
                 "supported": ["book", "booklet"],
                 "preferred": ["book"],
-                "template": "{{num|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+                "template": "{{num|add_to_front('<br />')|add_chars('. ') if num else ''}}{{author|authors_acm() if author else '' }}{{title|add_chars('. ') if title else '' }}{{publisher|add_chars(', ') if publisher else '' }}{{city if city else ''}}{% if city is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
             },
             "inbook" : {
                 "supported": ["inbook"],
