@@ -3,8 +3,8 @@
 # @brief  module to execute the WibTeX Reference Management
 #         System
 #
-# @author Hayden Aupperle, Jarid Bredemeier, Charles Duso
-# @date   April 5, 2017
+# @author Charles Duso, Jarid Bredemeier
+# @date   May 3, 2017
 ############################################################
 
 ################################################
@@ -13,58 +13,58 @@
 import style
 import wibtex_parser
 import docx_io
-import pprint
 
-################################################
-# Construct Input Data
-################################################
-input_bib   = "test_data/demo_bib.bib"
-input_doc   = "test_data/example.docx"
-input_style = "test_data/demo_style.json"
-style_form  = "ccsc"
+def execute( input_bib, input_doc, style_form, output_doc ):
+    '''
+    Executes the WibTeX RMS
 
-################################################
-# Construct Output Data
-################################################
-bib_data    = {} #' The BibTeX database
-bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
-cite_data   = {} #' The formatted reference data to insert in the document
-xml         = "" #' The document string
-output      = "test_data/demo_output.docx"
+    @param input_bib  the input BibTeX database file path
+    @param input_doc  the input Microsoft Word document
+    @param style_form the chosen reference style
+    @param output_doc the chosen output Word document
+    '''
 
-################################################
-# Read BibTeX Database (wibtex_parser.py)
-################################################
+    ################################################
+    # Construct Output Data
+    ################################################
+    bib_data    = {} #' The BibTeX database
+    bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
+    cite_data   = {} #' The formatted reference data to insert in the document
+    xml         = "" #' The document string
 
-bib_data = wibtex_parser.parse(input_bib)
+    ################################################
+    # Read BibTeX Database (wibtex_parser.py)
+    ################################################
 
-################################################
-# Read Word Document (docx_io.py)
-################################################
+    bib_data = wibtex_parser.parse(input_bib)
 
-# Read in the document
-docx = docx_io.Document(input_doc)
+    ################################################
+    # Read Word Document (docx_io.py)
+    ################################################
 
-# Extract XML
-xml  = (docx.get_xml())
+    # Read in the document
+    docx = docx_io.Document(input_doc)
 
-# Extract BibTeX markup
-bib_tags, xml = docx.get_dict_xml(xml)
+    # Extract XML
+    xml  = (docx.get_xml())
 
-################################################
-# Generate Reference Data (style.py)
-################################################
+    # Extract BibTeX markup
+    bib_tags, xml = docx.get_dict_xml(xml)
 
-cite_data = style.get_reference_data(input_style, style_form, bib_tags, bib_data)
+    ################################################
+    # Generate Reference Data (style.py)
+    ################################################
 
-################################################
-# Write to Word Document (docx_io.py)
-################################################
+    cite_data = style.get_reference_data(style_form, bib_tags, bib_data)
 
-# Take the dictonary with the template and run Jinja2 over it
-xml = docx.jinja_it(xml, cite_data)
+    ################################################
+    # Write to Word Document (docx_io.py)
+    ################################################
 
-# Save the results into a new document
-docx.save_xml(docx.get_xml_tree(xml), output)
+    # Take the dictonary with the template and run Jinja2 over it
+    xml = docx.jinja_it(xml, cite_data)
 
-# # DONE :)
+    # Save the results into a new document
+    docx.save_xml(docx.get_xml_tree(xml), output_doc)
+
+    # # DONE :)
