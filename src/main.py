@@ -67,9 +67,9 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
     xml = docx.jinja_it(xml, cite_data)
 
     # Convert the html to xml
-    xml = docx.html_to_xml(xml)
-    
+    xml = docx.html_to_xml(xml.decode('utf-8'))
+
     # Save the results into a new document
-    docx.save_xml(docx.get_xml_tree(xml), output_doc)
+    docx.save_xml(docx.get_xml_tree(xml.encode('utf-8')), output_doc)
 
     # DONE :)
