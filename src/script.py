@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+############################################################
+# @file   script.py
+# @brief  script to execute the WibTeX RMS
+#
+# @author Charles Duso
+# @date   May 4, 2017
+############################################################
+
 # Import libraries
 import sys
 import main
@@ -19,7 +27,6 @@ elif len(sys.argv) > 5:
     print("Input is of the form: file.docx file.bib style output.docx")
 
 else:
-    # TODO - create a logger, check against styles
 
     input_doc   = arguments[1]
     input_bib   = arguments[2]

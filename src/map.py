@@ -1,3 +1,11 @@
+############################################################
+# @file   map.py
+# @brief  module to handle mapping of latex to unicode
+#
+# @author Charles Duso
+# @date   May 3, 2017
+############################################################
+
 class RosettaStone:
 
     def __init__(self):

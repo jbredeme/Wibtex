@@ -1,3 +1,11 @@
+############################################################
+# @file   logger.py
+# @brief  module to handle somewhat dynamic logging
+#
+# @author Charles Duso
+# @date   May 3, 2017
+############################################################
+
 class SimpleLogger:
 
     def __init__(self):

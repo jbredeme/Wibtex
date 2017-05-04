@@ -3,7 +3,7 @@
 # @brief  module to extraction of BibTeX databases
 #
 # @author Charles Duso
-# @date   May 3, 2017
+# @date   May 4, 2017
 ############################################################
 
 ################################################

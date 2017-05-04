@@ -606,7 +606,6 @@ def get_valid_styles( log ):
     '''
 
     #TODO - Investigate pathing on different operating systems
-    #TODO - Incorporate logging better
 
     style_file = "../config/styles.json"
     valid_styles = []
