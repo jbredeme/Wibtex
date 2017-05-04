@@ -955,6 +955,7 @@ def generate_citations( bib_data, ordered_cites, style_data, environment ):
     @param bib_data      a dictionary containing BibTeX database entries
     @param ordered_cites a dictionary containing citation keys/jinja variables
     @param style_data    a dicitonary containing style template data
+    @param environment   a Jinja2 environment with custom filters
 
     @return              a dictionary containing formatted reference data
     '''
@@ -997,32 +998,103 @@ def generate_citations( bib_data, ordered_cites, style_data, environment ):
 
     return output
 
-def generate_works_cited( bib_data, ordered_cites, style_data, output ):
+def generate_works_cited( bib_data, ordered_cites, style_data, environment, output ):
+    '''
+    Generates reference sections based upon a preordained style
 
+    @param bib_data      a dictionary containing BibTeX database entries
+    @param ordered_cites a dictionary containing citation keys/jinja variables
+    @param style_data    a dicitonary containing style template data
+    @param environment   a Jinja2 environment with custom filters
+    @param output        a dictionary containing formatted reference data
+
+    @return              a dictionary containing formatted reference data
+    '''
+
+    # TODO - Verify
+
+    # Index for numbering citations 
     index = 1
 
+    # Extract the in-text citation token as it may be used
     token = style_data.get('in_text_style').get('index')
 
-    bib_list = []
+    bib_list = []   #' A list of citations for a particular reference section
 
     bib_string = "" #' String containing works cited
 
-    bib_string += style_data.get('title')
+    # TODO - Verify
+    empty_dict = {'title':'References'} #' Used for rendering title data ()
 
+    extended_styles = {} #' Constructs the extended styles (if any)
+    alt_style = {}       #' A specific alternate style
+
+    found = False
+
+    default = style_data.get('default_style') #' The default style template
+    template = ""
+    entrytype = ""
+
+    # For each bibliography
     for bib in ordered_cites:
 
+        # Constrtuct the reference title
+        templator = environment.from_string(style_data.get('title'))
+        bib_string += templator.render(empty_dict)
+
+        # Extract the reference section
         bib_list = ordered_cites.get(bib)
 
+        # For each citation key
         for key in bib_list[0]:
 
+            # Add the numerical token to the 
             bib_data[key][token] = index
 
-            templator = Template(style_data.get(bib_data[key].get('ENTRYTYPE')))
+            # Extract the entry type
+            entrytype = bib_data[key]['ENTRYTYPE']
+
+            # Construct the template from the BibTeX entry key
+            extended_styles = style_data.get('extended_styles')
+
+            # Set template to the default incase we can't find a valid
+            template = default
+
+            # Grab the preferred or supported style, else default to default style
+            # TODO - verify
+            if extended_styles:
+
+                # For each alternate style
+                for type in extended_styles:
+
+                    # Grab the alternate style
+                    alt_style = extended_style.get(type)
+
+                    # If BibTeX entry part of preferred
+                    if entrytype in alt_style.get('preferred'):
+                        template = alt_style.get('template')
+                        found = True
+
+                    # If BibTeX entry part of supported and not preferred
+                    if found is False and entrytype in alt_style.get('supported'):
+                        template = alt_style.get('template')
+
+            # Render the chosen template
+            templator = environment.from_string(template)
+
+            # Add reference string to master reference
             bib_string += templator.render(bib_data[key])
 
+            # Reset the filtering tokens
+            found = False
+
+            # Increment the index counter
             index += 1
 
+        # Add the formatted reference string to the master dictionary
         output[bib] = bib_string
+
+        # Reset the index and the reference string
         bib_string = ""
         index = 1
 
@@ -1053,6 +1125,6 @@ def get_reference_data( style_form, bib_tags, bib_data ):
     output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'), environment)
 
     # Generate reference page
-    output = generate_works_cited(bib_data, ordered_cites, style_data, output)
+    output = generate_works_cited(bib_data, ordered_cites, style_data, environment, output)
 
     return output
