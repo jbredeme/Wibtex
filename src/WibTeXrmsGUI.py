@@ -1,6 +1,7 @@
-from Tkinter import *
-import tkFileDialog as filedialog
-import tkMessageBox
+from tkinter import *
+from tkinter import filedialog
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showerror
 import os
 import style
 class MyFrame(Frame):
@@ -23,12 +24,6 @@ class MyFrame(Frame):
         Function to allow the user to browse their local directory for the
         BibTeX file and once selected it puts the file path into the e1 box
         """
-        def askopenfilename(self):
-            # get filename
-            filename = tkFileDialog.askopenfilename(**self.file_opt)
-            # open file on your own
-            if filename:
-                return open(filename, 'r')
         def input_bib():
             path = filedialog.askopenfilename()
             e1.delete(0, END)  # Remove current text in entry
@@ -66,11 +61,14 @@ class MyFrame(Frame):
             return
 
         def callstyles():
+            """
+            import main
             import style
-            style_data = style.get_valid_styles()            
-            print(style_data)
+            style.get_valid_styles()
+            """
+            return
 
-        style_data = style.get_valid_styles()            
+        style_data = style.get_valid_styles()           
 
         """
         Creates the Entry text boxes for the file path to be inserted into.
@@ -130,7 +128,6 @@ class MyFrame(Frame):
         w = OptionMenu(self, var, *style_data)
         w.grid(row=3, column=2, sticky=W) 
 
-        
         """
         Creates the run button to run the program, which will run the WibTeX program
         from its own defined function.
@@ -145,5 +142,4 @@ Runs the GUI
 
 if __name__ == "__main__":
     MyFrame().mainloop()
-
 
