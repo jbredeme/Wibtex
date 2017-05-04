@@ -7,6 +7,7 @@
  
 import sys, os, shutil, re, zipfile, tempfile
 from jinja2 import Template, Environment
+from bs4 import BeautifulSoup
 from lxml import etree
 
 class Document:
@@ -202,4 +203,174 @@ class Document:
 				print("\t\tPayload:\t" + str(val2['payload']) + "\n")
 			print("------------------------------------------------------------")
 			print("------------------------------------------------------------\n")
+			
+			
+	# html_to_xml: todo
+	#
+	# @pram xml
+	#
+	def html_to_xml(self, xml):
+		xml = xml.replace('&quot;', '"')										#=> markup clean up required													            
+		xml = xml.replace('<br />', '</w:t><w:br/><w:t xml:space="preserve">')	#=> line break injections													
+		gumbo = BeautifulSoup(xml, "lxml")										#=> XML Parser
+
+		for item in gumbo.findAll('w:r'): 					#=> find all the word runs
+			bisque = BeautifulSoup(str(item), "lxml")	
+			rpr = bisque.find('w:rpr')						#=> find the rPr data
+			rpr2 = rpr
+			
+			# correct auto formatting
+			rpr = str(rpr).replace('rpr', 'rPr')
+			rpr = rpr.replace('<w:rtl w:val="0"></w:rtl>', '<w:rtl w:val="0"/>')
+			
+			
+			for text in bisque.findAll('w:t'):				#=> look in each text run
+				broth = BeautifulSoup(str(text), 'html.parser')
+				pattern_list = []
+				list2 = []
+				key_list = []
+				# print('---------------------------------------------------')
+				# print(text)
+				
+				
+				
+				if not (len(broth.findAll('b')) == 0 and  len(broth.findAll('font')) == 0 and  len(broth.findAll('i')) == 0 and  len(broth.findAll('u')) == 0):
+					for element in broth.findAll('b'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+							
+					for element in broth.findAll('font'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+							
+					for element in broth.findAll('i'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+						
+					for element in broth.findAll('u'):
+						if element.getText() != element.parent.getText():
+							pattern_list.append('(' + str(element) + ')')
+					
+					pattern_str = '|'.join(pattern_list)
+					ptrn = re.compile(pattern_str)
+					
+					if(pattern_str != ''):
+						list2 = re.split(ptrn, str(text))
+						key_list = re.split(ptrn, str(text))
+				
+						while None in list2:
+							list2.remove(None)
+							
+						while None in key_list:
+							key_list.remove(None)
+							
+					
+					if len(list2) > 1:
+						for index in range(len(list2)):
+							if index == 0:
+								list2[index] = list2[index] + '</w:t></w:r>'
+								
+							else:
+								if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+									if index != (len(list2) - 1):
+										list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index] + '</w:t></w:r>'
+										
+									else:
+										list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000">' + str(rpr) + '<w:t xml:space="preserve">' + list2[index]						
+									
+								else:
+									rPr_temp = ''
+									
+									#=> B/F/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+
+									# #=> B/F/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+
+									#=> B/F/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
+										rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> B/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:					
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/><w:u w:val="single"/>'
+										
+									#=> B/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:b w:val="1"/><w:u w:val="single"/>'
+										
+									#=> B/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:i w:val="1"/>'
+										
+									#=> B/F
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+											
+									#=> B
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:b w:val="1"/>'
+										
+									#=> F/I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> F/I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:i w:val="1"/><w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+										
+									#=> F/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:u w:val="single"/>'
+										
+									#=> F
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:sz w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/><w:szCs w:val="' + str(BeautifulSoup(str(list2[index]), 'html.parser').font['size']) + '"/>'
+										
+									#=> I/U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:i w:val="1"/><w:u w:val="single"/>'
+										
+									# #=> I
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) != 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) == 0:
+										rPr_temp = '<w:i w:val="1"/>'
+										
+									#=> U
+									if len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('b')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('font')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('i')) == 0 and len(BeautifulSoup(str(list2[index]), 'html.parser').findAll('u')) != 0:
+										rPr_temp = '<w:u w:val="single"/>'
+									
+									list2[index] = '<w:r w:rsidDel="00000000" w:rsidR="00000000" w:rsidRPr="00000000"><w:rPr>' + str(rPr_temp) + '<w:rtl w:val="0"/></w:rPr><w:t xml:space="preserve">' + BeautifulSoup(str(list2[index]), 'html.parser').getText() + '</w:t></w:r>'
+
+					for x in list2:
+						x = x.replace('> <', '><')
+			
+				for index in range(len(list2)):
+					if str(key_list[index]) != '</w:t>':
+						xml = xml.replace(str(key_list[index]), str(list2[index]))
+						
+					# print('------------ OUTPUT Chcker -------------')	
+					# print(key_list[index])
+					# print(list2[index])
+					# print('-----------------------------------------')
+					
+					xml = xml.replace('</w:t></w:r></w:t></w:r>', '</w:t></w:r>')
+					
+		return xml		
+
 		
+# docx = Document('test_data\example2.docx')
+# xml  = docx.get_xml()
+# xml = xml.replace('College', '<font size="45">professor</font>')
+# xml = xml.replace('believable.', '<b>what up</b>')
+# xml = xml.replace('packages', '<i><u>Boya</u></i>')
+# xml = xml.replace('popularised', '<font size="45"><u><b>YES YES YES</b></u></font>')
+# xml = xml.replace('readable', '<br />')
+# xml = xml.replace('Latin', '<br />')
+# xml = xml.replace('\\bibliography{second_bib}', '<b><font size="23">THE real test</font></b>')		
+# xml = xml.replace('\\bibliography{third_bib}', '<b><font size="23"><i>Another Test</i></font></b>')
+# xml = xml.replace('consectetur,', '<br /><br />')
+
+# xml = docx.html_to_xml(xml)
+# docx.save_xml(docx.get_xml_tree(xml.encode('utf-8')), 'xml_out.docx')	
