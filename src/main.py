@@ -78,5 +78,6 @@ def execute( input_bib, input_doc, style_form, output_doc ):
 input_bib   = "test_data/demo_bib.bib"
 input_doc   = "test_data/example.docx"
 style_form  = "CCSC"
-output      = "test_data/demo_output.docx"
-execute(input_bib, input_doc, style_form, output)
+output      = "test_data/demo_output1.docx"
+
+execute( input_bib, input_doc, style_form, output)
