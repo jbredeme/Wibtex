@@ -20,6 +20,27 @@ from jinja2 import Template, Environment, BaseLoader
 # Function Definitions - Jinja2 Pipe & Filters
 ################################################
 
+def font(value, size):
+    '''
+    Wraps Jinja2 contextual data in font size
+
+    @param  value   the data to wrap
+    @param  size    the value to generate tags with
+    @return         the wrapped data
+    '''
+    # TODO - Verify
+
+    if isinstance(value, list):
+        data = ""
+        for item in value:
+            data += '<font size="' + str(size) + '">' + str(item) + '</font>'
+        return data
+
+    elif isinstance(value, str):
+        return '<font size="' + str(size) + '">' + value + '</font>'
+    else:
+        return '<font size="' + str(size) + '">' + str(value) + '</font>'
+
 def wrap_html(value, wrapper):
     '''
     Wraps Jinja2 contextual data in HTML-like fashion
@@ -542,6 +563,7 @@ def construct_env():
     environment.filters['wrap_html'] = wrap_html
     environment.filters['add_chars'] = add_chars
     environment.filters['wrap'] = wrap
+    environment.filters['font'] = font
     environment.filters['add_to_front'] = add_to_front
     environment.filters['authors_ccsc'] = authors_ccsc
     environment.filters['authors_acm'] = authors_acm
