@@ -2371,6 +2371,8 @@ class RosettaStone:
 
         for key in self.unicode_to_latex:
             self.unicode_to_latex[key] = self.unicode_to_latex[key].replace("\\", "\\\\")
+            self.unicode_to_latex[key] = self.unicode_to_latex[key].replace(" ", "")
+
         self.latex_to_unicode = {v: k for k, v in self.unicode_to_latex.items()}
 
     def get_encoding( self, to_convert ):
@@ -2378,6 +2380,14 @@ class RosettaStone:
         if self.latex_to_unicode.get(to_convert):
 
             return self.latex_to_unicode.get(to_convert)
+
+        elif self.latex_to_unicode.get(to_convert.replace("\\", "\\\\")):
+
+            return self.latex_to_unicode.get(to_convert.replace("\\", "\\\\"))
+
+        elif self.latex_to_unicode.get(to_convert.replace("\\", "")):
+
+            return self.latex_to_unicode.get(to_convert.replace("\\", "\\\\"))
 
         else:
 

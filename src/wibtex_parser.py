@@ -433,7 +433,6 @@ def fix_escape_chars( database ):
 
     return database
 
-# TODO - Optional as callback function appears robust enough to handle
 def latex_to_unicode( database ):
     '''
     Converts a TeX character codes to Unicode
@@ -448,7 +447,7 @@ def latex_to_unicode( database ):
 
     convert = map.RosettaStone()
 
-    regex = r'\\\\.*\{.*\}|\\\\\w+[^\}\{]'
+    regex = r'\\.[^\s\r\n]*\{.[^\s\r\n]*\}|\\\w+[^\s]'
 
     # For each entry
     for index in range(0, len(database)):
@@ -471,6 +470,7 @@ def latex_to_unicode( database ):
 
                         # Convert matches
                         if matches:
+
                             converted_matches = []
 
                             for match in matches:
