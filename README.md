@@ -10,14 +10,14 @@ WibTeX Reference Management System simplifies the process of preparing documents
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Version Compatibility
+### Microsoft Office Version Compatibility
 * Microsoft Office 2010/2013/2016
 
 ### Dependencies
 What you need to install the software and how to install them
 * [Jinja2](http://jinja.pocoo.org/docs/2.9/) - Templating engine
 * [Bibtexparser 0.6.2](https://pypi.python.org/pypi/bibtexparser) - Bibtex database parsing package
-* [lxml 3.7.2](http://lxml.de/) - XML toolkit is a Pythonic binding
+* [lxml 3.7.2](http://lxml.de/) - toolkit for processing XML and HTML in the Python language.
 * [Beautiful Soup 4.4.0](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - library for pulling data out of HTML and XML files
 
 ### Installation
