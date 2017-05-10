@@ -1,5 +1,5 @@
 # Wibtex
-project description goes here
+WibTeX Reference Management System simplifies the process of preparing documents for cross-discipline research publications by eliminating the need to reconstruct bibliographic information produced in BibTeX to a format suitable for Microsoft Word. WibTeX allows the user to construct reference pages and in-text citations sourced from BibTeX bibliographic information from within a Microsoft Word Document, using a LaTeX workflow.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -9,6 +9,9 @@ project description goes here
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+## Version Compatibility
+* Office 2010/2013/2016
 
 ### Dependencies
 What you need to install the software and how to install them
@@ -51,8 +54,3 @@ See also the list of [contributors](https://github.com/jbredeme/Wibtex/graphs/co
 
 ## License
 An example would be: This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-* Todo
-* Todo
-* Todo
