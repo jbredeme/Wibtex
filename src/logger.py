@@ -6,6 +6,7 @@
 # @date   May 3, 2017
 ############################################################
 
+
 class SimpleLogger:
 
     def __init__(self):
@@ -33,18 +34,18 @@ class SimpleLogger:
 
                 # Search for the version number
                 for char in range(0, len(self.data)):
-                    
+
                     # If we find the version
                     if self.data[char].isdigit():
                         self.version = int(self.data[char])
-            
+
             # Construct the logpath now
             self.logpath = '../logs/log_' + str(self.version) + '.log'
 
         except(IOError):
             print("ERROR - Could not read log properties file.")
 
-    def log_data( self, data_string ):
+    def log_data(self, data_string):
         '''
         Logs data to the predefined logging folder
 
