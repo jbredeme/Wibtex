@@ -1,9 +1,8 @@
- #
- # Author: Jarid Bredemeier
- # Email: jpb64@nau.edu
- # File: docx_io.py
- # Copyright © 2017 All rights reserved 
- #
+# Author: Jarid Bredemeier
+# Email: jpb64@nau.edu
+# File: docx_io.py
+# Copyright © 2017 All rights reserved 
+#
  
 import sys, os, shutil, re, zipfile, tempfile
 from jinja2 import Template, Environment
@@ -11,7 +10,7 @@ from bs4 import BeautifulSoup
 from lxml import etree
 
 class Document:
-	#	# __init__ is the the constructor for the document class that stores a qualified path to a target Open file.
+	# __init__ is the the constructor for the document class that stores a qualified path to a target Open file.
 	#
 	# @pram filename is the directory\name of the target Open XML document file.
 	#	
@@ -27,7 +26,7 @@ class Document:
 				
 	# get_xml extracts the Open XML contents from a document zip compression
 	#
-	# @returns string containing the Open XML.
+	# @return string containing the Open XML.
 	#
 	def get_xml(self):
 		try:
@@ -46,7 +45,7 @@ class Document:
 	# 
 	# @pram xml_content is a string containing some data that will be written into the document.xml.
 	# @pram output_filename is a string that is used to name the new Open XML document.
-	# @returns true indicating successful document creation; false upon failure to create document
+	# @return true indicating successful document creation; false upon failure to create document
 	#
 	def save_xml(self, xml_content, output_filename):
 		dir = tempfile.mkdtemp()
@@ -76,7 +75,7 @@ class Document:
 			
 	# get_xml_tree create an element or tree of elements from a string containing XML.
 	# 
-	# @returns a new element instance represented by the XML.
+	# @return a new element instance represented by the XML.
 	#
 	def get_xml_tree(self, xml_string):
 	   return etree.fromstring(xml_string)
@@ -103,7 +102,7 @@ class Document:
 	#
 	# @pram xml is a string containing xml content and jinja variables.
 	# @pram dictionary of jinja variables and values used for xml targeting and replacement. 
-	# @returns an xml string that is been processed by the templating engine
+	# @return an xml string that is been processed by the templating engine
 	# 
 	def jinja_it(self, xml, dictionary):
 		template = Template(xml)
@@ -117,7 +116,7 @@ class Document:
 	# reference keys.
 	#
 	# @pram latex is a string containing latex markup.
-	# @returns a string containing all the contents inside curly braces, None if no value was extracted.
+	# @return a string containing all the contents inside curly braces, None if no value was extracted.
 	#
 	def get_bib_key(self, latex):
 		ptn_markup = re.compile(r'<w:[^>]*>|</w:[^>]*>|')
@@ -137,7 +136,7 @@ class Document:
 	# referencing multiple bibliographies in a single docx document and their assoicate citations.
 	#
 	# @pram xml is a string containing Open XML.
-	# @returns a tuple; first value is a python dictionary of the latex markup and jinja key variables generated for bibliographies and citations; second value 
+	# @return a tuple; first value is a python dictionary of the latex markup and jinja key variables generated for bibliographies and citations; second value 
 	#          is a string containing the Open XML content of a docx document with the latex markup replaced with jinja templating variables.
 	#
 	def get_dict_xml(self, xml):
@@ -211,7 +210,7 @@ class Document:
 	# string is used as a regex pattern to split the string into a list.
 	#
 	# @pram html string of text containing html markup
-	# @returns a string that can be re.compiled as a regex expression pattern
+	# @return a string that can be re.compiled as a regex expression pattern
 	#
 	def split_html(self, html):
 		pattern = []
@@ -233,7 +232,7 @@ class Document:
 	# function accepts nested html tags independant of order.
 	#
 	# @pram text is a string containing plain text, html markup, or a combination of both.
-	# @returns a list of wordml data.
+	# @return a list of wordml data.
 	#		
 	def recursive_builder(self, text):
 		broth = BeautifulSoup(text, 'html.parser')
@@ -286,7 +285,7 @@ class Document:
 	# i.e. 'some text <b> more text <i><u> even more text </u></i> and more </b> text'
 	#
 	# @pram 
-	# @returns
+	# @return
 	#		
 	def recursive_list_spliter(self, html):
 		# base case: text has no html markup
@@ -312,7 +311,7 @@ class Document:
 	# and is well formed, the newly generated content replaces the old data.
 	#
 	# @pram xml is the loaded xml data string from the docx file.
-	# @returns modified xml string containing the new markup.
+	# @return modified xml string containing the new markup.
 	#			
 	def html_to_wordlm(self, xml):
 		# Expression patterns
