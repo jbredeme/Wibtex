@@ -16,7 +16,8 @@ import style
 import wibtex_parser
 import docx_io
 
-def execute( input_bib, input_doc, style_form, output_doc, log ):
+
+def execute(input_bib, input_doc, style_form, output_doc, log):
     '''
     Executes the WibTeX RMS
 
@@ -29,11 +30,11 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
     ################################################
     # Construct Output Data
     ################################################
-    bib_data    = {} #' The BibTeX database
-    bib_tags    = [] #' The dictionary of BibTeX tags in the Word document
-    cite_data   = {} #' The formatted reference data to insert in the document
-    xml         = "" #' The document string
-    
+    bib_data = {}  # The BibTeX database
+    bib_tags = []  # The dictionary of BibTeX tags in the Word document
+    cite_data = {}  # The formatted reference data to insert in the document
+    xml = ""  # The document string
+
     ################################################
     # Read BibTeX Database (wibtex_parser.py)
     ################################################
@@ -48,7 +49,7 @@ def execute( input_bib, input_doc, style_form, output_doc, log ):
     docx = docx_io.Document(input_doc)
 
     # Extract XML
-    xml  = (docx.get_xml())
+    xml = (docx.get_xml())
 
     # Extract BibTeX markup
     bib_tags, xml = docx.get_dict_xml(xml)
