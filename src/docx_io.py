@@ -254,8 +254,15 @@ class Document:
 				if len(sub) == 0:
 					sub = broth.font.getText()
 				out2 = self.recursive_builder(str(sub))
-				out2.insert(2, '<w:sz w:val="' + broth.font['size'] +'"/>')
-				out2.insert(2, '<w:szCs w:val="' + broth.font['size'] + '"/>')
+				
+				if broth.font.has_attr('size'): 
+					out2.insert(2, '<w:sz w:val="' + broth.font['size'] +'"/>')
+					out2.insert(2, '<w:szCs w:val="' + broth.font['size'] + '"/>')
+					
+				if broth.font.has_attr('color'):
+					hex_color = str(broth.font['color'])
+					hex_color = hex_color.replace('#', '')
+					out2.insert(2, '<w:color w:val="' + hex_color + '" />')
 
 			if broth.find().name == 'i':
 				sub = broth.i.findChildren(recursive = False)
@@ -315,6 +322,7 @@ class Document:
 		xml = xml.replace('<br />', 'w:br')		#=> encode break tags
 		text_run = []
 		accum = []
+		meta_data = []
 		
 		# Find all the word runs in the document and put them into a list
 		for element in wr.findall(xml, re.IGNORECASE):
@@ -333,11 +341,14 @@ class Document:
 				
 				# Examine each text run found; word text runs are stored in a list
 				for x in range(len(text_run)):
-					str_pattern = docx.split_html(text_run[x])
+					str_pattern = self.split_html(text_run[x])
 					pattern = re.compile(str_pattern)
 					
 					if str_pattern != '':
 						list = re.split(pattern, text_run[x])
+						
+						while None in list:
+							list.remove(None)
 						
 						for item in list:
 							out = self.recursive_builder(item)
