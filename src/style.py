@@ -1,6 +1,6 @@
 ############################################################
 # @file   style.py
-# @brief  module to handle formatting of data for reference 
+# @brief  module to handle formatting of data for reference
 #         styles
 #
 # @author Charles Duso
@@ -19,6 +19,7 @@ from jinja2 import Template, Environment, BaseLoader
 ################################################
 # Function Definitions - Jinja2 Pipe & Filters
 ################################################
+
 
 def font(value, size):
     '''
@@ -40,6 +41,7 @@ def font(value, size):
     else:
         return '<font size="' + size + '">' + str(value) + '</font>'
 
+
 def wrap_html(value, wrapper):
     '''
     Wraps Jinja2 contextual data in HTML-like fashion
@@ -60,6 +62,7 @@ def wrap_html(value, wrapper):
     else:
         return "<" + wrapper + ">" + str(value) + "</" + wrapper + ">"
 
+
 def add_chars(value, char):
     '''
     Adds characters to end of Jinja2 contextual data
@@ -68,9 +71,7 @@ def add_chars(value, char):
     @param  char    the value to append
     @return         the modified data
     '''
-    
-    #TODO - Verify
-    
+
     if isinstance(value, str):
         return value + char
     elif isinstance(value, list):
@@ -81,6 +82,7 @@ def add_chars(value, char):
     else:
         return str(value) + char
 
+
 def wrap(value, char):
     '''
     Wraps Jinja2 contextual data (specialized for braces/brackets)
@@ -89,7 +91,6 @@ def wrap(value, char):
     @param  char    the values to wrap
     @return         the modified data
     '''
-    #TODO - Verify
 
     if isinstance(value, str):
 
@@ -113,7 +114,7 @@ def wrap(value, char):
             else:
                 data += char + str(item) + char
         return data
-    
+
     else:
 
         if char is ')' or char is '(':
@@ -124,6 +125,7 @@ def wrap(value, char):
 
         return char + str(value) + char
 
+
 def add_to_front(value, char):
     '''
     Adds characters to front of Jinja2 contextual data
@@ -132,9 +134,7 @@ def add_to_front(value, char):
     @param  char    the value to append
     @return         the modified data
     '''
-    
-    #TODO - Verify
-    
+
     if isinstance(value, str):
         return char + value
     elif isinstance(value, list):
@@ -145,6 +145,7 @@ def add_to_front(value, char):
     else:
         return char + str(value)
 
+
 def authors_ccsc(value):
     '''
     Adds CCSC author format to Jinja2 contextual data
@@ -153,17 +154,15 @@ def authors_ccsc(value):
     @return         the modified data
     '''
 
-    #TODO - Verify
-
     if isinstance(value, list):
 
-        f_half = "" #' First half of an author list
-        s_half = "" #' Second half of an author list
+        f_half = ""  # First half of an author list
+        s_half = ""  # Second half of an author list
 
         if len(value) <= 1:
-            f_half = re.findall('\w+,\s+', str(value[0])) #' Grab the author's last name
-            s_half = re.findall('\s(\w)', str(value[0]))  #' Grab the author's initials
-            name   = re.findall('\w+', str(value[0]))     #' Grab the author's name if no initials
+            f_half = re.findall('\w+,\s+', str(value[0]))
+            s_half = re.findall('\s(\w)', str(value[0]))
+            name = re.findall('\w+', str(value[0]))
 
             if not f_half:
                 return name[0] + ' '
@@ -175,16 +174,16 @@ def authors_ccsc(value):
 
         else:
             string = ""
-            
+
             for item in value:
-                f_half = re.findall('\w+,\s+', str(item)) #' Grab the author's last name
-                s_half = re.findall('\s(\w)', str(item))  #' Grab the author's initials
-                name   = re.findall('\w+', str(item))     #' Grab the author's name if no initials
+                f_half = re.findall('\w+,\s+', str(item))
+                s_half = re.findall('\s(\w)', str(item))
+                name = re.findall('\w+', str(item))
 
                 if not s_half:
-                    string += name[0]  + ", "
+                    string += name[0] + ", "
                 elif not s_half:
-                    string += f_half.split(',')[0]  + ", "
+                    string += f_half.split(',')[0] + ", "
                 else:
                     string += str(name[0]) + ", "
 
@@ -192,9 +191,10 @@ def authors_ccsc(value):
 
     elif isinstance(value, str):
         return value + ', '
-        
+
     else:
         return str(value)
+
 
 def authors_acm(value):
     '''
@@ -204,19 +204,17 @@ def authors_acm(value):
     @return         the modified data
     '''
 
-    #TODO - Verify
-
-    f_half = "" #' First half of an author list
-    s_half = "" #' Second half of an author list
+    f_half = ""
+    s_half = ""
 
     if isinstance(value, list):
 
         # If list of authors is one
         if len(value) <= 1:
 
-            f_half = re.findall('\w+,\s+', str(value[0])) #' Grab the author's last name
-            s_half = re.findall('\s(\w)', str(value[0]))  #' Grab the author's initials
-            name   = re.findall('\w+', str(value[0]))     #' Grab the author's name if no initials   
+            f_half = re.findall('\w+,\s+', str(value[0]))
+            s_half = re.findall('\s(\w)', str(value[0]))
+            name = re.findall('\w+', str(value[0]))
 
             # If no last name exists return name
             if not f_half:
@@ -240,7 +238,7 @@ def authors_acm(value):
 
             f_half = re.findall('\w+,\s+', str(value[0]))
             s_half = re.findall('\s(\w)', str(value[0]))
-            name   = re.findall('\w+', str(value[0]))
+            name = re.findall('\w+', str(value[0]))
 
             # If no last name exists return name
             if not f_half:
@@ -248,7 +246,7 @@ def authors_acm(value):
 
             # If the initials don't exist
             elif not s_half:
-                first =  f_half[0].split(',')[0]
+                first = f_half[0].split(',')[0]
 
             # If initials exist, format them
             else:
@@ -258,22 +256,22 @@ def authors_acm(value):
 
             f_half = re.findall('\w+,\s+', str(value[1]))
             s_half = re.findall('\s(\w)', str(value[1]))
-            name   = re.findall('\w+', str(value[1]))
-            
+            name = re.findall('\w+', str(value[1]))
+
             # If no last name exists return name
             if not f_half:
                 second = name[0]
 
             # If the initials don't exist
             elif not s_half:
-                second =  f_half[0].split(',')[0]
+                second = f_half[0].split(',')[0]
 
             # If initials exist, format them
             else:
                 second = f_half[0]
                 for item in s_half:
                     second += item + '.'
-            
+
             return first + ' and ' + second + ' '
 
         # List of 3 or more authors
@@ -287,7 +285,7 @@ def authors_acm(value):
 
                 f_half = re.findall('\w+,\s+', str(value[index]))
                 s_half = re.findall('\s(\w)', str(value[index]))
-                name   = re.findall('\w+', str(value[index]))
+                name = re.findall('\w+', str(value[index]))
 
                 # If second to last author
                 if index == len(value) - 2:
@@ -315,7 +313,7 @@ def authors_acm(value):
                     out += temp + ' '
 
                 # If author not last nor second to last
-                else:               
+                else:
                     if not f_half:
                         temp = name[0]
                     elif not s_half:
@@ -327,8 +325,9 @@ def authors_acm(value):
                     out += temp + ', '
 
             return out
-        
+
     return value
+
 
 def authors_apa(value):
     '''
@@ -337,8 +336,6 @@ def authors_apa(value):
     @param  value   the data to filter
     @return         the modified data
     '''
-
-    #TODO - Verify
 
     f_half = ""
     s_half = ""
@@ -350,7 +347,7 @@ def authors_apa(value):
         if len(value) <= 1:
             f_half = re.findall('\w+,\s+', str(value[0]))
             s_half = re.findall('\s(\w)', str(value[0]))
-            name   = re.findall('\w+', str(value[0]))
+            name = re.findall('\w+', str(value[0]))
 
             # If no last name
             if not f_half:
@@ -375,7 +372,7 @@ def authors_apa(value):
 
             f_half = re.findall('\w+,\s+', str(value[0]))
             s_half = re.findall('\s(\w)', str(value[0]))
-            name   = re.findall('\w+', str(value[0]))
+            name = re.findall('\w+', str(value[0]))
 
             # If no last name
             if not f_half:
@@ -383,7 +380,7 @@ def authors_apa(value):
 
             # If no initials
             elif not s_half:
-                first =  f_half[0].split(',')[0]
+                first = f_half[0].split(',')[0]
 
             # If initials and last name
             else:
@@ -393,7 +390,7 @@ def authors_apa(value):
 
             f_half = re.findall('\w+,\s+', str(value[1]))
             s_half = re.findall('\s(\w)', str(value[1]))
-            name   = re.findall('\w+', str(value[1]))
+            name = re.findall('\w+', str(value[1]))
 
             # If no last name
             if not f_half:
@@ -401,14 +398,14 @@ def authors_apa(value):
 
             # If no initials
             elif not s_half:
-                second =  f_half[0].split(',')[0]
+                second = f_half[0].split(',')[0]
 
             # If initials and last name
             else:
                 second = f_half[0]
                 for item in s_half:
                     second += item + '.'
-            
+
             return first + ' and ' + second + ' '
 
         # If number of authors greater than 7
@@ -422,7 +419,7 @@ def authors_apa(value):
 
                 f_half = re.findall('\w+,\s+', str(value[index]))
                 s_half = re.findall('\s(\w)', str(value[index]))
-                name   = re.findall('\w+', str(value[index]))
+                name = re.findall('\w+', str(value[index]))
 
                 # If we are at the sixth author
                 if index == 6:
@@ -451,7 +448,7 @@ def authors_apa(value):
                     out += temp + ' '
 
                 # If we are the first author
-                else:      
+                else:
 
                     # If no last name
                     if not f_half:
@@ -480,7 +477,7 @@ def authors_apa(value):
 
                 f_half = re.findall('\w+,\s+', str(value[index]))
                 s_half = re.findall('\s(\w)', str(value[index]))
-                name   = re.findall('\w+', str(value[index]))
+                name = re.findall('\w+', str(value[index]))
 
                 if index == len(value) - 2:
 
@@ -517,7 +514,7 @@ def authors_apa(value):
                             temp += item + '.'
                     out += temp + ' '
 
-                else:              
+                else:
 
                     # If no last name
                     if not f_half:
@@ -542,6 +539,7 @@ def authors_apa(value):
     else:
         return str(value) + ', '
 
+
 def get_last(value):
     '''
     Extracts the last name of an author from Jinja2 contextual data
@@ -549,8 +547,6 @@ def get_last(value):
     @param  value   the data to filter
     @return         the modified data
     '''
-
-    #TODO - Verify
 
     result = ""
 
@@ -601,15 +597,14 @@ def construct_env():
 # Function Definitions - Style File Interaction
 ################################################
 
-def get_valid_styles( log ):
+
+def get_valid_styles(log):
     '''
     Validates the styles from the config folder and returns
     a list of valid styles
 
     @return a list of valid styles
     '''
-
-    #TODO - Investigate pathing on different operating systems
 
     style_file = "../config/styles.json"
     valid_styles = []
@@ -641,45 +636,54 @@ def get_valid_styles( log ):
             # Verify order field and its sub-fields exist
             order = style_data.get('order')
             if order is None:
-                log.log_data('\nERROR - Could not access "order" field in style template')
+                log.log_data('\nERROR - Could not access "order" \
+                             field in style template')
                 continue
             else:
                 if 'method' not in order or 'sortby' not in order:
-                    log.log_data('\nERROR - Missing "method" or "sortby" values in "order" field of style template.')
+                    log.log_data('\nERROR - Missing "method" or "sortby" \
+                                 values in "order" field of style template.')
                     continue
 
             # Verify in_text_style field and its sub-fields exist
             in_text = style_data.get('in_text_style')
             if in_text is None:
-                log.log_data('\nERROR - Could not access "in_text_style" field in style template')
+                log.log_data('\nERROR - Could not access "in_text_style"\
+                             field in style template')
                 continue
             else:
                 if 'index' not in in_text or 'template' not in in_text:
-                    log.log_data('\nERROR - Could not access "index" or "template" in "in_text_style" field of style template')
+                    log.log_data('\nERROR - Could not access "index" or\
+                                 "template" in "in_text_style" field of\
+                                 style template')
                     continue
 
             # Verify title field exists
             title = style_data.get('title')
             if title is None:
-                log.log_data('\nERROR - Could not access "title" field in style template')
+                log.log_data('\nERROR - Could not access "title" field \
+                             in style template')
                 continue
             else:
                 if 'key' not in title or 'template' not in title:
-                    log.log_data('\nERROR - Missing "key" or "template" values in "title" field of style template.')
+                    log.log_data('\nERROR - Missing "key" or "template"\
+                                 values in "title" field of style template.')
                     continue
 
             # Verify default_style field exists
             default = style_data.get('default_style')
             if default is None:
-                log.log_data('\nERROR - Could not access "default_style" field in style template')
+                log.log_data('\nERROR - Could not access "default_style"\
+                             field in style template')
                 continue
-        
+
         # If key is valid, then append it to the list
         valid_styles.append(key)
 
     return valid_styles
 
-def read_style_file( style_form, log ):
+
+def read_style_file(style_form, log):
     '''
     Extracts a specified style from a style file
 
@@ -702,7 +706,8 @@ def read_style_file( style_form, log ):
 # Function Definitions - Style Data Formatting
 ################################################
 
-def validate_citations( bib_tags, bib_data, log ):
+
+def validate_citations(bib_tags, bib_data, log):
     '''
     Verifies that a set of BibTeX tags extracted from a BibTeX database exist
 
@@ -710,21 +715,19 @@ def validate_citations( bib_tags, bib_data, log ):
     @param  bib_data BibTeX database
     '''
 
-    sub_dict = {}     #' Dictionary for reference sections
-    cite_dict = {}    #' Dictionary of citations found for a reference section
-    key = ''          #' Temporary key to see if entry in BibTeX database
-    invalid_keys = [] #' A set of invalid keys from the document
+    sub_dict = {}
+    cite_dict = {}
+    key = ''
+    invalid_keys = []
     temp_sub = {}
     temp_final = {}
-
-    #TODO - Test to ensure that invalid keys are removed and in a correct manner
 
     # For each bibliography
     for super_key in bib_tags:
 
         sub_dict = bib_tags.get(super_key)
         cite_dict = sub_dict.get('citations')
-        
+
         # For each citation
         for sub_key in cite_dict:
 
@@ -734,29 +737,30 @@ def validate_citations( bib_tags, bib_data, log ):
                 continue
             else:
                 # Remove it from the key list
-                log.log_data("\nERROR: Could not find key referened in document within BibTeX database: " + str(sub_key))
+                log.log_data(
+                    "\nERROR: Could not find key referened \
+                    in document within BibTeX database: " + str(sub_key))
                 invalid_keys.append(key)
                 continue
 
-    #Log invalid keys
-        
     return bib_tags
 
-def sort_alphabetical( bib_key, sort_list, ordered_cites ):
+
+def sort_alphabetical(bib_key, sort_list, ordered_cites):
     '''
     Sorts a set of citations alphabetically
 
     @param  bib_key         the associated reference section
     @param  sort_list       the list of items to sort
     @param  orderered_cites the dictionary containing sorted reference sections
-    @return                 ordered dictionary sections of the citations extracted
+    @return                 ordered dictionary sections of the citations
     '''
 
-    sorted_list = [] #' Sorted content
-    sorted_tags = [] #' Sorted tags corresponding to respective content
-    to_sort = []     #' Items to sort
-    jinja_list = []  #' List of jinja vars associated with sorted content
-    outer_list = []  #' Master list
+    sorted_list = []
+    sorted_tags = []
+    to_sort = []
+    jinja_list = []
+    outer_list = []
 
     temp_str = ""
 
@@ -791,7 +795,7 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
 
                 # Extract information and negate this item
                 # The same author may appear for many entries
-                # We choose the first available match and then nullify it from matching
+                # We choose the first available match and then nullify it
                 jinja_list[index] = sort_list[item][0]
                 sorted_tags[index] = sort_list[item][1]
                 sort_list[item][2] = ['#']
@@ -806,9 +810,10 @@ def sort_alphabetical( bib_key, sort_list, ordered_cites ):
 
     return ordered_cites
 
-def organize_citations( bib_tags, bib_data, order ):
+
+def organize_citations(bib_tags, bib_data, order):
     '''
-    Sorts a set of citations based on order chosen (alphabetic/first-encountered)
+    Sorts a set of citations based on order chosen (alphabetic/numeric)
 
     @param  bib_tags BibTeX tags extracted from a document
     @param  bib_data BibTeX database
@@ -820,13 +825,13 @@ def organize_citations( bib_tags, bib_data, order ):
     method = order.get('method')
     sort_by = order.get('sortby')
 
-    jinja_var = ''  #' The templating variable associated with the citations
-    sort_item = ''  #' The item to sort by
+    jinja_var = ''
+    sort_item = ''
 
-    tag_list = []   #' List of citations found in single section to be referenced
-    jinja_list = [] #'
-    outer_list = [] #'
-    triplet = []    #' A triplet containing jinja var, bibtex key, and content
+    tag_list = []
+    jinja_list = []
+    outer_list = []
+    triplet = []
 
     # Dictionary that will contain sets of ordered citations
     ordered_cites = {}
@@ -842,10 +847,10 @@ def organize_citations( bib_tags, bib_data, order ):
 
                 # Grab the list of citations
                 citations = bib_tags.get(bib).get('citations')
-                
+
                 # Grab the entry key and sorting token
                 for entry_key in citations:
-                    
+
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
@@ -860,14 +865,18 @@ def organize_citations( bib_tags, bib_data, order ):
                     # If title in BibTeX database and NOT author
                     elif 'title' in bib_data.get(bib_key):
 
-                        sort_item = bib_data.get(bib_key).get('title') 
+                        sort_item = bib_data.get(bib_key).get('title')
 
-                    # No title and no author (unlikely), but grab next resource to sort by
+                    # No title and no author (unlikely), but grab next resource
                     else:
                         # Grab next available value
-                        sort_item = next (iter (bib_data.get(bib_key).values()))
+                        sort_item = next(
+                            iter(
+                                bib_data.get(bib_key).values()
+                                )
+                            )
 
-                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
+                    # Create a triplet of jinja variable, BibTeX key, and value
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
@@ -877,8 +886,10 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
 
-                # Sort this set of bibtex citations for this reference section and add it to the dictionary
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
+                # Sort this set of bibtex citations for this reference section
+                ordered_cites = sort_alphabetical(
+                    bib_tags.get(bib).get('jinja_var'),
+                    tag_list, ordered_cites)
                 tag_list = []
 
         # If we are to sort via titles
@@ -889,16 +900,16 @@ def organize_citations( bib_tags, bib_data, order ):
 
                 # Grab the list of citations
                 citations = bib_tags.get(bib).get('citations')
-                
+
                 # Grab the entry key and sorting token
                 for entry_key in citations:
-                    
+
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
                     if not bib_data.get(bib_key):
                         continue
-                        
+
                     # If title in BibTeX database
                     if 'title' in bib_data.get(bib_key):
 
@@ -907,14 +918,18 @@ def organize_citations( bib_tags, bib_data, order ):
                     # If author in BibTeX database and NOT title
                     elif 'author' in bib_data.get(bib_key):
 
-                        sort_item = bib_data.get(bib_key).get('author') 
+                        sort_item = bib_data.get(bib_key).get('author')
 
                     # If author and title NOT in BibTeX database
                     else:
                         # Grab next available value
-                        sort_item = next (iter (bib_data.get(bib_key).values()))
+                        sort_item = next(
+                            iter(
+                                bib_data.get(bib_key).values()
+                                )
+                            )
 
-                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
+                    # Create a triplet of jinja variable, BibTeX key
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
@@ -924,8 +939,10 @@ def organize_citations( bib_tags, bib_data, order ):
 
                     triplet = []
 
-                # Sort this set of bibtex citations for this reference section and add it to the dictionary
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
+                # Sort this set of bibtex citations for this reference section
+                ordered_cites = sort_alphabetical(
+                    bib_tags.get(bib).get('jinja_var'),
+                    tag_list, ordered_cites)
                 tag_list = []
 
         # Default to first-available field
@@ -935,16 +952,20 @@ def organize_citations( bib_tags, bib_data, order ):
 
                 # Grab the list of citations
                 citations = bib_tags.get(bib).get('citations')
-                
+
                 # Grab the entry key and sorting token
                 for entry_key in citations:
-                    
+
                     bib_key = citations.get(entry_key).get('bib_key')
                     jinja_var = citations.get(entry_key).get('jinja_var')
 
-                    sort_item = next (iter (bib_data.get(bib_key).values()))
+                    sort_item = next(
+                        iter(
+                            bib_data.get(bib_key).values()
+                            )
+                        )
 
-                    # Create a triplet of jinja variable, BibTeX key, and value to sort by
+                    # Create a triplet of jinja variable, BibTeX key
                     triplet.append(jinja_var)
                     triplet.append(bib_key)
                     triplet.append(sort_item)
@@ -952,20 +973,22 @@ def organize_citations( bib_tags, bib_data, order ):
                     tag_list.append(triplet)
 
                     triplet = []
-        
-                # Sort this set of bibtex citations for this reference section and add it to the dictionary
-                ordered_cites = sort_alphabetical(bib_tags.get(bib).get('jinja_var'), tag_list, ordered_cites)
+
+                # Sort this set of bibtex citations for this reference section
+                ordered_cites = sort_alphabetical(
+                    bib_tags.get(bib).get('jinja_var'),
+                    tag_list, ordered_cites)
                 tag_list = []
 
     # Default to first-written-first-cited
     else:
 
-        # This is the count of citations used to interface with the Jinja templates
+        # This is the count of citations used to interface with the Jinja
         c_count = 0
 
         # Access string used to retrieve document keys extracted
         access_str = ""
-        
+
         # For each reference section
         for key in bib_tags:
 
@@ -977,7 +1000,7 @@ def organize_citations( bib_tags, bib_data, order ):
                 # Generate the access key (i.e. 'cite + X')
                 access_str = "cite" + str(c_count)
 
-                # Append bib key and corresponding jinja var to their respective lists
+                # Append bib key and corresponding jinja var to lists
                 tag_list.append(citations[access_str]['bib_key'])
                 jinja_list.append(citations[access_str]['jinja_var'])
 
@@ -989,7 +1012,7 @@ def organize_citations( bib_tags, bib_data, order ):
             # Append list of jinja vars and bib keys to master list
             outer_list.append(tag_list)
             outer_list.append(jinja_list)
-            
+
             # Associate a reference section with the master list and reset
             ordered_cites[key] = outer_list
             tag_list = []
@@ -998,7 +1021,8 @@ def organize_citations( bib_tags, bib_data, order ):
 
     return ordered_cites
 
-def generate_citations( bib_data, ordered_cites, style_data, environment ):
+
+def generate_citations(bib_data, ordered_cites, style_data, environment):
     '''
     Generates in-text citations for the document from a pre-ordained
     style
@@ -1011,17 +1035,15 @@ def generate_citations( bib_data, ordered_cites, style_data, environment ):
     @return              a dictionary containing formatted reference data
     '''
 
-    #TODO - Verify
+    output = {}
+    cur_bib = {}
 
-    output = {}  #' Dictionary containg jinja variables associated with citation data
-    cur_bib = {} #' The current reference section
+    index = 1
 
-    index = 1    #' Key for numbering citations   
+    token = style_data.get('index')
+    template = style_data.get('template')
 
-    token = style_data.get('index')        # We number citations regardless of if they're used
-    template = style_data.get('template')  # The in-text citation template
-
-    templator = environment.from_string(template) # Construct the templator
+    templator = environment.from_string(template)
 
     # For each reference section
     for bib in ordered_cites:
@@ -1042,15 +1064,19 @@ def generate_citations( bib_data, ordered_cites, style_data, environment ):
         # For each item in the current reference section
         for item in range(0, len(cur_bib[1])):
 
-            # Render the template string and assign the key as its jinja variable
-            output[cur_bib[1][item]] = templator.render(bib_data[cur_bib[0][item]])
+            # Render the template string and assign the key as its jinja
+            output[cur_bib[1][item]] = templator.render(
+                bib_data[cur_bib[0][item]])
 
         # Reset the index
         index = 1
 
     return output
 
-def generate_works_cited( bib_data, ordered_cites, style_data, environment, output ):
+
+def generate_works_cited(
+        bib_data, ordered_cites,
+        style_data, environment, output):
     '''
     Generates reference sections based upon a preordained style
 
@@ -1063,27 +1089,24 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
     @return              a dictionary containing formatted reference data
     '''
 
-    # TODO - Verify
-
-    # Index for numbering citations 
+    # Index for numbering citations
     index = 1
 
     # Extract the in-text citation token as it may be used
     token = style_data.get('in_text_style').get('index')
 
-    bib_list = []   #' A list of citations for a particular reference section
+    bib_list = []
 
-    bib_string = "" #' String containing works cited
+    bib_string = ""
 
-    # TODO - Verify
-    header = {} #' Used for rendering title data ()
+    header = {}
 
-    extended_styles = {} #' Constructs the extended styles (if any)
-    alt_style = {}       #' A specific alternate style
+    extended_styles = {}
+    alt_style = {}
 
     found = False
 
-    default = style_data.get('default_style') #' The default style template
+    default = style_data.get('default_style')
     template = ""
     entrytype = ""
 
@@ -1091,8 +1114,11 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
     for bib in ordered_cites:
 
         # Constrtuct the reference title
-        header[style_data.get('title').get('key')] = style_data.get('title').get('key')
-        templator = environment.from_string(style_data.get('title').get('template'))
+        header[style_data.get('title').get('key')] = (
+            style_data.get('title').get('key')
+        )
+        templator = environment.from_string(
+            style_data.get('title').get('template'))
         bib_string += templator.render(header)
 
         # Extract the reference section
@@ -1101,7 +1127,7 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
         # For each citation key
         for key in bib_list[0]:
 
-            # Add the numerical token to the 
+            # Add the numerical token to the
             bib_data[key][token] = index
 
             # Extract the entry type
@@ -1113,8 +1139,7 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
             # Set template to the default incase we can't find a valid
             template = default
 
-            # Grab the preferred or supported style, else default to default style
-            # TODO - verify
+            # Grab the preferred or supported style, else default to default
             if extended_styles:
 
                 # For each alternate style
@@ -1129,8 +1154,10 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
                         found = True
 
                     # If BibTeX entry part of supported and not preferred
-                    if found is False and entrytype in alt_style.get('supported'):
-                        template = alt_style.get('template')
+                    if (
+                        found is False and
+                            entrytype in alt_style.get('supported')):
+                            template = alt_style.get('template')
 
             # Render the chosen template
             templator = environment.from_string(template)
@@ -1153,28 +1180,34 @@ def generate_works_cited( bib_data, ordered_cites, style_data, environment, outp
 
     return output
 
-def get_reference_data( style_form, bib_tags, bib_data, log ):
 
-    style_data = {}    #' A dictionary containing style information
-    ordered_cites = {} #' A dictionary containing ordered citations
-    output     = {}    #' A dictionary for Jinja2 templating on the final document
+def get_reference_data(style_form, bib_tags, bib_data, log):
+
+    style_data = {}
+    ordered_cites = {}
+    output = {}
 
     # Read style file and extract style choice
     style_data = read_style_file(style_form, log)
-    
+
     # Validate that citations are in BibTeX database
     bib_tags = validate_citations(bib_tags, bib_data, log)
 
     # Organize citations according to style
-    ordered_cites = organize_citations(bib_tags, bib_data, style_data.get('order'))
+    ordered_cites = organize_citations(
+        bib_tags, bib_data,
+        style_data.get('order'))
 
     # Construct the Jinja2 environment
     environment = construct_env()
 
     # Generate in-text citations
-    output = generate_citations(bib_data, ordered_cites, style_data.get('in_text_style'), environment)
+    output = generate_citations(
+        bib_data, ordered_cites,
+        style_data.get('in_text_style'), environment)
 
     # Generate reference page
-    output = generate_works_cited(bib_data, ordered_cites, style_data, environment, output)
+    output = generate_works_cited(
+        bib_data, ordered_cites, style_data, environment, output)
 
     return output
