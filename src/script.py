@@ -28,30 +28,36 @@ elif len(sys.argv) > 5:
 
 else:
 
-    input_doc   = arguments[1]
-    input_bib   = arguments[2]
+    input_doc = arguments[1]
+    input_bib = arguments[2]
     style_input = arguments[3]
-    output      = arguments[4]
-    log         = logger.SimpleLogger()
+    output = arguments[4]
+    log = logger.SimpleLogger()
 
     # Verify BibTeX database
     if not input_bib.endswith('.bib'):
-        log.log_data("Error: Expected BibTeX file extension '.bib' for third argument")
+        log.log_data("Error: Expected BibTeX file extension \
+                     '.bib' for third argument")
         quit()
 
     # Verify input Word document
     if not input_doc.endswith('.docx'):
-        log.log_data("Error: Expected Word file extension '.docx' for second argument")
+        log.log_data("Error: Expected Word file extension \
+                     '.docx' for second argument")
         quit()
 
     # Verify output Word document
     if not output.endswith('.docx'):
-        log.log_data("Error: Expected Word file extension '.docx' for fifth argument")
+        log.log_data("Error: Expected Word file extension '.docx'\
+                     for fifth argument")
         quit()
-    
+
     # Verify style file
-    styles = style.get_valid_styles(log)
-    if style_input not in styles and style_input.lower() not in styles and style_input.upper() not in styles:
+    style_valid = style.get_valid_styles(log)
+    if (
+            style_input not in style_valid and
+            style_input.lower() not in style_valid and
+            style_input.upper() not in style_valid):
         log.log_data("Error: Could not locate chosen style in style file.")
         quit()
 
