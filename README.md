@@ -10,8 +10,8 @@ WibTeX Reference Management System simplifies the process of preparing documents
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-## Version Compatibility
-* Office 2010/2013/2016
+### Version Compatibility
+* Microsoft Office 2010/2013/2016
 
 ### Dependencies
 What you need to install the software and how to install them
