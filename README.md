@@ -15,10 +15,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Dependencies
 What you need to install the software and how to install them
-* [Jinja2](http://jinja.pocoo.org/docs/2.9/) - Templating engine
-* [Bibtexparser 0.6.2](https://pypi.python.org/pypi/bibtexparser) - Bibtex database parsing package
+* [Jinja2](http://jinja.pocoo.org/docs/2.9/) - Templating engine.
+* [Bibtexparser 0.6.2](https://pypi.python.org/pypi/bibtexparser) - Bibtex database parsing package.
 * [lxml 3.7.2](http://lxml.de/) - Toolkit for processing XML and HTML in the Python language.
-* [Beautiful Soup 4.4.0](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - library for pulling data out of HTML and XML files
+* [Beautiful Soup 4.4.0](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - library for pulling data out of HTML and XML files.
 
 ### Installation
 A step by step series of examples that tell you how to get a development env running
@@ -43,7 +43,7 @@ Give an example
 Add additional notes about how to deploy this on a live system
 
 ## Built With
-* [Python 3.6.x](https://www.python.org/) - Implementation language
+* [Python 3.6.x](https://www.python.org/) - Implementation language.
 
 ## Authors
 * **Jarid Bredemeier** - *Document IO Module*
