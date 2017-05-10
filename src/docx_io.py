@@ -54,8 +54,8 @@ class Document:
 		self.zipfile.extractall(dir)
 		
 		try:
-			with open(os.path.join(dir,'word/document.xml'), 'w') as f:
-				xml_str = etree.tostring(xml_content, pretty_print=True).decode("utf-8")
+			with open(os.path.join(dir,'word', 'document.xml'), 'w') as f:
+				xml_str = etree.tostring(xml_content, pretty_print = True).decode("utf-8")
 				f.write(xml_str)
 				
 			filenames = self.zipfile.namelist()	#=> Get a list of all the files in the original docx zipfile
@@ -204,38 +204,45 @@ class Document:
 			print("------------------------------------------------------------\n")
 
 			
-	# TODO
+	# generates a string by taking the first occurance of a html element or a nested set
+	# of elements and joining them together. an example string might be something like
+	# 'simple <b>example</b> string <i><front size="16">nothing interesting</font></i> at all'
+	# would return '(<b>example</b>)|(<i><front size="16">nothing interesting</font></i>)'. this
+	# string is used as a regex pattern to split the string into a list.
 	#
-	# @pram 
-	# @returns
+	# @pram html string of text containing html markup
+	# @returns a string that can be re.compiled as a regex expression pattern
 	#
 	def split_html(self, html):
 		pattern = []
-		broth = BeautifulSoup(html, 'html.parser')
-
-		for token in broth.findAll(recursive = False):
-			pattern.append('(' + str(token) + ')')
+		
+		if not html:										#=> guard against empty strings
+			return html
+		
+		else: 
+			broth = BeautifulSoup(html, 'html.parser')		#=> parsing object
+			for token in broth.findAll(recursive = False):	
+				pattern.append('(' + str(token) + ')')
+				
+			pattern = '|'.join(pattern)						#=> join list into a string
 			
-		pattern = '|'.join(pattern)
-
-		return pattern
+			return pattern
 		
 		
-	# TODO
+	# this is a recursive parse tree function that generates wordml data from html data. this
+	# function accepts nested html tags independant of order.
 	#
-	# @pram 
-	# @returns
+	# @pram text is a string containing plain text, html markup, or a combination of both.
+	# @returns a list of wordml data.
 	#		
 	def recursive_builder(self, text):
-		# base case: text has no html markup
 		broth = BeautifulSoup(text, 'html.parser')
-		if len(broth.findAll(recursive = False)) == 0:
+		if len(broth.findAll(recursive = False)) == 0:		#=> base case: text has no html elements
 			output = ['<w:r>', '<w:rPr>', '</w:rPr>', '<w:t>', text, '</w:t>', '</w:r>']
 			return output
 			
 		else:
-			# recursive step
-			if broth.find().name == 'b':
+			if broth.find().name == 'b':					#=> recursive step text with html elements
 				sub = broth.b.findChildren(recursive = False)
 				if len(sub) == 0:
 					sub = broth.b.getText()				
@@ -267,7 +274,9 @@ class Document:
 			return out2
 			
 			
-	# TODO
+	# splits a string recursively into a list of plain text and html markup. this function is
+	# used to mamange nesting of tags inside a string of text with leading and trailing text.
+	# i.e. 'some text <b> more text <i><u> even more text </u></i> and more </b> text'
 	#
 	# @pram 
 	# @returns
@@ -278,21 +287,25 @@ class Document:
 			return html
 			
 		else:
+		# recursive step
 			str_pattern = docx.split_html(html)
 			pattern = re.compile(str_pattern)
 		
 			if str_pattern != '':
 				list = re.split(pattern, html)
-				print(list)
 			
 			for x in range(len(list)):
 				self.recursive_list(list[x])
 				
+		return html
 				
-	# TODO
+				
+	# looks through the Open XML document for text runs. analyzes the text runs for embedded html
+	# markup and calls a parse tree function to convert html to wordml. after wordml has been assembled
+	# and is well formed, the newly generated content replaces the old data.
 	#
-	# @pram 
-	# @returns
+	# @pram xml is the loaded xml data string from the docx file.
+	# @returns modified xml string containing the new markup.
 	#			
 	def html_to_wordlm(self, xml):
 		# Expression patterns
@@ -316,9 +329,9 @@ class Document:
 				
 			# Find all word text run using beautifulsoup
 			for run in BeautifulSoup(xml_markup, 'lxml').findAll('w:t'):
-				text_run.append(re.sub(r'<w:[^>]*>|</w:[^>]*>|', '', str(run)))
+				text_run.append(re.sub(r'<w:[^>]*>|</w:[^>]*>|', '', str(run)))	#=> remove leading OpenXML elements
 				
-				# Examine each text run found, word text runs are stored in a list
+				# Examine each text run found; word text runs are stored in a list
 				for x in range(len(text_run)):
 					str_pattern = docx.split_html(text_run[x])
 					pattern = re.compile(str_pattern)
@@ -329,16 +342,23 @@ class Document:
 						for item in list:
 							out = self.recursive_builder(item)
 							
-							if len(meta_data) != 0:
+							if len(meta_data) != 0:			#=> meta data inheritance				
 								out.insert(2, meta_data[0])
-								
+							
+							if out[2] == '</w:rPr>':		#=> remove rPr meta data tags if no meta data
+								out.remove('<w:rPr>')
+								out.remove('</w:rPr>')
+							
 							accum = accum + out
 							
 					else:
-						
 						out = self.recursive_builder(text_run[x])
-						if len(meta_data) != 0:
+						if len(meta_data) != 0:				#=> meta data inheritance
 							out.insert(2, meta_data[0])
+							
+						if out[2] == '</w:rPr>':			#=> remove rPr meta data tags if no meta data
+							out.remove('<w:rPr>')
+							out.remove('</w:rPr>')
 							
 						accum = accum + out	
 						
@@ -347,20 +367,6 @@ class Document:
 				accum = []		
 				text_run = []
 				
-		xml = xml.replace('w:br', '</w:t><w:br/><w:t>')
+		xml = xml.replace('w:br', '</w:t><w:br/><w:t>')	#=> decode break tags
 		
 		return xml
-			
-		
-	
-		
-# docx = Document('test_data\SampleW16.docx')
-# xml  = docx.get_xml()
-# xml = xml.replace('What', '<font size="45">professor</font>')
-# xml = xml.replace('need', '<b>what up</b>')
-# xml = xml.replace('look', '<i><u>Boya</u></i>')
-# xml = xml.replace('well', '<br /><br />')
-
-# out = docx.html_to_wordlm(xml)
-# print(etree.tostring(docx.get_xml_tree(out.encode('utf-8')), pretty_print = True).decode('utf-8'))
-# docx.save_xml(docx.get_xml_tree(out.encode('utf-8')), 'test.docx')	
