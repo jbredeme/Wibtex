@@ -36,7 +36,34 @@ Some example(s)
 ### And coding style and custom templates
 Add an overview of template syntax, structure, and how to add it into the system environment 
 ```
-Give an example
+{
+    "CCSC": {
+        "order": {
+            "method": "alpha",
+            "sortby": "author"
+        },
+        "in_text_style": {
+            "index" : "num",
+            "template": "{{num|wrap(']') if num else ''}}"
+        },
+        "title": {
+            "key" : "REFERENCES",
+            "template": "{{REFERENCES|wrap_html('b')|font('28')}}"
+        },
+        "default_style": "<br />{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
+        "extended_styles": {
+            "journal": {
+                "supported": ["journal", "article", "mastersthesis", "incollection"],
+                "preferred": ["journal", "article", "mastersthesis", "incollection", "conference"],
+                "template": "<br />{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{{title|add_chars(', ') if title else '' }}{{journal|wrap_html('i')|add_chars(', ') if journal else ''}}{{volume|add_chars(', ') if volume else '' }}{{issue|wrap(')')|add_chars(', ') if issue else ''}}{{pages if pages else ''}}{% if pages is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+            },
+            "book": {
+                "supported": ["book", "booklet", "conference"],
+                "preferred": ["book"],
+                "template": "<br />{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{{title|wrap_html('i')|add_chars(', ') if title else '' }}{{city|add_chars(': ') if city else ''}}{{publisher if publisher else '' }}{% if publisher is defined and year is defined %}{{year|add_chars('.')|add_to_front(', ')}}{% elif year is defined %}{{year|add_chars('.')}}{% else %}{{'.'}}{% endif %}"
+            }, ...
+    }, ...
+}
 ```
 
 ## Deployment
