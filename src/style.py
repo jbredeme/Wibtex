@@ -21,7 +21,7 @@ from jinja2 import Template, Environment, BaseLoader
 ################################################
 
 
-def font(value, size):
+def font(value, size, color=None):
     '''
     Wraps Jinja2 contextual data in font size
 
@@ -30,16 +30,31 @@ def font(value, size):
     @return         the wrapped data
     '''
 
-    if isinstance(value, list):
-        data = ""
-        for item in value:
-            data += '<font size="' + size + '">' + str(item) + '</font>'
-        return data
+    if color:
+        if isinstance(value, list):
+            data = ""
+            for item in value:
+                data += '<font color="' + color + ' \
+                        size="' + size + '">' + str(item) + '</font>'
+            return data
 
-    elif isinstance(value, str):
-        return '<font size="' + size + '">' + value + '</font>'
+        elif isinstance(value, str):
+            return '<font color="' + color + ' \
+                    size="' + size + '">' + str(item) + '</font>'
+        else:
+            return '<font color="' + color + ' \
+                    size="' + size + '">' + str(item) + '</font>'
     else:
-        return '<font size="' + size + '">' + str(value) + '</font>'
+        if isinstance(value, list):
+            data = ""
+            for item in value:
+                data += '<font size="' + size + '">' + str(item) + '</font>'
+            return data
+
+        elif isinstance(value, str):
+            return '<font size="' + size + '">' + value + '</font>'
+        else:
+            return '<font size="' + size + '">' + str(value) + '</font>'
 
 
 def wrap_html(value, wrapper):
