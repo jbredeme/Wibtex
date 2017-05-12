@@ -4,8 +4,6 @@ WibTeX Reference Management System simplifies the process of preparing documents
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
@@ -37,7 +35,7 @@ OR
 python wibtex_gui
 ```
 
-### And coding style and custom templates
+### Coding style(s) and custom template(s)
 Templates for reference styles follow the JSON format depicted below. All
 templates must contain an 'order', 'in_text_style', 'title', and 'default_style'
 fields in order to be considered valid.
