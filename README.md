@@ -28,9 +28,9 @@ python setup.py install
 ```
 
 ## Usage
-Some examples of how to use the program
+Example of how to use the program
 ```
-Some example(s)
+python script.py input_doc.docx file.bib style output_doc.docx
 ```
 
 ### And coding style and custom templates
