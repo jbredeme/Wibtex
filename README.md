@@ -52,7 +52,7 @@ fields in order to be considered valid.
         },
         "title": {
             "key" : "REFERENCES",
-            "template": "{{REFERENCES|wrap_html('b')|font('28')}}"
+            "template": "{{REFERENCES|wrap_html('b')|font('28', '#4286F4')}}"
         },
         "default_style": "<br />{{num|wrap(']')|add_chars(' ') if num else ''}}{{author|authors_ccsc() if author else '' }}{% if title is defined and author is defined %}{{title|add_chars('.')|add_to_front(', ')}}{% elif title is defined %}{{title|add_chars('.')}}{% else %}{{'.'}}{% endif %}",
         "extended_styles": {
