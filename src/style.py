@@ -34,15 +34,15 @@ def font(value, size, color=None):
         if isinstance(value, list):
             data = ""
             for item in value:
-                data += '<font color="' + color + ' \
+                data += '<font color="' + str(color) + ' \
                         size="' + size + '">' + str(item) + '</font>'
             return data
 
         elif isinstance(value, str):
-            return '<font color="' + color + ' \
+            return '<font color="' + str(color) + ' \
                     size="' + size + '">' + str(item) + '</font>'
         else:
-            return '<font color="' + color + ' \
+            return '<font color="' + str(color) + ' \
                     size="' + size + '">' + str(item) + '</font>'
     else:
         if isinstance(value, list):
