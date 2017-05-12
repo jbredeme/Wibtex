@@ -31,10 +31,14 @@ python setup.py install
 Example of how to use the program
 ```
 python script.py input_doc.docx file.bib style output_doc.docx
+
+OR
+
+python wibtex_gui
 ```
 
 ### And coding style and custom templates
-Add an overview of template syntax, structure, and how to add it into the system environment 
+Add an overview of template syntax, structure, and how to add it into the system environment
 ```
 {
     "CCSC": {
