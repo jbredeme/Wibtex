@@ -81,6 +81,3 @@ fields in order to be considered valid.
 * **Hayden Aupperle** - *User Interface*
 
 See also the list of [contributors](https://github.com/jbredeme/Wibtex/graphs/contributors) who participated in this project.
-
-## License
-An example would be: This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
