@@ -38,7 +38,9 @@ python wibtex_gui
 ```
 
 ### And coding style and custom templates
-Add an overview of template syntax, structure, and how to add it into the system environment
+Templates for reference styles follow the JSON format depicted below. All
+templates must contain an 'order', 'in_text_style', 'title', and 'default_style'
+fields in order to be considered valid.
 ```
 {
     "CCSC": {
@@ -69,9 +71,6 @@ Add an overview of template syntax, structure, and how to add it into the system
     }, ...
 }
 ```
-
-## Deployment
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 * [Python 3.6.x](https://www.python.org/) - Implementation language.
