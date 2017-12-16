@@ -1,4 +1,4 @@
-# WibTeX Reference Management System (WRMS)
+# WibTeX Reference Management System (WRMS) ![Jarid_Bredemeier](https://img.shields.io/badge/build-passing-green.svg?style=flat-plastic)
 WibTeX Reference Management System simplifies the process of preparing documents for cross-discipline research publications by eliminating the need to reconstruct bibliographic information produced in BibTeX to a format suitable for Microsoft Word. WibTeX allows the user to construct reference pages and in-text citations sourced from BibTeX bibliographic information from within a Microsoft Word Document, using a LaTeX workflow.
 
 ## Table of Contents
